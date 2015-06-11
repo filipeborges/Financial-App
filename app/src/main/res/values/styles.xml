@@ -1,8 +1,34 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <!-- App custom theme and customActionBar theme. -->
+    <style name="AppCustomTheme"
+        parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/CustomActionBarTheme</item>
+        <!-- For appCompat compatibility -->
+        <item name="actionBarStyle">@style/CustomActionBarTheme</item>
+    </style>
+
+    <style name="CustomActionBarTheme"
+        parent="@style/Widget.AppCompat.Light.ActionBar">
+        <item name="android:background">@drawable/action_bar_background_color</item>
+        <item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
+        <!-- For appCompat compatibility -->
+        <item name="background">@drawable/action_bar_background_color</item>
+        <item name="displayOptions">showHome|homeAsUp|showTitle</item>
+    </style>
+
+    <!-- activity_main.xml -->
+    <style name="bottomBarImgView">
+        <item name="android:background">#023c49</item>
+    </style>
+
+    <style name="backgroundImgView">
+        <item name="android:src">@drawable/background</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+
+    <style name="leftDrawer">
+        <item name="android:background">#000</item>
     </style>
 
 </resources>
