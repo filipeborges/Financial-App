@@ -7,6 +7,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.TextView;
+
+import com.jabarasca.financial_app.utils.Utilities;
 
 //Obs: Normal actionBar from Activity doesnt show hamburguer icon.
 public class MainActivity extends AppCompatActivity {
@@ -24,12 +27,14 @@ public class MainActivity extends AppCompatActivity {
                 R.string.open_drawer, R.string.close_drawer) {
             @Override
             public void onDrawerOpened (View drawerView) {}
-
             @Override
             public void onDrawerClosed (View drawerView) {}
         };
-
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
+
+
+        getSupportActionBar().setCustomView(R.layout.action_bar_custom_date);
+        setActionBarDate(R.id.actionBarDateTextView);
     }
 
     @Override
@@ -60,4 +65,11 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    private void setActionBarDate(int actionBarTextViewId) {
+        TextView actionBarDate = (TextView)findViewById(actionBarTextViewId);
+        actionBarDate.setText(Utilities.getFormattedActualDate());
+    }
+
+
 }
