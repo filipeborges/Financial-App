@@ -31,9 +31,10 @@
         <item name="android:background">#000</item>
     </style>
 
-    <!-- action_bar_custom_date.xml -->
+
+
+    <!-- action_bar_text.xml-->
     <style name="actionBarDateTextView">
-        <!--<item name="android:fontFamily">sans-serif</item>-->
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">20sp</item>
     </style>

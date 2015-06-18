@@ -15,32 +15,65 @@ import com.jabarasca.financial_app.utils.Utilities;
 public class MainActivity extends AppCompatActivity {
 
     private ActionBarDrawerToggle actionBarDrawerToggle;
+    private View drawerRightListView;
+    private DrawerLayout drawerLayout;
+    private Menu menu;
+    private TextView actionBarTextView;
+    private String formattedDate = Utilities.getFormattedActualDate();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        DrawerLayout drawerLayout = (DrawerLayout)findViewById(R.id.activityMainDrawerLay);
+        drawerLayout = (DrawerLayout)findViewById(R.id.activityMainDrawerLay);
+        drawerRightListView = findViewById(R.id.rightDrawer);
 
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
                 R.string.open_drawer, R.string.close_drawer) {
+
             @Override
-            public void onDrawerOpened (View drawerView) {}
-            @Override
-            public void onDrawerClosed (View drawerView) {}
+            public void onDrawerSlide (View drawerView, float slideOffset) {
+                if(drawerView.getId() == R.id.rightDrawer) {
+                    if(slideOffset > 0.1) {
+                        menu.findItem(R.id.plusButton).setIcon(R.drawable.minus);
+                        actionBarTextView.setText(getString(R.string.add_options_title));
+                        actionBarDrawerToggle.setDrawerIndicatorEnabled(false);
+                    }
+                    else if(slideOffset <= 0.1) {
+                        actionBarDrawerToggle.setDrawerIndicatorEnabled(true);
+                        actionBarDrawerToggle.syncState();
+                        menu.findItem(R.id.plusButton).setIcon(R.drawable.add);
+                        actionBarTextView.setText(formattedDate);
+                    }
+                }
+                else {
+                    if(slideOffset > 0.1) {
+                        menu.findItem(R.id.plusButton).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+                    }
+                    else if(slideOffset <= 0.1) {
+                        menu.findItem(R.id.plusButton).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+                    }
+                }
+
+                super.onDrawerSlide(drawerView, slideOffset);
+            }
         };
+
+        //Insert this instruction do XML.
+        actionBarDrawerToggle.setHomeAsUpIndicator(R.drawable.action_bar_background_color);
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
 
-
-        getSupportActionBar().setCustomView(R.layout.action_bar_custom_date);
-        setActionBarDate(R.id.actionBarDateTextView);
+        getSupportActionBar().setCustomView(R.layout.action_bar_text);
+        actionBarTextView = (TextView)findViewById(R.id.actionBarTextView);
+        actionBarTextView.setText(formattedDate);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.activity_main_action_bar, menu);
+        this.menu = menu;
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -62,14 +95,15 @@ public class MainActivity extends AppCompatActivity {
         if(actionBarDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
+        else if(item.getItemId() == R.id.plusButton) {
+            if(!drawerLayout.isDrawerOpen(drawerRightListView)) {
+                drawerLayout.openDrawer(drawerRightListView);
+            } else {
+                drawerLayout.closeDrawer(drawerRightListView);
+            }
+        }
 
         return super.onOptionsItemSelected(item);
     }
-
-    private void setActionBarDate(int actionBarTextViewId) {
-        TextView actionBarDate = (TextView)findViewById(actionBarTextViewId);
-        actionBarDate.setText(Utilities.getFormattedActualDate());
-    }
-
 
 }

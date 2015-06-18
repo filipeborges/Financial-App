@@ -1,9 +1,7 @@
 <resources>
     <string name="app_name">Financial_App</string>
-
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
     <string name="action_bar_add_title">Adicionar</string>
     <string name="open_drawer">Aberto</string>
     <string name="close_drawer">Fechado</string>
+    <string name="add_options_title">Adicionar</string>
 </resources>
