@@ -10,16 +10,16 @@
 
     <style name="CustomActionBarTheme"
         parent="@style/Widget.AppCompat.Light.ActionBar">
-        <item name="android:background">@drawable/action_bar_background_color</item>
+        <item name="android:background">@drawable/action_bar_color</item>
         <item name="android:displayOptions">showHome|homeAsUp|showCustom</item>
         <!-- For appCompat compatibility -->
-        <item name="background">@drawable/action_bar_background_color</item>
+        <item name="background">@drawable/action_bar_color</item>
         <item name="displayOptions">showHome|homeAsUp|showCustom</item>
     </style>
 
     <!-- activity_main.xml -->
     <style name="bottomBarImgView">
-        <item name="android:background">#023c49</item>
+        <item name="android:background">@drawable/action_bar_color</item>
     </style>
 
     <style name="backgroundImgView">
@@ -27,15 +27,29 @@
         <item name="android:scaleType">centerCrop</item>
     </style>
 
-    <style name="leftDrawer">
-        <item name="android:background">#000</item>
+    <style name="drawerStyle">
+        <item name="android:background">@drawable/action_bar_color</item>
     </style>
 
+    <style name="optionText">
+        <item name="android:textColor">#FFF</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_marginLeft">90dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
+    </style>
 
+    <style name="addOptionPlusIcon">
+        <item name="android:src">@drawable/add</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_marginLeft">60dp</item>
+    </style>
 
     <!-- action_bar_text.xml-->
     <style name="actionBarDateTextView">
-        <item name="android:textStyle">bold</item>
+        <item name="android:textStyle">bold|italic</item>
         <item name="android:textSize">20sp</item>
     </style>
 

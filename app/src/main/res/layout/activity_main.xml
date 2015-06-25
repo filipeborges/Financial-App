@@ -37,17 +37,17 @@
     </RelativeLayout>
 
     <!-- Left Drawer ListView -->
-    <ListView android:id="@+id/leftDrawer"
+    <ListView android:id="@+id/activityMainLeftDrawer"
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        style="@style/leftDrawer"/>
+        style="@style/drawerStyle"/>
 
     <!-- Right Drawer ListView -->
-    <ListView android:id="@+id/rightDrawer"
+    <ListView android:id="@+id/activityMainRightDrawer"
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="end"
-        android:background="#ddd"/>
+        style="@style/drawerStyle"/>
 
 </android.support.v4.widget.DrawerLayout>

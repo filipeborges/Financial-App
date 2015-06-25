@@ -7,6 +7,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.jabarasca.financial_app.utils.Utilities;
@@ -27,22 +29,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         drawerLayout = (DrawerLayout)findViewById(R.id.activityMainDrawerLay);
-        drawerRightListView = findViewById(R.id.rightDrawer);
+        drawerRightListView = findViewById(R.id.activityMainRightDrawer);
 
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
                 R.string.open_drawer, R.string.close_drawer) {
 
             @Override
             public void onDrawerSlide (View drawerView, float slideOffset) {
-                if(drawerView.getId() == R.id.rightDrawer) {
+                if(drawerView.getId() == R.id.activityMainRightDrawer) {
                     if(slideOffset > 0.1) {
                         menu.findItem(R.id.plusButton).setIcon(R.drawable.minus);
                         actionBarTextView.setText(getString(R.string.add_options_title));
-                        actionBarDrawerToggle.setDrawerIndicatorEnabled(false);
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                     }
                     else if(slideOffset <= 0.1) {
-                        actionBarDrawerToggle.setDrawerIndicatorEnabled(true);
-                        actionBarDrawerToggle.syncState();
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                         menu.findItem(R.id.plusButton).setIcon(R.drawable.add);
                         actionBarTextView.setText(formattedDate);
                     }
@@ -50,9 +51,11 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     if(slideOffset > 0.1) {
                         menu.findItem(R.id.plusButton).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+                        actionBarTextView.setText(getString(R.string.menu_options_title));
                     }
                     else if(slideOffset <= 0.1) {
                         menu.findItem(R.id.plusButton).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+                        actionBarTextView.setText(formattedDate);
                     }
                 }
 
@@ -60,14 +63,27 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        //Insert this instruction do XML.
-        actionBarDrawerToggle.setHomeAsUpIndicator(R.drawable.action_bar_background_color);
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
 
         getSupportActionBar().setCustomView(R.layout.action_bar_text);
         actionBarTextView = (TextView)findViewById(R.id.actionBarTextView);
         actionBarTextView.setText(formattedDate);
+
+        //Set items on AddListView (activityMainRightDrawer).
+        String[] addOptions = new String[]{getString(R.string.add_options_1),
+            getString(R.string.add_options_2)};
+        setListViewItems(R.id.activityMainRightDrawer, addOptions, R.layout.action_bar_add_option, R.id.drawerAddOptTextView);
     }
+
+    private void setListViewItems(int listViewId, String[] listViewOptions, int listItemLayoutId, int listItemTextViewId) {
+        ListView listView = (ListView)findViewById(listViewId);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
+                listItemLayoutId, listItemTextViewId, listViewOptions);
+
+        listView.setAdapter(adapter);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

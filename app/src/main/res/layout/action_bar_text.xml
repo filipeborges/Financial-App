@@ -9,7 +9,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/actionBarTextView"
-        android:text="Abr/2015"
         style="@style/actionBarDateTextView" />
 
 </LinearLayout>

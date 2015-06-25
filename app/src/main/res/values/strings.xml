@@ -4,4 +4,7 @@
     <string name="open_drawer">Aberto</string>
     <string name="close_drawer">Fechado</string>
     <string name="add_options_title">Adicionar</string>
+    <string name="menu_options_title">Menu</string>
+    <string name="add_options_1">Despeza</string>
+    <string name="add_options_2">Saldo</string>
 </resources>
