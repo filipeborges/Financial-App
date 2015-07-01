@@ -47,6 +47,11 @@
         <item name="android:layout_marginLeft">60dp</item>
     </style>
 
+    <style name="numberItemDespeza">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">#000</item>
+    </style>
+
     <!-- action_bar_text.xml-->
     <style name="actionBarDateTextView">
         <item name="android:textStyle">bold|italic</item>
