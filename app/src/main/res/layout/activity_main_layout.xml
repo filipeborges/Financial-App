@@ -27,7 +27,7 @@
             style="@style/bottomBarImgView" />
 
         <ImageView
-            android:id="@+id/bottomGraphicImgView"
+            android:id="@+id/bottomBarGraphicImgView"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_alignParentBottom="true"
@@ -38,20 +38,20 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/bottomBarImgView"
-            android:divider="@null"
-            android:id="@+id/amountListView"/>
+            android:id="@+id/amountsListView"
+            style="@style/amountsListView"/>
 
     </RelativeLayout>
 
     <!-- Left Drawer ListView -->
-    <ListView android:id="@+id/activityMainLeftDrawer"
+    <ListView android:id="@+id/activityMainLeftDrawerListView"
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         style="@style/drawerStyle"/>
 
     <!-- Right Drawer ListView -->
-    <ListView android:id="@+id/activityMainRightDrawer"
+    <ListView android:id="@+id/activityMainRightDrawerListView"
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="end"

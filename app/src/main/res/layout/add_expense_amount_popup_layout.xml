@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:id="@+id/addDespezaRelativeLay">
+    android:id="@+id/addExpensePopupRelativeLay">
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
-        android:maxLength="6"
-        android:id="@+id/addDespezaEditText" />
+        android:id="@+id/addExpensePopupEditText"
+        style="@style/addExpensePopupEditText"/>
 </RelativeLayout>

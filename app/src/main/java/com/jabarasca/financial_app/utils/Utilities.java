@@ -1,10 +1,12 @@
 package com.jabarasca.financial_app.utils;
 
+import android.app.Activity;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
 import java.util.Calendar;
 
-/**
- * Created by filipe on 16/06/15.
- */
 public class Utilities {
 
     public static String getFormattedActualDate() {
@@ -15,6 +17,18 @@ public class Utilities {
                 String.valueOf(actualDate.get(Calendar.YEAR));
 
         return actualFormattedDate;
+    }
+
+    public static void setListViewItems(Activity activity, int listViewId, String[] listViewItemsStrings, int listItemLayoutId,
+                                        int listItemTextViewId, AdapterView.OnItemClickListener itemListener) {
+
+        ListView listView = (ListView)activity.findViewById(listViewId);
+        listView.setOnItemClickListener(itemListener);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity.getApplicationContext(),
+                listItemLayoutId, listItemTextViewId, listViewItemsStrings);
+
+        listView.setAdapter(adapter);
     }
 
     private static String getFormattedMonth(int monthNumber) {
@@ -44,7 +58,7 @@ public class Utilities {
                case 12:
                    return "Dez";
                default:
-                   return "Invalido";
+                   return "Inválido";
            }
     }
 }

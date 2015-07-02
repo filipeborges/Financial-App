@@ -17,43 +17,49 @@
         <item name="displayOptions">showHome|homeAsUp|showCustom</item>
     </style>
 
-    <!-- activity_main.xml -->
+    <!-- activity_main_layout.xml -->
+    <style name="backgroundImgView">
+        <item name="android:src">@drawable/background</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+
     <style name="bottomBarImgView">
         <item name="android:background">@drawable/action_bar_color</item>
     </style>
 
-    <style name="backgroundImgView">
-        <item name="android:src">@drawable/background</item>
-        <item name="android:scaleType">centerCrop</item>
+    <style name="amountsListView">
+        <item name="android:divider">@null</item>
     </style>
 
     <style name="drawerStyle">
         <item name="android:background">@drawable/action_bar_color</item>
     </style>
 
-    <style name="optionText">
+    <!-- add_menu_item_layout.xml -->
+    <style name="addMenuItemImageView">
+        <item name="android:src">@drawable/plus</item>
+    </style>
+
+    <style name="addMenuItemTextView">
         <item name="android:textColor">#FFF</item>
-        <item name="android:layout_centerVertical">true</item>
-        <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:layout_marginLeft">90dp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">20sp</item>
     </style>
 
-    <style name="addOptionPlusIcon">
-        <item name="android:src">@drawable/add</item>
-        <item name="android:layout_centerVertical">true</item>
-        <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:layout_marginLeft">60dp</item>
-    </style>
-
-    <style name="numberItemDespeza">
+    <!-- expense_amount_list_view_item_layout.xml -->
+    <style name="expenseAmountItemTextView">
         <item name="android:textSize">20sp</item>
         <item name="android:textColor">#000</item>
     </style>
 
-    <!-- action_bar_text.xml-->
-    <style name="actionBarDateTextView">
+    <!-- add_expense_amount_popup_layout.xml -->
+    <style name="addExpensePopupEditText">
+        <item name="android:inputType">numberDecimal</item>
+        <item name="android:maxLength">6</item>
+    </style>
+
+    <!-- action_bar_text_layout.xml-->
+    <style name="actionBarTextView">
         <item name="android:textStyle">bold|italic</item>
         <item name="android:textSize">20sp</item>
     </style>
