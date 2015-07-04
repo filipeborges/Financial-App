@@ -6,6 +6,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.Calendar;
+import java.util.List;
 
 public class Utilities {
 
@@ -19,7 +20,7 @@ public class Utilities {
         return actualFormattedDate;
     }
 
-    public static void setListViewItems(Activity activity, int listViewId, String[] listViewItemsStrings, int listItemLayoutId,
+    public static void setListViewItems(Activity activity, int listViewId, List<String> listViewItemsStrings, int listItemLayoutId,
                                         int listItemTextViewId, AdapterView.OnItemClickListener itemListener) {
 
         ListView listView = (ListView)activity.findViewById(listViewId);

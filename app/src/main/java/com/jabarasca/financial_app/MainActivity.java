@@ -12,14 +12,18 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
+import com.jabarasca.financial_app.utils.SwipeDismissListViewTouchListener;
 import com.jabarasca.financial_app.utils.Utilities;
 
 //Obs: Normal actionBar from Activity doesnt show hamburguer icon.
@@ -38,6 +42,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int compare(String lhs, String rhs) {
             //For incresing order(negative number): lhs > rhs == -1; lhs == rhs == 0; lhs < rhs == 1;
+            //Number will come with ',' for decimal separator (Brazilian Device). Need to replace ',' to '.' for parseFloat() to works.
+            if(lhs.contains(",") && rhs.contains(",")) {
+                lhs = lhs.replace(',','.');
+                rhs = rhs.replace(',','.');
+            }
             return (int)Math.signum(Float.parseFloat(lhs) - Float.parseFloat(rhs));
         }
     };
@@ -45,32 +54,24 @@ public class MainActivity extends AppCompatActivity {
     private DialogInterface.OnClickListener addExpenseDialogListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int id) {
-            if (id == DialogInterface.BUTTON_NEGATIVE) {
-                drawerLayout.closeDrawers();
-            }
-            else {
-                String[] expenseAmounts = null;
+            EditText expenseAmountEditText = (EditText) ((Dialog) dialog).findViewById(R.id.addExpensePopupEditText);
 
-                EditText expenseAmountEditText = (EditText)((Dialog)dialog).findViewById(R.id.addExpensePopupEditText);
+            if (!expenseAmountEditText.getText().toString().equals("")) {
                 double expenseAmout = Double.parseDouble(expenseAmountEditText.getText().toString()) * -1;
                 expenseAmountsList.add(String.format("%.2f", expenseAmout));
 
                 //Not first expense added.
-                if(expenseAmountsList.size() > 0) {
+                if (expenseAmountsList.size() > 1) {
                     Collections.sort(expenseAmountsList, expenseAmountComparator);
-                    expenseAmounts = new String[expenseAmountsList.size()];
-                    for(int i = 0; i < expenseAmountsList.size(); i++) {
-                        expenseAmounts[i] = expenseAmountsList.get(i);
-                    }
-                }
-                else {
-                    expenseAmounts = new String[1];
-                    expenseAmounts[0] = expenseAmountsList.get(0);
+                    ListView listView = (ListView) findViewById(R.id.amountsListView);
+                    ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
+                } else {
+                    Utilities.setListViewItems(MainActivity.this, R.id.amountsListView, expenseAmountsList,
+                            R.layout.expense_amount_list_view_item_layout, R.id.expenseAmountItemTextView, null);
                 }
 
-                Utilities.setListViewItems(MainActivity.this, R.id.amountsListView, expenseAmounts,
-                        R.layout.expense_amount_list_view_item_layout, R.id.expenseAmountItemTextView, null);
-
+                drawerLayout.closeDrawers();
+            } else {
                 drawerLayout.closeDrawers();
             }
         }
@@ -137,17 +138,18 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        setSwipeToDismissListView(R.id.amountsListView);
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
 
         getSupportActionBar().setCustomView(R.layout.action_bar_text_layout);
         actionBarTextView = (TextView)findViewById(R.id.actionBarTextView);
         actionBarTextView.setText(actionBarFormattedDate);
 
-        //Set items on activityMainRightDrawerListView.
-        String[] addMenuOptions = new String[]{getString(R.string.add_menu_option_1),
-                                           getString(R.string.add_menu_option_2)};
+        List<String> addMenuOptionsList = new ArrayList<String>();
+        addMenuOptionsList.add(getString(R.string.add_menu_option_1));
+        addMenuOptionsList.add(getString(R.string.add_menu_option_2));
 
-        Utilities.setListViewItems(this, R.id.activityMainRightDrawerListView, addMenuOptions,
+        Utilities.setListViewItems(this, R.id.activityMainRightDrawerListView, addMenuOptionsList,
                 R.layout.add_menu_item_layout, R.id.addMenuItemTextView, addMenuItemListener);
     }
 
@@ -186,6 +188,27 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setSwipeToDismissListView(int listViewId) {
+        ListView listView = (ListView)findViewById(listViewId);
+
+        SwipeDismissListViewTouchListener swipeToDismissListViewListener = new SwipeDismissListViewTouchListener(listView,
+                new SwipeDismissListViewTouchListener.DismissCallbacks() {
+                    @Override
+                    public boolean canDismiss(int position) {
+                        return true;
+                    }
+
+                    @Override
+                    public void onDismiss(ListView listView, int[] reverseSortedPositions) {
+                        expenseAmountsList.remove(reverseSortedPositions[0]);
+                        ((ArrayAdapter)listView.getAdapter()).notifyDataSetChanged();
+                    }
+                });
+
+        listView.setOnTouchListener(swipeToDismissListViewListener);
+        listView.setOnScrollListener(swipeToDismissListViewListener.makeScrollListener());
     }
 
 }

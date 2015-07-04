@@ -10,10 +10,10 @@
 
     <style name="CustomActionBarTheme"
         parent="@style/Widget.AppCompat.Light.ActionBar">
-        <item name="android:background">@drawable/action_bar_color</item>
+        <item name="android:background">@color/action_bar_color</item>
         <item name="android:displayOptions">showHome|homeAsUp|showCustom</item>
         <!-- For appCompat compatibility -->
-        <item name="background">@drawable/action_bar_color</item>
+        <item name="background">@color/action_bar_color</item>
         <item name="displayOptions">showHome|homeAsUp|showCustom</item>
     </style>
 
@@ -24,7 +24,7 @@
     </style>
 
     <style name="bottomBarImgView">
-        <item name="android:background">@drawable/action_bar_color</item>
+        <item name="android:background">@color/action_bar_color</item>
     </style>
 
     <style name="amountsListView">
@@ -32,7 +32,7 @@
     </style>
 
     <style name="drawerStyle">
-        <item name="android:background">@drawable/action_bar_color</item>
+        <item name="android:background">@color/action_bar_color</item>
     </style>
 
     <!-- add_menu_item_layout.xml -->
@@ -48,8 +48,8 @@
 
     <!-- expense_amount_list_view_item_layout.xml -->
     <style name="expenseAmountItemTextView">
-        <item name="android:textSize">20sp</item>
-        <item name="android:textColor">#000</item>
+        <item name="android:textSize">23sp</item>
+        <item name="android:textColor">@color/expense_amount_color</item>
     </style>
 
     <!-- add_expense_amount_popup_layout.xml -->
