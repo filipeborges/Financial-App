@@ -9,7 +9,7 @@
     <string name="menu_action_bar_title">Menu</string>
 
     <string name="add_menu_option_1">Despesa</string>
-    <string name="add_menu_option_2">Saldo</string>
+    <string name="add_menu_option_2">Renda</string>
 
     <string name="expense_title">Adicionar Despesa</string>
     <string name="expense_message">Valor:</string>

@@ -2,6 +2,7 @@ package com.jabarasca.financial_app;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,17 +12,19 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 
 import com.jabarasca.financial_app.utils.SwipeDismissListViewTouchListener;
 import com.jabarasca.financial_app.utils.Utilities;
@@ -37,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
     private String actionBarFormattedDate = Utilities.getFormattedActualDate();
     private LayoutInflater inflater;
     private List<String> expenseAmountsList = new ArrayList<String>();
+    private final int EXPENSE_LISTVIEW_POSITION = 0;
+    private final int INCOME_LISTVIEW_POSITION = 1;
+
 
     private Comparator<String> expenseAmountComparator = new Comparator<String>() {
         @Override
@@ -78,12 +84,10 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private AdapterView.OnItemClickListener addMenuItemListener = new AdapterView.OnItemClickListener() {
-        private final int EXPENSE = 0;
-
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             switch (position) {
-                case EXPENSE:
+                case EXPENSE_LISTVIEW_POSITION:
                     //AlertDialog.Builder constructor must use Activity reference instead of Context.
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
                     alertDialog.setTitle(getResources().getString(R.string.expense_title));
@@ -108,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
 
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
                 R.string.open_drawer, R.string.close_drawer) {
-
             @Override
             public void onDrawerSlide (View drawerView, float slideOffset) {
                 if(drawerView.getId() == R.id.activityMainRightDrawerListView) {
@@ -133,7 +136,6 @@ public class MainActivity extends AppCompatActivity {
                         actionBarTextView.setText(actionBarFormattedDate);
                     }
                 }
-
                 super.onDrawerSlide(drawerView, slideOffset);
             }
         };
@@ -149,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
         addMenuOptionsList.add(getString(R.string.add_menu_option_1));
         addMenuOptionsList.add(getString(R.string.add_menu_option_2));
 
-        Utilities.setListViewItems(this, R.id.activityMainRightDrawerListView, addMenuOptionsList,
+        setAddMenuListViewItems(R.id.activityMainRightDrawerListView, addMenuOptionsList,
                 R.layout.add_menu_item_layout, R.id.addMenuItemTextView, addMenuItemListener);
     }
 
@@ -188,6 +190,34 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setAddMenuListViewItems(int listViewId, List<String> listViewItemsStrings, int listItemLayoutId,
+                                        int listItemTextViewId, AdapterView.OnItemClickListener itemListener) {
+
+        ListView listView = (ListView)findViewById(listViewId);
+        listView.setOnItemClickListener(itemListener);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
+                listItemLayoutId, listItemTextViewId, listViewItemsStrings) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                if(convertView == null) {
+                    LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    convertView = inflater.inflate(R.layout.add_menu_item_layout, parent, false);
+                }
+                switch (position) {
+                    case EXPENSE_LISTVIEW_POSITION:
+                        ((ImageView)((RelativeLayout)convertView).getChildAt(0)).setImageResource(R.drawable.negative_plus);
+                        break;
+                    case INCOME_LISTVIEW_POSITION:
+                        ((ImageView)((RelativeLayout)convertView).getChildAt(0)).setImageResource(R.drawable.plus);
+                        break;
+                }
+                return super.getView(position, convertView, parent);
+            }
+        };
+        listView.setAdapter(adapter);
     }
 
     private void setSwipeToDismissListView(int listViewId) {
