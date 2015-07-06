@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     private DialogInterface.OnClickListener addExpenseDialogListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int id) {
-            EditText expenseAmountEditText = (EditText) ((Dialog) dialog).findViewById(R.id.addExpensePopupEditText);
+            EditText expenseAmountEditText = (EditText) ((Dialog) dialog).findViewById(R.id.addAmountPopupEditText);
 
             if (!expenseAmountEditText.getText().toString().equals("")) {
                 double expenseAmout = Double.parseDouble(expenseAmountEditText.getText().toString()) * -1;
@@ -86,18 +86,29 @@ public class MainActivity extends AppCompatActivity {
     private AdapterView.OnItemClickListener addMenuItemListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            //AlertDialog.Builder constructor must use Activity reference instead of Context.
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+            String title;
+
             switch (position) {
                 case EXPENSE_LISTVIEW_POSITION:
-                    //AlertDialog.Builder constructor must use Activity reference instead of Context.
-                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
-                    alertDialog.setTitle(getResources().getString(R.string.expense_title));
-                    alertDialog.setMessage(getResources().getString(R.string.expense_message));
-                    alertDialog.setNegativeButton(getResources().getString(R.string.expense_negative_button_message), addExpenseDialogListener);
-                    alertDialog.setPositiveButton(getResources().getString(R.string.expense_positive_button_message), addExpenseDialogListener);
-                    alertDialog.setView(inflater.inflate(R.layout.add_expense_amount_popup_layout, null));
-                    alertDialog.show();
+                    title = getString(R.string.expense_title);
+                    alertDialog.setNegativeButton(getResources().getString(R.string.negative_button_message), addExpenseDialogListener);
+                    alertDialog.setPositiveButton(getResources().getString(R.string.positive_button_message), addExpenseDialogListener);
                     break;
+                case INCOME_LISTVIEW_POSITION:
+                    title = getString(R.string.income_title);
+                    alertDialog.setNegativeButton(getResources().getString(R.string.negative_button_message), null);
+                    alertDialog.setPositiveButton(getResources().getString(R.string.positive_button_message), null);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid ListView position: "+position);
             }
+
+            alertDialog.setTitle(title);
+            alertDialog.setMessage(getString(R.string.expense_income_popup_message));
+            alertDialog.setView(inflater.inflate(R.layout.add_amount_popup_layout, null));
+            alertDialog.show();
         }
     };
 

@@ -12,7 +12,8 @@
     <string name="add_menu_option_2">Renda</string>
 
     <string name="expense_title">Adicionar Despesa</string>
-    <string name="expense_message">Valor:</string>
-    <string name="expense_negative_button_message">Cancelar</string>
-    <string name="expense_positive_button_message">@android:string/ok</string>
+    <string name="income_title">Adicionar Renda</string>
+    <string name="expense_income_popup_message">Valor:</string>
+    <string name="negative_button_message">Cancelar</string>
+    <string name="positive_button_message">@android:string/ok</string>
 </resources>
