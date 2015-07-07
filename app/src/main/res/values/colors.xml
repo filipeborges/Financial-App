@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="expense_amount_color">#c81f1f</color>
+    <color name="income_amount_color">#2c9a16</color>
     <color name="action_bar_color">#023c48</color>
 </resources>

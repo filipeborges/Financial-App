@@ -6,6 +6,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Utilities {
@@ -30,6 +32,45 @@ public class Utilities {
                 listItemLayoutId, listItemTextViewId, listViewItemsStrings);
 
         listView.setAdapter(adapter);
+    }
+
+    public static void sortAllAmountsList(List<String> allAmountsList, List<String> incomeAmountsList, List<String> expenseAmountsList,
+                                                boolean isIncomeElement) {
+        Comparator<String> expenseAmountComparator = new Comparator<String>() {
+            @Override
+            public int compare(String lhs, String rhs) {
+                //For incresing order(negative number): lhs > rhs == -1; lhs == rhs == 0; lhs < rhs == 1;
+                //Number will come with ',' for decimal separator (Brazilian Device). Need to replace ',' to '.' for parseFloat() to works.
+                if(lhs.contains(",") && rhs.contains(",")) {
+                    lhs = lhs.replace(',','.');
+                    rhs = rhs.replace(',','.');
+                }
+                return (int)Math.signum(Float.parseFloat(lhs) - Float.parseFloat(rhs));
+            }
+        };
+
+        Comparator<String> incomeAmountComparator = new Comparator<String>() {
+            @Override
+            public int compare(String lhs, String rhs) {
+                if(lhs.contains(",") && rhs.contains(",")) {
+                    lhs = lhs.replace(',','.');
+                    rhs = rhs.replace(',','.');
+                }
+                return (int)Math.signum(Float.parseFloat(rhs) - Float.parseFloat(lhs));
+            }
+        };
+
+        if(isIncomeElement) {
+            Collections.sort(incomeAmountsList, incomeAmountComparator);
+        } else {
+            Collections.sort(expenseAmountsList, expenseAmountComparator);
+        }
+
+        if(!allAmountsList.isEmpty()) {
+            allAmountsList.clear();
+        }
+        allAmountsList.addAll(incomeAmountsList);
+        allAmountsList.addAll(expenseAmountsList);
     }
 
     private static String getFormattedMonth(int monthNumber) {

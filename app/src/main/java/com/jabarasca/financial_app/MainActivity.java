@@ -22,8 +22,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import com.jabarasca.financial_app.utils.SwipeDismissListViewTouchListener;
@@ -40,22 +38,10 @@ public class MainActivity extends AppCompatActivity {
     private String actionBarFormattedDate = Utilities.getFormattedActualDate();
     private LayoutInflater inflater;
     private List<String> expenseAmountsList = new ArrayList<String>();
+    private List<String> incomeAmountsList = new ArrayList<String>();
+    private List<String> allAmountsList = new ArrayList<String>();
     private final int EXPENSE_LISTVIEW_POSITION = 0;
     private final int INCOME_LISTVIEW_POSITION = 1;
-
-
-    private Comparator<String> expenseAmountComparator = new Comparator<String>() {
-        @Override
-        public int compare(String lhs, String rhs) {
-            //For incresing order(negative number): lhs > rhs == -1; lhs == rhs == 0; lhs < rhs == 1;
-            //Number will come with ',' for decimal separator (Brazilian Device). Need to replace ',' to '.' for parseFloat() to works.
-            if(lhs.contains(",") && rhs.contains(",")) {
-                lhs = lhs.replace(',','.');
-                rhs = rhs.replace(',','.');
-            }
-            return (int)Math.signum(Float.parseFloat(lhs) - Float.parseFloat(rhs));
-        }
-    };
 
     private DialogInterface.OnClickListener addExpenseDialogListener = new DialogInterface.OnClickListener() {
         @Override
@@ -63,19 +49,43 @@ public class MainActivity extends AppCompatActivity {
             EditText expenseAmountEditText = (EditText) ((Dialog) dialog).findViewById(R.id.addAmountPopupEditText);
 
             if (!expenseAmountEditText.getText().toString().equals("")) {
-                double expenseAmout = Double.parseDouble(expenseAmountEditText.getText().toString()) * -1;
-                expenseAmountsList.add(String.format("%.2f", expenseAmout));
+                double expenseAmount = Double.parseDouble(expenseAmountEditText.getText().toString()) * -1;
+                expenseAmountsList.add(String.format("%.2f", expenseAmount));
+                Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList, expenseAmountsList, false);
 
                 //Not first expense added.
                 if (expenseAmountsList.size() > 1) {
-                    Collections.sort(expenseAmountsList, expenseAmountComparator);
                     ListView listView = (ListView) findViewById(R.id.amountsListView);
                     ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
                 } else {
-                    Utilities.setListViewItems(MainActivity.this, R.id.amountsListView, expenseAmountsList,
+                    Utilities.setListViewItems(MainActivity.this, R.id.amountsListView, allAmountsList,
                             R.layout.expense_amount_list_view_item_layout, R.id.expenseAmountItemTextView, null);
                 }
+                drawerLayout.closeDrawers();
+            } else {
+                drawerLayout.closeDrawers();
+            }
+        }
+    };
 
+    private DialogInterface.OnClickListener addIncomeDialogListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int id) {
+            EditText incomeAmountEditText = (EditText) ((Dialog) dialog).findViewById(R.id.addAmountPopupEditText);
+
+            if (!incomeAmountEditText.getText().toString().equals("")) {
+                double incomeAmount = Double.parseDouble(incomeAmountEditText.getText().toString());
+                incomeAmountsList.add(String.format("%.2f", incomeAmount));
+                Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList, expenseAmountsList, true);
+
+                //Not first income added.
+                if (incomeAmountsList.size() > 1) {
+                    ListView listView = (ListView) findViewById(R.id.amountsListView);
+                    ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
+                } else {
+                    Utilities.setListViewItems(MainActivity.this, R.id.amountsListView, allAmountsList,
+                            R.layout.expense_amount_list_view_item_layout, R.id.expenseAmountItemTextView, null);
+                }
                 drawerLayout.closeDrawers();
             } else {
                 drawerLayout.closeDrawers();
@@ -98,8 +108,8 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case INCOME_LISTVIEW_POSITION:
                     title = getString(R.string.income_title);
-                    alertDialog.setNegativeButton(getResources().getString(R.string.negative_button_message), null);
-                    alertDialog.setPositiveButton(getResources().getString(R.string.positive_button_message), null);
+                    alertDialog.setNegativeButton(getResources().getString(R.string.negative_button_message), addIncomeDialogListener);
+                    alertDialog.setPositiveButton(getResources().getString(R.string.positive_button_message), addIncomeDialogListener);
                     break;
                 default:
                     throw new IllegalArgumentException("Invalid ListView position: "+position);
@@ -243,8 +253,16 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onDismiss(ListView listView, int[] reverseSortedPositions) {
-                        expenseAmountsList.remove(reverseSortedPositions[0]);
-                        ((ArrayAdapter)listView.getAdapter()).notifyDataSetChanged();
+                        int aux = allAmountsList.size() - expenseAmountsList.size();
+
+                        //If the element dismissed is Income.
+                        if(reverseSortedPositions[0] < aux) {
+                            incomeAmountsList.remove(allAmountsList.get(reverseSortedPositions[0]));
+                        } else {
+                            expenseAmountsList.remove(allAmountsList.get(reverseSortedPositions[0]));
+                        }
+                        allAmountsList.remove(reverseSortedPositions[0]);
+                        ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
                     }
                 });
 
