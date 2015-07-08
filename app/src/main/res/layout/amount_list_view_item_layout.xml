@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="40dp"
-    android:id="@+id/expenseAmountItemRelativeLay">
+    android:id="@+id/amountItemRelativeLay">
 
     <TextView
         android:layout_width="wrap_content"
@@ -11,7 +11,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="35dp"
         android:layout_centerVertical="true"
-        android:id="@+id/expenseAmountItemTextView"
-        style="@style/expenseAmountItemTextView"/>
+        android:id="@+id/amountItemTextView"
+        style="@style/amountItemTextView"/>
 
 </RelativeLayout>

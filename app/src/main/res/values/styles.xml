@@ -42,10 +42,9 @@
         <item name="android:textSize">20sp</item>
     </style>
 
-    <!-- expense_amount_list_view_item_layout.xml -->
-    <style name="expenseAmountItemTextView">
+    <!-- amount_list_view_item_layout.xml -->
+    <style name="amountItemTextView">
         <item name="android:textSize">23sp</item>
-        <item name="android:textColor">@color/expense_amount_color</item>
     </style>
 
     <!-- add_amount_popup_layout -->

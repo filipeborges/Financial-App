@@ -43,49 +43,29 @@ public class MainActivity extends AppCompatActivity {
     private final int EXPENSE_LISTVIEW_POSITION = 0;
     private final int INCOME_LISTVIEW_POSITION = 1;
 
-    private DialogInterface.OnClickListener addExpenseDialogListener = new DialogInterface.OnClickListener() {
+    private DialogInterface.OnClickListener addAmountDialogListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int id) {
-            EditText expenseAmountEditText = (EditText) ((Dialog) dialog).findViewById(R.id.addAmountPopupEditText);
+            EditText amountEditText = (EditText) ((Dialog) dialog).findViewById(R.id.addAmountPopupEditText);
 
-            if (!expenseAmountEditText.getText().toString().equals("")) {
-                double expenseAmount = Double.parseDouble(expenseAmountEditText.getText().toString()) * -1;
-                expenseAmountsList.add(String.format("%.2f", expenseAmount));
-                Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList, expenseAmountsList, false);
+            if (!amountEditText.getText().toString().equals("")) {
+                //"alertTitle" -> name, "id" -> defType, "android" -> package.
+                TextView alertDialogTitle = (TextView)((Dialog) dialog).findViewById(getResources().getIdentifier("alertTitle", "id", "android"));
+                double amount;
 
-                //Not first expense added.
-                if (expenseAmountsList.size() > 1) {
-                    ListView listView = (ListView) findViewById(R.id.amountsListView);
-                    ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
+                //If its a income amount.
+                if(alertDialogTitle.getText().equals(getString(R.string.income_title))) {
+                    amount = Double.parseDouble(amountEditText.getText().toString());
+                    incomeAmountsList.add(String.format("%.2f", amount));
+                    Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList, expenseAmountsList, true);
                 } else {
-                    Utilities.setListViewItems(MainActivity.this, R.id.amountsListView, allAmountsList,
-                            R.layout.expense_amount_list_view_item_layout, R.id.expenseAmountItemTextView, null);
+                    amount = Double.parseDouble(amountEditText.getText().toString()) * -1;
+                    expenseAmountsList.add(String.format("%.2f", amount));
+                    Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList, expenseAmountsList, false);
                 }
-                drawerLayout.closeDrawers();
-            } else {
-                drawerLayout.closeDrawers();
-            }
-        }
-    };
 
-    private DialogInterface.OnClickListener addIncomeDialogListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int id) {
-            EditText incomeAmountEditText = (EditText) ((Dialog) dialog).findViewById(R.id.addAmountPopupEditText);
-
-            if (!incomeAmountEditText.getText().toString().equals("")) {
-                double incomeAmount = Double.parseDouble(incomeAmountEditText.getText().toString());
-                incomeAmountsList.add(String.format("%.2f", incomeAmount));
-                Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList, expenseAmountsList, true);
-
-                //Not first income added.
-                if (incomeAmountsList.size() > 1) {
-                    ListView listView = (ListView) findViewById(R.id.amountsListView);
-                    ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
-                } else {
-                    Utilities.setListViewItems(MainActivity.this, R.id.amountsListView, allAmountsList,
-                            R.layout.expense_amount_list_view_item_layout, R.id.expenseAmountItemTextView, null);
-                }
+                ListView listView = (ListView) findViewById(R.id.amountsListView);
+                ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
                 drawerLayout.closeDrawers();
             } else {
                 drawerLayout.closeDrawers();
@@ -103,20 +83,18 @@ public class MainActivity extends AppCompatActivity {
             switch (position) {
                 case EXPENSE_LISTVIEW_POSITION:
                     title = getString(R.string.expense_title);
-                    alertDialog.setNegativeButton(getResources().getString(R.string.negative_button_message), addExpenseDialogListener);
-                    alertDialog.setPositiveButton(getResources().getString(R.string.positive_button_message), addExpenseDialogListener);
                     break;
                 case INCOME_LISTVIEW_POSITION:
                     title = getString(R.string.income_title);
-                    alertDialog.setNegativeButton(getResources().getString(R.string.negative_button_message), addIncomeDialogListener);
-                    alertDialog.setPositiveButton(getResources().getString(R.string.positive_button_message), addIncomeDialogListener);
                     break;
                 default:
                     throw new IllegalArgumentException("Invalid ListView position: "+position);
             }
 
+            alertDialog.setNegativeButton(getResources().getString(R.string.negative_button_message), addAmountDialogListener);
+            alertDialog.setPositiveButton(getResources().getString(R.string.positive_button_message), addAmountDialogListener);
             alertDialog.setTitle(title);
-            alertDialog.setMessage(getString(R.string.expense_income_popup_message));
+            alertDialog.setMessage(getString(R.string.income_expense_popup_message));
             alertDialog.setView(inflater.inflate(R.layout.add_amount_popup_layout, null));
             alertDialog.show();
         }
@@ -174,6 +152,9 @@ public class MainActivity extends AppCompatActivity {
 
         setAddMenuListViewItems(R.id.activityMainRightDrawerListView, addMenuOptionsList,
                 R.layout.add_menu_item_layout, R.id.addMenuItemTextView, addMenuItemListener);
+
+        setAmountListViewItems(R.id.amountsListView, allAmountsList, R.layout.amount_list_view_item_layout,
+                R.id.amountItemTextView, null);
     }
 
     @Override
@@ -213,8 +194,35 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void setAmountListViewItems(int listViewId, List<String> listViewItemsStrings, int listItemLayoutId,
+                                         int listItemTextViewId, AdapterView.OnItemClickListener itemListener) {
+
+        ListView listView = (ListView)findViewById(listViewId);
+        listView.setOnItemClickListener(itemListener);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
+                listItemLayoutId, listItemTextViewId, listViewItemsStrings) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                if(convertView == null) {
+                    LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    convertView = inflater.inflate(R.layout.amount_list_view_item_layout, parent, false);
+                }
+                int incomeElementsMaxPosition = allAmountsList.size() - expenseAmountsList.size();
+
+                if(position < incomeElementsMaxPosition) {
+                    ((TextView)((RelativeLayout) convertView).getChildAt(0)).setTextColor(getResources().getColor(R.color.income_amount_color));
+                } else {
+                    ((TextView)((RelativeLayout) convertView).getChildAt(0)).setTextColor(getResources().getColor(R.color.expense_amount_color));
+                }
+                return super.getView(position, convertView, parent);
+            }
+        };
+        listView.setAdapter(adapter);
+    }
+
     private void setAddMenuListViewItems(int listViewId, List<String> listViewItemsStrings, int listItemLayoutId,
-                                        int listItemTextViewId, AdapterView.OnItemClickListener itemListener) {
+                                         int listItemTextViewId, AdapterView.OnItemClickListener itemListener) {
 
         ListView listView = (ListView)findViewById(listViewId);
         listView.setOnItemClickListener(itemListener);
@@ -253,10 +261,10 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onDismiss(ListView listView, int[] reverseSortedPositions) {
-                        int aux = allAmountsList.size() - expenseAmountsList.size();
+                        int incomeElementsMaxPosition = allAmountsList.size() - expenseAmountsList.size();
 
                         //If the element dismissed is Income.
-                        if(reverseSortedPositions[0] < aux) {
+                        if(reverseSortedPositions[0] < incomeElementsMaxPosition) {
                             incomeAmountsList.remove(allAmountsList.get(reverseSortedPositions[0]));
                         } else {
                             expenseAmountsList.remove(allAmountsList.get(reverseSortedPositions[0]));
