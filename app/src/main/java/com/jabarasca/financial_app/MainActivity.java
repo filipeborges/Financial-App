@@ -27,6 +27,8 @@ import java.util.List;
 import com.jabarasca.financial_app.utils.SwipeDismissListViewTouchListener;
 import com.jabarasca.financial_app.utils.Utilities;
 
+import org.w3c.dom.Text;
+
 //Obs: Normal actionBar from Activity doesnt show hamburguer icon.
 public class MainActivity extends AppCompatActivity {
 
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private Menu menu;
     private TextView actionBarTextView;
+    private TextView amountSumTextView;
     private String actionBarFormattedDate = Utilities.getFormattedActualDate();
     private LayoutInflater inflater;
     private List<String> expenseAmountsList = new ArrayList<String>();
@@ -56,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 //If its a income amount.
                 if(alertDialogTitle.getText().equals(getString(R.string.income_title))) {
                     amount = Double.parseDouble(amountEditText.getText().toString());
-                    incomeAmountsList.add(String.format("%.2f", amount));
+                    incomeAmountsList.add(String.format("+%.2f", amount));
                     Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList, expenseAmountsList, true);
                 } else {
                     amount = Double.parseDouble(amountEditText.getText().toString()) * -1;
@@ -66,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
                 ListView listView = (ListView) findViewById(R.id.amountsListView);
                 ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
+                amountSumTextView.setText(Utilities.sumIncomeExpenseItems(allAmountsList));
                 drawerLayout.closeDrawers();
             } else {
                 drawerLayout.closeDrawers();
@@ -139,12 +143,15 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        setSwipeToDismissListView(R.id.amountsListView);
+        setSwipeToDismissAmountsListView(R.id.amountsListView);
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
 
         getSupportActionBar().setCustomView(R.layout.action_bar_text_layout);
         actionBarTextView = (TextView)findViewById(R.id.actionBarTextView);
         actionBarTextView.setText(actionBarFormattedDate);
+
+        amountSumTextView = (TextView)findViewById(R.id.amountSumTextView);
+        amountSumTextView.setText(Utilities.sumIncomeExpenseItems(allAmountsList));
 
         List<String> addMenuOptionsList = new ArrayList<String>();
         addMenuOptionsList.add(getString(R.string.add_menu_option_1));
@@ -249,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
     }
 
-    private void setSwipeToDismissListView(int listViewId) {
+    private void setSwipeToDismissAmountsListView(int listViewId) {
         ListView listView = (ListView)findViewById(listViewId);
 
         SwipeDismissListViewTouchListener swipeToDismissListViewListener = new SwipeDismissListViewTouchListener(listView,
@@ -271,6 +278,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         allAmountsList.remove(reverseSortedPositions[0]);
                         ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
+                        amountSumTextView.setText(Utilities.sumIncomeExpenseItems(allAmountsList));
                     }
                 });
 

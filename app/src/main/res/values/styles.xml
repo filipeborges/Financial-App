@@ -35,6 +35,11 @@
         <item name="android:background">@color/action_bar_color</item>
     </style>
 
+    <style name="amountSumTextView">
+        <item name="android:textColor">#FFF</item>
+        <item name="android:textSize">23sp</item>
+    </style>
+
     <!-- add_menu_item_layout.xml -->
     <style name="addMenuItemTextView">
         <item name="android:textColor">#FFF</item>

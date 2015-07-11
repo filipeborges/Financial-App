@@ -18,6 +18,13 @@
             android:layout_height="match_parent"
             style="@style/backgroundImgView" />
 
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/bottomBarImgView"
+            android:id="@+id/amountsListView"
+            style="@style/amountsListView"/>
+
         <ImageView
             android:id="@+id/bottomBarImgView"
             android:layout_width="match_parent"
@@ -34,12 +41,15 @@
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="15dp" />
 
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/bottomBarImgView"
-            android:id="@+id/amountsListView"
-            style="@style/amountsListView"/>
+        <TextView
+            android:id="@+id/amountSumTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:layout_marginRight="15dp"
+            android:layout_alignTop="@+id/bottomBarImgView"
+            android:layout_alignParentRight="true"
+            style="@style/amountSumTextView"/>
 
     </RelativeLayout>
 

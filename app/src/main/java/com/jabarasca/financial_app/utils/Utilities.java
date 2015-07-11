@@ -73,6 +73,21 @@ public class Utilities {
         allAmountsList.addAll(expenseAmountsList);
     }
 
+    public static String sumIncomeExpenseItems(List<String> allAmountsListItems) {
+        double totalSum = 0.0;
+        if(!allAmountsListItems.isEmpty()) {
+            for(int i = 0; i < allAmountsListItems.size(); i++) {
+                totalSum += Double.parseDouble(allAmountsListItems.get(i));
+            }
+        }
+
+        if(totalSum > 0) {
+            return "+"+String.valueOf(totalSum);
+        } else {
+            return String.valueOf(totalSum);
+        }
+    }
+
     private static String getFormattedMonth(int monthNumber) {
            switch (monthNumber) {
                case 1:
