@@ -27,8 +27,6 @@ import java.util.List;
 import com.jabarasca.financial_app.utils.SwipeDismissListViewTouchListener;
 import com.jabarasca.financial_app.utils.Utilities;
 
-import org.w3c.dom.Text;
-
 //Obs: Normal actionBar from Activity doesnt show hamburguer icon.
 public class MainActivity extends AppCompatActivity {
 
@@ -36,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private View rightDrawerListView;
     private DrawerLayout drawerLayout;
     private Menu menu;
+    private ImageView graphicBalanceImgView;
     private TextView actionBarTextView;
     private TextView amountSumTextView;
     private String actionBarFormattedDate = Utilities.getFormattedActualDate();
@@ -70,10 +69,9 @@ public class MainActivity extends AppCompatActivity {
                 ListView listView = (ListView) findViewById(R.id.amountsListView);
                 ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
                 amountSumTextView.setText(Utilities.sumIncomeExpenseItems(allAmountsList));
-                drawerLayout.closeDrawers();
-            } else {
-                drawerLayout.closeDrawers();
+                graphicBalanceImgView.setImageResource(Utilities.getBalanceGraphicResourceId());
             }
+            drawerLayout.closeDrawers();
         }
     };
 
@@ -112,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
         inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
         drawerLayout = (DrawerLayout)findViewById(R.id.activityMainDrawerLay);
         rightDrawerListView = findViewById(R.id.activityMainRightDrawerListView);
+        graphicBalanceImgView = (ImageView)findViewById(R.id.bottomBarGraphicImgView);
 
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
                 R.string.open_drawer, R.string.close_drawer) {
@@ -279,11 +278,11 @@ public class MainActivity extends AppCompatActivity {
                         allAmountsList.remove(reverseSortedPositions[0]);
                         ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
                         amountSumTextView.setText(Utilities.sumIncomeExpenseItems(allAmountsList));
+                        graphicBalanceImgView.setImageResource(Utilities.getBalanceGraphicResourceId());
                     }
                 });
 
         listView.setOnTouchListener(swipeToDismissListViewListener);
         listView.setOnScrollListener(swipeToDismissListViewListener.makeScrollListener());
     }
-
 }

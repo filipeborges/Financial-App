@@ -7,7 +7,7 @@
     <string name="action_bar_add_title">Adicionar</string>
     <string name="add_menu_action_bar_title">Adicionar</string>
     <string name="menu_action_bar_title">Menu</string>
-
+    
     <string name="add_menu_option_1">Despesa</string>
     <string name="add_menu_option_2">Renda</string>
 
@@ -16,4 +16,5 @@
     <string name="income_expense_popup_message">Valor:</string>
     <string name="negative_button_message">Cancelar</string>
     <string name="positive_button_message">@android:string/ok</string>
+    <string name="balance_label">Saldo:</string>
 </resources>

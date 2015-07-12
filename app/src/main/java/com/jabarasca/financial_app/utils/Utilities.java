@@ -5,12 +5,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.jabarasca.financial_app.R;
+
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 public class Utilities {
+
+    private static double balanceSignal = 0.0;
 
     public static String getFormattedActualDate() {
         Calendar actualDate = Calendar.getInstance();
@@ -77,14 +81,29 @@ public class Utilities {
         double totalSum = 0.0;
         if(!allAmountsListItems.isEmpty()) {
             for(int i = 0; i < allAmountsListItems.size(); i++) {
-                totalSum += Double.parseDouble(allAmountsListItems.get(i));
+                totalSum += Double.parseDouble(allAmountsListItems.get(i).replace(",","."));
             }
         }
+        balanceSignal = Math.signum(totalSum);
 
         if(totalSum > 0) {
-            return "+"+String.valueOf(totalSum);
+            return "+"+String.format("%.2f", totalSum);
         } else {
-            return String.valueOf(totalSum);
+            return String.format("%.2f", totalSum);
+        }
+    }
+
+    //Needs to call sumIncomeExpenseItems() first, to update the balanceSignal.
+    public static int getBalanceGraphicResourceId() {
+        switch((int)balanceSignal) {
+            case 0:
+                return R.drawable.graphic_neutral;
+            case 1:
+                return R.drawable.graphic_up;
+            case -1:
+                return R.drawable.graphic_down;
+            default:
+                return -1;
         }
     }
 
