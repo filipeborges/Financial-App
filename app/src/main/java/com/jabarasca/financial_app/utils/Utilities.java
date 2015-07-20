@@ -1,10 +1,5 @@
 package com.jabarasca.financial_app.utils;
 
-import android.app.Activity;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-
 import com.jabarasca.financial_app.R;
 
 import java.util.Calendar;
@@ -26,20 +21,8 @@ public class Utilities {
         return actualFormattedDate;
     }
 
-    public static void setListViewItems(Activity activity, int listViewId, List<String> listViewItemsStrings, int listItemLayoutId,
-                                        int listItemTextViewId, AdapterView.OnItemClickListener itemListener) {
-
-        ListView listView = (ListView)activity.findViewById(listViewId);
-        listView.setOnItemClickListener(itemListener);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity.getApplicationContext(),
-                listItemLayoutId, listItemTextViewId, listViewItemsStrings);
-
-        listView.setAdapter(adapter);
-    }
-
     public static void sortAllAmountsList(List<String> allAmountsList, List<String> incomeAmountsList, List<String> expenseAmountsList,
-                                                boolean isIncomeElement) {
+                                                boolean isIncomeSorting) {
         Comparator<String> expenseAmountComparator = new Comparator<String>() {
             @Override
             public int compare(String lhs, String rhs) {
@@ -64,7 +47,7 @@ public class Utilities {
             }
         };
 
-        if(isIncomeElement) {
+        if(isIncomeSorting) {
             Collections.sort(incomeAmountsList, incomeAmountComparator);
         } else {
             Collections.sort(expenseAmountsList, expenseAmountComparator);
