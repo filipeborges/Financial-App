@@ -1,4 +1,4 @@
-package com.jabarasca.financial_app;
+package com.jabarasca.financial_app.test;
 
 import com.jabarasca.financial_app.utils.Utilities;
 

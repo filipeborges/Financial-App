@@ -30,22 +30,22 @@ import com.jabarasca.financial_app.utils.Utilities;
 //Obs: Normal actionBar from Activity doesnt show hamburguer icon.
 public class MainActivity extends AppCompatActivity {
 
-    private ActionBarDrawerToggle actionBarDrawerToggle;
-    private View rightDrawerListView;
-    private DrawerLayout drawerLayout;
-    private Menu menu;
-    private ImageView graphicBalanceImgView;
-    private TextView actionBarTextView;
-    private TextView amountSumTextView;
-    private String actionBarFormattedDate = Utilities.getFormattedActualDate();
-    private LayoutInflater inflater;
-    private List<String> expenseAmountsList = new ArrayList<String>();
-    private List<String> incomeAmountsList = new ArrayList<String>();
-    private List<String> allAmountsList = new ArrayList<String>();
+    public ActionBarDrawerToggle actionBarDrawerToggle;
+    public View rightDrawerListView;
+    public DrawerLayout drawerLayout;
+    public Menu menu;
+    public ImageView graphicBalanceImgView;
+    public TextView actionBarTextView;
+    public TextView amountSumTextView;
+    public String actionBarFormattedDate = Utilities.getFormattedActualDate();
+    public LayoutInflater inflater;
+    public List<String> expenseAmountsList = new ArrayList<String>();
+    public List<String> incomeAmountsList = new ArrayList<String>();
+    public List<String> allAmountsList = new ArrayList<String>();
     private final int EXPENSE_LISTVIEW_POSITION = 0;
     private final int INCOME_LISTVIEW_POSITION = 1;
 
-    private DialogInterface.OnClickListener addAmountDialogListener = new DialogInterface.OnClickListener() {
+    public DialogInterface.OnClickListener addAmountDialogListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int id) {
             EditText amountEditText = (EditText) ((Dialog) dialog).findViewById(R.id.addAmountPopupEditText);
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private AdapterView.OnItemClickListener addMenuItemListener = new AdapterView.OnItemClickListener() {
+    public AdapterView.OnItemClickListener addMenuItemListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             //AlertDialog.Builder constructor must use Activity reference instead of Context.
@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setAmountListViewItems(int listViewId, List<String> listViewItemsStrings, int listItemLayoutId,
+    public void setAmountListViewItems(int listViewId, List<String> listViewItemsStrings, int listItemLayoutId,
                                          int listItemTextViewId, AdapterView.OnItemClickListener itemListener) {
 
         ListView listView = (ListView)findViewById(listViewId);
@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
     }
 
-    private void setAddMenuListViewItems(int listViewId, List<String> listViewItemsStrings, int listItemLayoutId,
+    public void setAddMenuListViewItems(int listViewId, List<String> listViewItemsStrings, final int listItemLayoutId,
                                          int listItemTextViewId, AdapterView.OnItemClickListener itemListener) {
 
         ListView listView = (ListView)findViewById(listViewId);
@@ -239,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
             public View getView(int position, View convertView, ViewGroup parent) {
                 if(convertView == null) {
                     LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    convertView = inflater.inflate(R.layout.add_menu_item_layout, parent, false);
+                    convertView = inflater.inflate(listItemLayoutId, parent, false);
                 }
                 switch (position) {
                     case EXPENSE_LISTVIEW_POSITION:
