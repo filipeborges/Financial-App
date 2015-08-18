@@ -45,6 +45,67 @@ public class FuncTestMainActivity extends ActivityInstrumentationTestCase2<MainA
     }
 
     @Test
+    public void testAddIncomeExpense() {
+        solo.clickOnView(activity.findViewById(R.id.addButton));
+        DrawerLayout drawerLayout = (DrawerLayout)activity.findViewById(R.id.activityMainDrawerLay);
+        ListView rightDrawerListView = (ListView)activity.findViewById(R.id.activityMainRightDrawerListView);
+        getInstrumentation().waitForIdleSync();
+        Assert.assertTrue("Add menu is not openning.", drawerLayout.isDrawerOpen(rightDrawerListView));
+
+        solo.clickOnText(activity.getString(R.string.add_menu_option_2));
+        solo.enterText(0, "200.56");
+        solo.clickOnText(activity.getString(R.string.positive_button_message));
+
+        solo.clickOnView(activity.findViewById(R.id.addButton));
+        getInstrumentation().waitForIdleSync();
+        Assert.assertTrue("Add menu is not openning.", drawerLayout.isDrawerOpen(rightDrawerListView));
+
+        solo.clickOnText(activity.getString(R.string.add_menu_option_1));
+        solo.enterText(0, "100");
+        solo.clickOnText(activity.getString(R.string.positive_button_message));
+        ViewGroup amountsListView = (ViewGroup)activity.findViewById(R.id.amountsListView);
+        getInstrumentation().waitForIdleSync();
+
+        Assert.assertEquals("Amounts list should have 2 childs.", 2, amountsListView.getChildCount());
+
+        ImageView bottomBarGraphicImgView = (ImageView)activity.findViewById(R.id.bottomBarGraphicImgView);
+        Assert.assertTrue("Graphic should be: \"graphic_up\".",
+                bottomBarGraphicImgView.getDrawable().getConstantState().equals(activity.getResources().
+                        getDrawable(R.drawable.graphic_up).getConstantState()));
+
+        TextView amountSum = (TextView)activity.findViewById(R.id.amountSumTextView);
+        String amountSumString = amountSum.getText().toString().replace(",", ".");
+
+        Assert.assertEquals("Total sum should be +100,56.", "+100.56", amountSumString);
+    }
+
+    @Test
+    public void testAddExpense() {
+        solo.clickOnView(activity.findViewById(R.id.addButton));
+        DrawerLayout drawerLayout = (DrawerLayout)activity.findViewById(R.id.activityMainDrawerLay);
+        ListView rightDrawerListView = (ListView)activity.findViewById(R.id.activityMainRightDrawerListView);
+        getInstrumentation().waitForIdleSync();
+        Assert.assertTrue("Add menu is not openning.", drawerLayout.isDrawerOpen(rightDrawerListView));
+
+        solo.clickOnText(activity.getString(R.string.add_menu_option_1));
+        solo.enterText(0, "15.47");
+        solo.clickOnText(activity.getString(R.string.positive_button_message));
+        ViewGroup amountsListView = (ViewGroup)activity.findViewById(R.id.amountsListView);
+        getInstrumentation().waitForIdleSync();
+        Assert.assertNotNull("Expense was not add to the amounts list.", amountsListView.getChildAt(0));
+
+        ImageView bottomBarGraphicImgView = (ImageView)activity.findViewById(R.id.bottomBarGraphicImgView);
+        Assert.assertTrue("Graphic should be: \"graphic_down\".",
+                bottomBarGraphicImgView.getDrawable().getConstantState().equals(activity.getResources().
+                        getDrawable(R.drawable.graphic_down).getConstantState()));
+
+        TextView amountSum = (TextView)activity.findViewById(R.id.amountSumTextView);
+        String amountSumString = amountSum.getText().toString().replace(",", ".");
+
+        Assert.assertEquals("Total sum should be -15,47.", "-15.47", amountSumString);
+    }
+
+    @Test
     public void testAddIncome() {
         solo.clickOnView(activity.findViewById(R.id.addButton));
         DrawerLayout drawerLayout = (DrawerLayout)activity.findViewById(R.id.activityMainDrawerLay);
@@ -63,6 +124,11 @@ public class FuncTestMainActivity extends ActivityInstrumentationTestCase2<MainA
         Assert.assertTrue("Graphic should be: \"graphic_up\".",
                 bottomBarGraphicImgView.getDrawable().getConstantState().equals(activity.getResources().
                         getDrawable(R.drawable.graphic_up).getConstantState()));
+
+        TextView amountSum = (TextView)activity.findViewById(R.id.amountSumTextView);
+        String amountSumString = amountSum.getText().toString().replace(",", ".");
+
+        Assert.assertEquals("Total sum should be +125,44.", "+125.44", amountSumString);
     }
 
     @Test
@@ -89,7 +155,12 @@ public class FuncTestMainActivity extends ActivityInstrumentationTestCase2<MainA
 
         MenuItem addButton = activity.menu.findItem(R.id.addButton);
         Assert.assertTrue("Add button image should be: \"plus\".", addButton.getIcon().getConstantState().equals(
-            activity.getResources().getDrawable(R.drawable.plus).getConstantState()));
+                activity.getResources().getDrawable(R.drawable.plus).getConstantState()));
+
+        TextView amountSum = (TextView)activity.findViewById(R.id.amountSumTextView);
+        String amountSumString = amountSum.getText().toString().replace(",", ".");
+
+        Assert.assertEquals("Total sum should be 0,00.", "0.00", amountSumString);
     }
 
     @After
