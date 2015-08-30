@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     public List<String> expenseAmountsList = new ArrayList<String>();
     public List<String> incomeAmountsList = new ArrayList<String>();
     public List<String> allAmountsList = new ArrayList<String>();
-    private String OUT_OF_BOUNDS_LABEL = null;
+    public String OUT_OF_BOUNDS_LABEL = null;
     private final int EXPENSE_LISTVIEW_POSITION = 0;
     private final int INCOME_LISTVIEW_POSITION = 1;
 

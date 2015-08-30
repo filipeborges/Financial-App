@@ -54,6 +54,7 @@ public class TestMainActivity extends ActivityUnitTestCase<MainActivity> {
 
         Assert.assertNotNull("\"addAmountDialogListener\" is null.", activity.addAmountDialogListener);
         Assert.assertNotNull("\"addMenuItemListener\" is null.", activity.addMenuItemListener);
+        Assert.assertNotNull("\"OUT_OF_BOUNDS\" is null", activity.OUT_OF_BOUNDS_LABEL);
         Assert.assertNotNull("\"inflater\" is null.", activity.inflater);
         Assert.assertNotNull("\"drawerLayout\" is null.", activity.drawerLayout);
         Assert.assertNotNull("\"rightDrawerListView\" is null.", activity.rightDrawerListView);
