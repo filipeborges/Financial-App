@@ -45,6 +45,30 @@ public class FuncTestMainActivity extends ActivityInstrumentationTestCase2<MainA
     }
 
     @Test
+    public void testChildQuantityOfMaxValues() {
+        DrawerLayout drawerLayout = (DrawerLayout)activity.findViewById(R.id.activityMainDrawerLay);
+        ListView rightDrawerListView = (ListView)activity.findViewById(R.id.activityMainRightDrawerListView);
+        solo.clickOnView(activity.findViewById(R.id.addButton));
+        getInstrumentation().waitForIdleSync();
+        Assert.assertTrue("Add menu is not openning.", drawerLayout.isDrawerOpen(rightDrawerListView));
+        //Closing menu.
+        solo.clickOnView(activity.findViewById(R.id.addButton));
+        getInstrumentation().waitForIdleSync();
+
+        for(int i = 0; i < 13; i++) {
+            solo.clickOnView(activity.findViewById(R.id.addButton));
+            solo.clickOnText(activity.getString(R.string.add_menu_option_1));
+            solo.enterText(0, "999999");
+            solo.clickOnText(activity.getString(R.string.positive_button_message));
+            getInstrumentation().waitForIdleSync();
+        }
+
+        ListView amountsListView = (ListView)activity.findViewById(R.id.amountsListView);
+
+        Assert.assertEquals("Only 11 elements of 999999 should be added to AmountsListView.", 11, amountsListView.getCount());
+    }
+
+    @Test
     public void testAddIncomeExpense() {
         solo.clickOnView(activity.findViewById(R.id.addButton));
         DrawerLayout drawerLayout = (DrawerLayout)activity.findViewById(R.id.activityMainDrawerLay);

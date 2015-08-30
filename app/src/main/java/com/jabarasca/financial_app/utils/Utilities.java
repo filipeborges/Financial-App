@@ -60,19 +60,26 @@ public class Utilities {
         allAmountsList.addAll(expenseAmountsList);
     }
 
-    public static String sumIncomeExpenseItems(List<String> allAmountsListItems) {
+    public static String sumIncomeExpenseItems(List<String> allAmountsListItems, String outOfBoundsLabel) {
         double totalSum = 0.0;
         if(!allAmountsListItems.isEmpty()) {
             for(int i = 0; i < allAmountsListItems.size(); i++) {
                 totalSum += Double.parseDouble(allAmountsListItems.get(i).replace(",","."));
             }
         }
-        balanceSignal = Math.signum(totalSum);
 
-        if(totalSum > 0) {
-            return "+"+String.format("%.2f", totalSum);
+        if(String.valueOf(totalSum).matches("\\-?[0-9]{1,7}\\.[0-9]{1,2}")) {
+            balanceSignal = Math.signum(totalSum);
+
+            if (totalSum > 0.0) {
+                return "+" + String.format("%.2f", totalSum);
+            } else {
+                return String.format("%.2f", totalSum);
+            }
         } else {
-            return String.format("%.2f", totalSum);
+            //Value to enter on default on getBalanceGraphicResourceId().
+            balanceSignal = 99.99;
+            return outOfBoundsLabel;
         }
     }
 

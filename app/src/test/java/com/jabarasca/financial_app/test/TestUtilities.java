@@ -82,6 +82,8 @@ public class TestUtilities {
 
     @Test
     public void testSumIncomeExpenseItems() {
+        String fakeString = "fakeString";
+
         List<String> stringNumbers = new ArrayList<String>();
         stringNumbers.add("25.00");
         stringNumbers.add("-19.00456");
@@ -90,11 +92,11 @@ public class TestUtilities {
         stringNumbers.add("234.190");
 
         String result = null;
-        result = Utilities.sumIncomeExpenseItems(stringNumbers);
+        result = Utilities.sumIncomeExpenseItems(stringNumbers, fakeString);
         Assert.assertNotNull(result);
 
         stringNumbers.clear();
-        result = Utilities.sumIncomeExpenseItems(stringNumbers);
+        result = Utilities.sumIncomeExpenseItems(stringNumbers, fakeString);
         Assert.assertNotNull(result);
         if(result.contains(",")) {
             result = result.replace(",", ".");
@@ -102,5 +104,12 @@ public class TestUtilities {
         double returnedValue = Double.parseDouble(result);
         result = String.format(Locale.US, "%.2f", returnedValue);
         Assert.assertEquals(String.format(Locale.US, "%.2f", 0.0), result);
+
+        stringNumbers.clear();
+        for(int i = 0; i < 15; i++) {
+            stringNumbers.add("-999999.00");
+        }
+        result = Utilities.sumIncomeExpenseItems(stringNumbers, fakeString);
+        Assert.assertEquals("fakeString", result);
     }
 }

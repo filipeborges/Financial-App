@@ -17,4 +17,5 @@
     <string name="negative_button_message">Cancelar</string>
     <string name="positive_button_message">@android:string/ok</string>
     <string name="balance_label">Saldo:</string>
+    <string name="out_of_bounds_label">Infinito...</string>
 </resources>

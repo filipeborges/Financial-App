@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     public List<String> expenseAmountsList = new ArrayList<String>();
     public List<String> incomeAmountsList = new ArrayList<String>();
     public List<String> allAmountsList = new ArrayList<String>();
+    private String OUT_OF_BOUNDS_LABEL = null;
     private final int EXPENSE_LISTVIEW_POSITION = 0;
     private final int INCOME_LISTVIEW_POSITION = 1;
 
@@ -50,7 +51,8 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(DialogInterface dialog, int id) {
             EditText amountEditText = (EditText) ((Dialog) dialog).findViewById(R.id.addAmountPopupEditText);
 
-            if (!amountEditText.getText().toString().equals("")) {
+            if (!amountEditText.getText().toString().equals("") &&
+                    !amountSumTextView.getText().toString().equals(OUT_OF_BOUNDS_LABEL)) {
                 //"alertTitle" -> name, "id" -> defType, "android" -> package.
                 TextView alertDialogTitle = (TextView)((Dialog) dialog).findViewById(getResources().getIdentifier("alertTitle", "id", "android"));
                 double amount;
@@ -68,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
                 ListView listView = (ListView) findViewById(R.id.amountsListView);
                 ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
-                amountSumTextView.setText(Utilities.sumIncomeExpenseItems(allAmountsList));
+                amountSumTextView.setText(Utilities.sumIncomeExpenseItems(allAmountsList, OUT_OF_BOUNDS_LABEL));
                 graphicBalanceImgView.setImageResource(Utilities.getBalanceGraphicResourceId());
             }
             drawerLayout.closeDrawers();
@@ -107,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_layout);
 
+        OUT_OF_BOUNDS_LABEL = getString(R.string.out_of_bounds_label);
         inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
         drawerLayout = (DrawerLayout)findViewById(R.id.activityMainDrawerLay);
         rightDrawerListView = findViewById(R.id.activityMainRightDrawerListView);
@@ -150,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
         actionBarTextView.setText(actionBarFormattedDate);
 
         amountSumTextView = (TextView)findViewById(R.id.amountSumTextView);
-        amountSumTextView.setText(Utilities.sumIncomeExpenseItems(allAmountsList));
+        amountSumTextView.setText(Utilities.sumIncomeExpenseItems(allAmountsList, OUT_OF_BOUNDS_LABEL));
 
         List<String> addMenuOptionsList = new ArrayList<String>();
         addMenuOptionsList.add(getString(R.string.add_menu_option_1));
@@ -277,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         allAmountsList.remove(reverseSortedPositions[0]);
                         ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
-                        amountSumTextView.setText(Utilities.sumIncomeExpenseItems(allAmountsList));
+                        amountSumTextView.setText(Utilities.sumIncomeExpenseItems(allAmountsList, OUT_OF_BOUNDS_LABEL));
                         graphicBalanceImgView.setImageResource(Utilities.getBalanceGraphicResourceId());
                     }
                 });
