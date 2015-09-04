@@ -37,8 +37,8 @@
             android:id="@+id/bottomBarGraphicImgView"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
+            android:layout_alignBottom="@+id/bottomBarImgView"
+            android:layout_alignTop="@+id/bottomBarImgView"
             android:layout_marginLeft="15dp"
             style="@style/bottomBarGraphicImgView"/>
 
@@ -46,10 +46,11 @@
             android:id="@+id/balanceLabelTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@id/bottomBarGraphicImgView"
+            android:layout_alignLeft="@+id/amountSumTextView"
             android:layout_alignTop="@+id/bottomBarImgView"
-            android:layout_marginLeft="58dp"
-            android:layout_marginTop="7dp"
+            android:layout_alignBottom="@+id/bottomBarImgView"
+            android:layout_marginLeft="-65dp"
+            android:gravity="center"
             android:text="@string/balance_label"
             style="@style/amountBalance" />
 
@@ -57,10 +58,11 @@
             android:id="@+id/amountSumTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="7dp"
+            android:layout_alignParentRight="true"
             android:layout_marginRight="15dp"
             android:layout_alignTop="@+id/bottomBarImgView"
-            android:layout_alignParentRight="true"
+            android:layout_alignBottom="@+id/bottomBarImgView"
+            android:gravity="center"
             style="@style/amountBalance"/>
 
     </RelativeLayout>
