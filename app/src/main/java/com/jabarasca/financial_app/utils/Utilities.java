@@ -68,7 +68,8 @@ public class Utilities {
             }
         }
 
-        if(String.valueOf(totalSum).matches("\\-?[0-9]{1,7}\\.[0-9]{1,2}")) {
+        //TODO: Improve this regex better, if possible, to detect more special cases.
+        if(String.valueOf(totalSum).matches("\\-?[0-9]{1,6}\\.[0-9]+")) {
             balanceSignal = Math.signum(totalSum);
 
             if (totalSum > 0.0) {
@@ -99,29 +100,29 @@ public class Utilities {
 
     private static String getFormattedMonth(int monthNumber) {
            switch (monthNumber) {
-               case 1:
+               case Calendar.JANUARY:
                    return "Jan";
-               case 2:
+               case Calendar.FEBRUARY:
                    return "Fev";
-               case 3:
+               case Calendar.MARCH:
                    return "Mar";
-               case 4:
+               case Calendar.APRIL:
                    return "Abr";
-               case 5:
+               case Calendar.MAY:
                    return "Mai";
-               case 6:
+               case Calendar.JUNE:
                    return "Jun";
-               case 7:
+               case Calendar.JULY:
                    return "Jul";
-               case 8:
+               case Calendar.AUGUST:
                    return "Ago";
-               case 9:
+               case Calendar.SEPTEMBER:
                    return "Set";
-               case 10:
+               case Calendar.OCTOBER:
                    return "Out";
-               case 11:
+               case Calendar.NOVEMBER:
                    return "Nov";
-               case 12:
+               case Calendar.DECEMBER:
                    return "Dez";
                default:
                    return "Inválido";

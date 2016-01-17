@@ -57,9 +57,11 @@ public class MainActivity extends AppCompatActivity {
                 TextView alertDialogTitle = (TextView)((Dialog) dialog).findViewById(getResources().getIdentifier("alertTitle", "id", "android"));
                 double amount;
 
+                //TODO: The save needs to be done in this if-else statement. If income, iside IF. If expense, inside ELSE.
                 //If its a income amount.
                 if(alertDialogTitle.getText().equals(getString(R.string.income_title))) {
                     amount = Double.parseDouble(amountEditText.getText().toString());
+                    //TODO: The parameter passed to the save method needs to be this formatted string below.
                     incomeAmountsList.add(String.format("+%.2f", amount));
                     Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList, expenseAmountsList, true);
                 } else {
@@ -272,6 +274,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onDismiss(ListView listView, int[] reverseSortedPositions) {
                         int incomeElementsMaxPosition = allAmountsList.size() - expenseAmountsList.size();
 
+                        //TODO: The delete from saved data needs to be done inside this if-else statement.
                         //If the element dismissed is Income.
                         if(reverseSortedPositions[0] < incomeElementsMaxPosition) {
                             incomeAmountsList.remove(allAmountsList.get(reverseSortedPositions[0]));
