@@ -63,11 +63,11 @@ public class MainActivity extends AppCompatActivity {
                     amount = Double.parseDouble(amountEditText.getText().toString());
                     //TODO: The parameter passed to the save method needs to be this formatted string below.
                     incomeAmountsList.add(String.format("+%.2f", amount));
-                    Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList, expenseAmountsList, true);
+                    Utilities.setSortedAmountsList(allAmountsList, incomeAmountsList, expenseAmountsList, true);
                 } else {
                     amount = Double.parseDouble(amountEditText.getText().toString()) * -1;
                     expenseAmountsList.add(String.format("%.2f", amount));
-                    Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList, expenseAmountsList, false);
+                    Utilities.setSortedAmountsList(allAmountsList, incomeAmountsList, expenseAmountsList, false);
                 }
 
                 ListView listView = (ListView) findViewById(R.id.amountsListView);
@@ -155,7 +155,8 @@ public class MainActivity extends AppCompatActivity {
         actionBarTextView.setText(actionBarFormattedDate);
 
         amountSumTextView = (TextView)findViewById(R.id.amountSumTextView);
-        amountSumTextView.setText(Utilities.sumIncomeExpenseItems(allAmountsList, OUT_OF_BOUNDS_LABEL));
+        amountSumTextView.setText(Utilities.sumIncomeExpenseItems(allAmountsList,
+                OUT_OF_BOUNDS_LABEL));
 
         List<String> addMenuOptionsList = new ArrayList<String>();
         addMenuOptionsList.add(getString(R.string.add_menu_option_1));
@@ -164,8 +165,8 @@ public class MainActivity extends AppCompatActivity {
         setAddMenuListViewItems(R.id.activityMainRightDrawerListView, addMenuOptionsList,
                 R.layout.add_menu_item_layout, R.id.addMenuItemTextView, addMenuItemListener);
 
-        setAmountListViewItems(R.id.amountsListView, allAmountsList, R.layout.amount_list_view_item_layout,
-                R.id.amountItemTextView, null);
+        setAmountListViewItems(R.id.amountsListView, allAmountsList,
+                R.layout.amount_list_view_item_layout, R.id.amountItemTextView);
     }
 
     @Override
@@ -206,10 +207,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setAmountListViewItems(int listViewId, List<String> listViewItemsStrings, int listItemLayoutId,
-                                         int listItemTextViewId, AdapterView.OnItemClickListener itemListener) {
-
+                                         int listItemTextViewId) {
         ListView listView = (ListView)findViewById(listViewId);
-        listView.setOnItemClickListener(itemListener);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
                 listItemLayoutId, listItemTextViewId, listViewItemsStrings) {

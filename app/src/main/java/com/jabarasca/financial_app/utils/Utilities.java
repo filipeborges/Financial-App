@@ -21,8 +21,8 @@ public class Utilities {
         return actualFormattedDate;
     }
 
-    public static void sortAllAmountsList(List<String> allAmountsList, List<String> incomeAmountsList, List<String> expenseAmountsList,
-                                                boolean isIncomeSorting) {
+    public static void setSortedAmountsList(List<String> allAmountsList, List<String> incomeAmountsList, List<String> expenseAmountsList,
+                                            boolean isIncomeSorting) {
         Comparator<String> expenseAmountComparator = new Comparator<String>() {
             @Override
             public int compare(String lhs, String rhs) {
@@ -61,6 +61,7 @@ public class Utilities {
     }
 
     public static String sumIncomeExpenseItems(List<String> allAmountsListItems, String outOfBoundsLabel) {
+        final double INVALID_SIGNAL = 99.99;
         double totalSum = 0.0;
         if(!allAmountsListItems.isEmpty()) {
             for(int i = 0; i < allAmountsListItems.size(); i++) {
@@ -79,7 +80,7 @@ public class Utilities {
             }
         } else {
             //Value to enter on default on getBalanceGraphicResourceId().
-            balanceSignal = 99.99;
+            balanceSignal = INVALID_SIGNAL;
             return outOfBoundsLabel;
         }
     }
@@ -94,6 +95,7 @@ public class Utilities {
             case -1:
                 return R.drawable.graphic_down;
             default:
+                //TODO: Return image for infinite value.
                 return -1;
         }
     }
