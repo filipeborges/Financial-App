@@ -78,8 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
                 ListView listView = (ListView) findViewById(R.id.amountsListView);
                 ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
-                amountSumTextView.setText(Utilities.sumIncomeExpenseItems(allAmountsList, OUT_OF_BOUNDS_LABEL));
-                graphicBalanceImgView.setImageResource(Utilities.getBalanceGraphicResourceId());
+                refreshGraphicAndAmountSum(allAmountsList);
             }
             drawerLayout.closeDrawers();
         }
@@ -187,6 +186,11 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void refreshGraphicAndAmountSum(List<String> allAmountsList) {
+        amountSumTextView.setText(Utilities.sumIncomeExpenseItems(allAmountsList, OUT_OF_BOUNDS_LABEL));
+        graphicBalanceImgView.setImageResource(Utilities.getBalanceGraphicResourceId());
+    }
+
     public ActionBarDrawerToggle getActionBarDrawerToogle() {
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
                 R.string.open_drawer, R.string.close_drawer) {
@@ -249,6 +253,7 @@ public class MainActivity extends AppCompatActivity {
             ListView amountsListView = (ListView)findViewById(R.id.amountsListView);
             ((ArrayAdapter)amountsListView.getAdapter()).notifyDataSetChanged();
         }
+        refreshGraphicAndAmountSum(allAmountsList);
     }
 
     public void setAmountListViewItems(int listViewId, List<String> listViewItemsStrings, int listItemLayoutId,
