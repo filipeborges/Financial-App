@@ -125,38 +125,9 @@ public class MainActivity extends AppCompatActivity {
         rightDrawerListView = findViewById(R.id.activityMainRightDrawerListView);
         graphicBalanceImgView = (ImageView)findViewById(R.id.bottomBarGraphicImgView);
 
-        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
-                R.string.open_drawer, R.string.close_drawer) {
-            @Override
-            public void onDrawerSlide (View drawerView, float slideOffset) {
-                if(drawerView.getId() == R.id.activityMainRightDrawerListView) {
-                    if(slideOffset > 0.1) {
-                        menu.findItem(R.id.addButton).setIcon(R.drawable.minus);
-                        actionBarTextView.setText(getString(R.string.add_menu_action_bar_title));
-                        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-                    }
-                    else if(slideOffset <= 0.1) {
-                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                        menu.findItem(R.id.addButton).setIcon(R.drawable.plus);
-                        actionBarTextView.setText(actionBarFormattedDate);
-                    }
-                }
-                else {
-                    if(slideOffset > 0.1) {
-                        menu.findItem(R.id.addButton).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-                        actionBarTextView.setText(getString(R.string.menu_action_bar_title));
-                    }
-                    else if(slideOffset <= 0.1) {
-                        menu.findItem(R.id.addButton).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-                        actionBarTextView.setText(actionBarFormattedDate);
-                    }
-                }
-                super.onDrawerSlide(drawerView, slideOffset);
-            }
-        };
-
-        setSwipeToDismissAmountsListView(R.id.amountsListView);
+        actionBarDrawerToggle = getActionBarDrawerToogle();
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
+        setSwipeToDismissAmountsListView(R.id.amountsListView);
 
         getSupportActionBar().setCustomView(R.layout.action_bar_text_layout);
         actionBarTextView = (TextView)findViewById(R.id.actionBarTextView);
@@ -166,34 +137,11 @@ public class MainActivity extends AppCompatActivity {
         amountSumTextView.setText(Utilities.sumIncomeExpenseItems(allAmountsList,
                 OUT_OF_BOUNDS_LABEL));
 
-        List<String> addMenuOptionsList = new ArrayList<String>();
-        addMenuOptionsList.add(getString(R.string.add_menu_option_1));
-        addMenuOptionsList.add(getString(R.string.add_menu_option_2));
-
-        setAddMenuListViewItems(R.id.activityMainRightDrawerListView, addMenuOptionsList,
-                R.layout.add_menu_item_layout, R.id.addMenuItemTextView, addMenuItemListener);
-
         setAmountListViewItems(R.id.amountsListView, allAmountsList,
                 R.layout.amount_list_view_item_layout, R.id.amountItemTextView);
 
-        //@@@@@@@@@@@@@@@@@@@@@@ QUERY AMOUNTS TEST @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        List<String> queryAmountsList = dbAccess.getSpecificDateAmounts(Utilities.
-                getDBFormattedActualDate()+" 00:00", Utilities.getDBFormattedActualDate()+" 23:59");
-
-        if(queryAmountsList.size() > 0) {
-            for(int i = 0; i < queryAmountsList.size(); i++) {
-                String amount = queryAmountsList.get(i);
-                if(Double.parseDouble(amount) > 0.0) {
-                    incomeAmountsList.add(amount);
-                } else {
-                    expenseAmountsList.add(amount);
-                }
-            }
-            Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList,
-                    expenseAmountsList, Utilities.INCOME_EXPENSE_SORT);
-            ListView amountsListView = (ListView)findViewById(R.id.amountsListView);
-            ((ArrayAdapter)amountsListView.getAdapter()).notifyDataSetChanged();
-        }
+        configureAddMenu();
+        setAmountsSaved();
     }
 
     @Override
@@ -237,6 +185,69 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public ActionBarDrawerToggle getActionBarDrawerToogle() {
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+                R.string.open_drawer, R.string.close_drawer) {
+            @Override
+            public void onDrawerSlide (View drawerView, float slideOffset) {
+                if(drawerView.getId() == R.id.activityMainRightDrawerListView) {
+                    if(slideOffset > 0.1) {
+                        menu.findItem(R.id.addButton).setIcon(R.drawable.minus);
+                        actionBarTextView.setText(getString(R.string.add_menu_action_bar_title));
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                    }
+                    else if(slideOffset <= 0.1) {
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                        menu.findItem(R.id.addButton).setIcon(R.drawable.plus);
+                        actionBarTextView.setText(actionBarFormattedDate);
+                    }
+                }
+                else {
+                    if(slideOffset > 0.1) {
+                        menu.findItem(R.id.addButton).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+                        actionBarTextView.setText(getString(R.string.menu_action_bar_title));
+                    }
+                    else if(slideOffset <= 0.1) {
+                        menu.findItem(R.id.addButton).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+                        actionBarTextView.setText(actionBarFormattedDate);
+                    }
+                }
+                super.onDrawerSlide(drawerView, slideOffset);
+            }
+        };
+
+        return actionBarDrawerToggle;
+    }
+
+    public void configureAddMenu() {
+        List<String> addMenuOptionsList = new ArrayList<String>();
+        addMenuOptionsList.add(getString(R.string.add_menu_option_1));
+        addMenuOptionsList.add(getString(R.string.add_menu_option_2));
+
+        setAddMenuListViewItems(R.id.activityMainRightDrawerListView, addMenuOptionsList,
+                R.layout.add_menu_item_layout, R.id.addMenuItemTextView, addMenuItemListener);
+    }
+
+    public void setAmountsSaved() {
+        List<String> queryAmountsList = dbAccess.getSpecificDateAmounts(Utilities.
+                getDBFormattedActualDate()+" 00:00", Utilities.getDBFormattedActualDate()+" 23:59");
+
+        if(queryAmountsList.size() > 0) {
+            for(int i = 0; i < queryAmountsList.size(); i++) {
+                String amount = queryAmountsList.get(i);
+                if(Double.parseDouble(amount) > 0.0) {
+                    incomeAmountsList.add(amount);
+                } else {
+                    expenseAmountsList.add(amount);
+                }
+            }
+            Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList,
+                    expenseAmountsList, Utilities.INCOME_EXPENSE_SORT);
+            ListView amountsListView = (ListView)findViewById(R.id.amountsListView);
+            ((ArrayAdapter)amountsListView.getAdapter()).notifyDataSetChanged();
+        }
     }
 
     public void setAmountListViewItems(int listViewId, List<String> listViewItemsStrings, int listItemLayoutId,
