@@ -237,7 +237,8 @@ public class MainActivity extends AppCompatActivity {
         if(queryAmountsList.size() > 0) {
             for(int i = 0; i < queryAmountsList.size(); i++) {
                 String amount = queryAmountsList.get(i);
-                if(Double.parseDouble(amount) > 0.0) {
+                //Brazilian float number.
+                if(Double.parseDouble(amount.replace(",",".")) > 0.0) {
                     incomeAmountsList.add(amount);
                 } else {
                     expenseAmountsList.add(amount);
