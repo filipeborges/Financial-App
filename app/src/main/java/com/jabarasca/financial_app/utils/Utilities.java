@@ -11,6 +11,7 @@ public class Utilities {
 
     private static double balanceSignal = 0.0;
 
+    //TODO: Refactor this method name to reflect actionbar date.
     public static String getFormattedActualDate() {
         Calendar actualDate = Calendar.getInstance();
         String actualMonth = Utilities.getFormattedMonth(actualDate.get(Calendar.MONTH));
@@ -21,8 +22,20 @@ public class Utilities {
         return actualFormattedDate;
     }
 
+    //TODO: Refactor this method name to a more generic name.
+    public static String getSaveDateFormatted() {
+        Calendar actualDate = Calendar.getInstance();
+
+        String day = String.valueOf(actualDate.get(Calendar.DAY_OF_MONTH));
+        String month = Utilities.getSaveFormattedMonth(actualDate.get(Calendar.MONTH));
+        String year = String.valueOf(actualDate.get(Calendar.YEAR));
+
+        return year + "-" + month + "-" + day;
+    }
+
+    //TODO: Refactor this method.
     public static void setSortedAmountsList(List<String> allAmountsList, List<String> incomeAmountsList, List<String> expenseAmountsList,
-                                            boolean isIncomeSorting) {
+                                            boolean isIncomeSorting, boolean isSortAll) {
         Comparator<String> expenseAmountComparator = new Comparator<String>() {
             @Override
             public int compare(String lhs, String rhs) {
@@ -49,6 +62,9 @@ public class Utilities {
 
         if(isIncomeSorting) {
             Collections.sort(incomeAmountsList, incomeAmountComparator);
+        } else if(isSortAll) {
+            Collections.sort(incomeAmountsList, incomeAmountComparator);
+            Collections.sort(expenseAmountsList, expenseAmountComparator);
         } else {
             Collections.sort(expenseAmountsList, expenseAmountComparator);
         }
@@ -100,8 +116,40 @@ public class Utilities {
         }
     }
 
-    private static String getFormattedMonth(int monthNumber) {
-           switch (monthNumber) {
+    private static String getSaveFormattedMonth(int month) {
+        switch (month) {
+            case Calendar.JANUARY:
+                return "01";
+            case Calendar.FEBRUARY:
+                return "02";
+            case Calendar.MARCH:
+                return "03";
+            case Calendar.APRIL:
+                return "04";
+            case Calendar.MAY:
+                return "05";
+            case Calendar.JUNE:
+                return "06";
+            case Calendar.JULY:
+                return "07";
+            case Calendar.AUGUST:
+                return "08";
+            case Calendar.SEPTEMBER:
+                return "09";
+            case Calendar.OCTOBER:
+                return "10";
+            case Calendar.NOVEMBER:
+                return "11";
+            case Calendar.DECEMBER:
+                return "12";
+            default:
+                return "Inválido";
+        }
+    }
+
+    //TODO: Refactor this method name to reflect the actionbar date.
+    private static String getFormattedMonth(int month) {
+           switch (month) {
                case Calendar.JANUARY:
                    return "Jan";
                case Calendar.FEBRUARY:

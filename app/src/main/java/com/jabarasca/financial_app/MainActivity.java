@@ -24,6 +24,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jabarasca.financial_app.dao.DatabaseAccess;
 import com.jabarasca.financial_app.utils.SwipeDismissListViewTouchListener;
 import com.jabarasca.financial_app.utils.Utilities;
 
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     public String OUT_OF_BOUNDS_LABEL = null;
     private final int EXPENSE_LISTVIEW_POSITION = 0;
     private final int INCOME_LISTVIEW_POSITION = 1;
+    private DatabaseAccess dbAccess;
 
     public DialogInterface.OnClickListener addAmountDialogListener = new DialogInterface.OnClickListener() {
         @Override
@@ -62,12 +64,16 @@ public class MainActivity extends AppCompatActivity {
                 if(alertDialogTitle.getText().equals(getString(R.string.income_title))) {
                     amount = Double.parseDouble(amountEditText.getText().toString());
                     //TODO: The parameter passed to the save method needs to be this formatted string below.
-                    incomeAmountsList.add(String.format("+%.2f", amount));
-                    Utilities.setSortedAmountsList(allAmountsList, incomeAmountsList, expenseAmountsList, true);
+                    String amountString = String.format("+%.2f", amount);
+                    dbAccess.saveAmount(amountString, Utilities.getSaveDateFormatted());
+                    incomeAmountsList.add(amountString);
+                    Utilities.setSortedAmountsList(allAmountsList, incomeAmountsList, expenseAmountsList, true, false);
                 } else {
                     amount = Double.parseDouble(amountEditText.getText().toString()) * -1;
-                    expenseAmountsList.add(String.format("%.2f", amount));
-                    Utilities.setSortedAmountsList(allAmountsList, incomeAmountsList, expenseAmountsList, false);
+                    String amountString = String.format("%.2f", amount);
+                    dbAccess.saveAmount(amountString, Utilities.getSaveDateFormatted());
+                    expenseAmountsList.add(amountString);
+                    Utilities.setSortedAmountsList(allAmountsList, incomeAmountsList, expenseAmountsList, false, false);
                 }
 
                 ListView listView = (ListView) findViewById(R.id.amountsListView);
@@ -110,6 +116,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_layout);
+
+        dbAccess = new DatabaseAccess(getApplicationContext());
 
         OUT_OF_BOUNDS_LABEL = getString(R.string.out_of_bounds_label);
         inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -167,6 +175,30 @@ public class MainActivity extends AppCompatActivity {
 
         setAmountListViewItems(R.id.amountsListView, allAmountsList,
                 R.layout.amount_list_view_item_layout, R.id.amountItemTextView);
+
+        //@@@@@@@@@@@@@@@@@@@@@@ QUERY AMOUNTS TEST @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        List<String> queryAmountsList = dbAccess.getSpecificDateAmounts(Utilities.
+                        getSaveDateFormatted()+" 00:00", Utilities.getSaveDateFormatted()+" 23:59");
+
+        if(queryAmountsList.size() > 0) {
+            for(int i = 0; i < queryAmountsList.size(); i++) {
+                String amount = queryAmountsList.get(i);
+                if(Double.parseDouble(amount) > 0.0) {
+                    incomeAmountsList.add(amount);
+                } else {
+                    expenseAmountsList.add(amount);
+                }
+            }
+            Utilities.setSortedAmountsList(allAmountsList, incomeAmountsList, expenseAmountsList, false, true);
+            ListView amountsListView = (ListView)findViewById(R.id.amountsListView);
+            ((ArrayAdapter)amountsListView.getAdapter()).notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        dbAccess.closeDatabase();
+        super.onDestroy();
     }
 
     @Override

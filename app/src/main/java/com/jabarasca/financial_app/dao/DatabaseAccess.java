@@ -18,7 +18,7 @@ public class DatabaseAccess {
     private final String AMOUNTS_TABLE = "tb_amount_month";
     private final String AMOUNT_COLUMN = "amount";
     private final String DATE_COLUMN = "date";
-    private final String CREATE_TB_MONTH = "CREATE TABLE tb_amount_month(cod INTEGER PRIMARY KEY NOT NULL AUTOINCREMENT," +
+    private final String CREATE_TB_MONTH = "CREATE TABLE tb_amount_month(cod INTEGER PRIMARY KEY AUTOINCREMENT," +
                                                                         "date TEXT," +
                                                                         "amount TEXT);";
 
@@ -56,10 +56,10 @@ public class DatabaseAccess {
         return db.insert(AMOUNTS_TABLE, null, mapValues);
     }
 
-    //initial and finalDateTime must be in format: YYYY-MM-DD HH:MM:SS
+    //initial and finalDateTime must be in format: YYYY-MM-DD HH:MM
     public List<String> getSpecificDateAmounts(String initialDateTime, String finalDateTime) {
-        String queryFilter = "DATETIME(" + DATE_COLUMN + ") >= DATETIME(" + initialDateTime + ")" +
-                "AND DATETIME(" + DATE_COLUMN + ") <= DATETIME(" + finalDateTime + ");";
+        String queryFilter = "DATETIME(" + DATE_COLUMN + ") >= DATETIME('" + initialDateTime + "')" +
+                " AND DATETIME(" + DATE_COLUMN + ") <= DATETIME('" + finalDateTime + "');";
         Cursor queryCursor = db.query(AMOUNTS_TABLE, new String[]{AMOUNT_COLUMN}, queryFilter,
                 null, null, null, null, null);
 
@@ -68,14 +68,17 @@ public class DatabaseAccess {
 
     private List<String> getAmountsListFromCursor(Cursor cursor) {
         //TODO: Verify if the cursor is before first position.
-        final int AMOUNT_COLUMN_INDEX = 2;
+        final int AMOUNT_COLUMN_INDEX = 0;
         List<String> amountsList = new ArrayList<>();
 
-        cursor.moveToFirst();
-        for(int i = 0; i < cursor.getCount(); i++) {
-            amountsList.add(cursor.getString(AMOUNT_COLUMN_INDEX));
-            cursor.moveToNext();
+        if(!cursor.moveToFirst()) {
+            return amountsList;
+        } else {
+            for (int i = 0; i < cursor.getCount(); i++) {
+                amountsList.add(cursor.getString(AMOUNT_COLUMN_INDEX));
+                cursor.moveToNext();
+            }
+            return amountsList;
         }
-        return amountsList;
     }
 }
