@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     public ImageView graphicBalanceImgView;
     public TextView actionBarTextView;
     public TextView amountSumTextView;
-    public String actionBarFormattedDate = Utilities.getFormattedActualDate();
+    public String actionBarFormattedDate = Utilities.getActionBarFormattedActualDate();
     public LayoutInflater inflater;
     public List<String> expenseAmountsList = new ArrayList<String>();
     public List<String> incomeAmountsList = new ArrayList<String>();
@@ -59,21 +59,21 @@ public class MainActivity extends AppCompatActivity {
                 TextView alertDialogTitle = (TextView)((Dialog) dialog).findViewById(getResources().getIdentifier("alertTitle", "id", "android"));
                 double amount;
 
-                //TODO: The save needs to be done in this if-else statement. If income, iside IF. If expense, inside ELSE.
                 //If its a income amount.
                 if(alertDialogTitle.getText().equals(getString(R.string.income_title))) {
                     amount = Double.parseDouble(amountEditText.getText().toString());
-                    //TODO: The parameter passed to the save method needs to be this formatted string below.
                     String amountString = String.format("+%.2f", amount);
-                    dbAccess.saveAmount(amountString, Utilities.getSaveDateFormatted());
+                    dbAccess.saveAmount(amountString, Utilities.getDBFormattedActualDate());
                     incomeAmountsList.add(amountString);
-                    Utilities.setSortedAmountsList(allAmountsList, incomeAmountsList, expenseAmountsList, true, false);
+                    Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList,
+                            expenseAmountsList, Utilities.INCOME_SORT);
                 } else {
                     amount = Double.parseDouble(amountEditText.getText().toString()) * -1;
                     String amountString = String.format("%.2f", amount);
-                    dbAccess.saveAmount(amountString, Utilities.getSaveDateFormatted());
+                    dbAccess.saveAmount(amountString, Utilities.getDBFormattedActualDate());
                     expenseAmountsList.add(amountString);
-                    Utilities.setSortedAmountsList(allAmountsList, incomeAmountsList, expenseAmountsList, false, false);
+                    Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList,
+                            expenseAmountsList, Utilities.EXPENSE_SORT);
                 }
 
                 ListView listView = (ListView) findViewById(R.id.amountsListView);
@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
 
         //@@@@@@@@@@@@@@@@@@@@@@ QUERY AMOUNTS TEST @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         List<String> queryAmountsList = dbAccess.getSpecificDateAmounts(Utilities.
-                        getSaveDateFormatted()+" 00:00", Utilities.getSaveDateFormatted()+" 23:59");
+                getDBFormattedActualDate()+" 00:00", Utilities.getDBFormattedActualDate()+" 23:59");
 
         if(queryAmountsList.size() > 0) {
             for(int i = 0; i < queryAmountsList.size(); i++) {
@@ -189,7 +189,8 @@ public class MainActivity extends AppCompatActivity {
                     expenseAmountsList.add(amount);
                 }
             }
-            Utilities.setSortedAmountsList(allAmountsList, incomeAmountsList, expenseAmountsList, false, true);
+            Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList,
+                    expenseAmountsList, Utilities.INCOME_EXPENSE_SORT);
             ListView amountsListView = (ListView)findViewById(R.id.amountsListView);
             ((ArrayAdapter)amountsListView.getAdapter()).notifyDataSetChanged();
         }

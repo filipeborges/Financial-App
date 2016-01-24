@@ -10,11 +10,14 @@ import java.util.List;
 public class Utilities {
 
     private static double balanceSignal = 0.0;
+    public static final int INCOME_SORT = 1;
+    public static final int EXPENSE_SORT = 2;
+    public static final int INCOME_EXPENSE_SORT = 3;
 
-    //TODO: Refactor this method name to reflect actionbar date.
-    public static String getFormattedActualDate() {
+
+    public static String getActionBarFormattedActualDate() {
         Calendar actualDate = Calendar.getInstance();
-        String actualMonth = Utilities.getFormattedMonth(actualDate.get(Calendar.MONTH));
+        String actualMonth = Utilities.getActionBarFormattedMonth(actualDate.get(Calendar.MONTH));
 
         String actualFormattedDate = actualMonth + "/" +
                 String.valueOf(actualDate.get(Calendar.YEAR));
@@ -22,20 +25,19 @@ public class Utilities {
         return actualFormattedDate;
     }
 
-    //TODO: Refactor this method name to a more generic name.
-    public static String getSaveDateFormatted() {
+    public static String getDBFormattedActualDate() {
         Calendar actualDate = Calendar.getInstance();
 
         String day = String.valueOf(actualDate.get(Calendar.DAY_OF_MONTH));
-        String month = Utilities.getSaveFormattedMonth(actualDate.get(Calendar.MONTH));
+        String month = Utilities.getDBFormattedMonth(actualDate.get(Calendar.MONTH));
         String year = String.valueOf(actualDate.get(Calendar.YEAR));
 
         return year + "-" + month + "-" + day;
     }
 
-    //TODO: Refactor this method.
-    public static void setSortedAmountsList(List<String> allAmountsList, List<String> incomeAmountsList, List<String> expenseAmountsList,
-                                            boolean isIncomeSorting, boolean isSortAll) {
+    public static void sortAllAmountsList(List<String> allAmountsList,
+                                          List<String> incomeAmountsList,
+                                          List<String> expenseAmountsList, int typeOfSort) {
         Comparator<String> expenseAmountComparator = new Comparator<String>() {
             @Override
             public int compare(String lhs, String rhs) {
@@ -60,18 +62,23 @@ public class Utilities {
             }
         };
 
-        if(isIncomeSorting) {
-            Collections.sort(incomeAmountsList, incomeAmountComparator);
-        } else if(isSortAll) {
-            Collections.sort(incomeAmountsList, incomeAmountComparator);
-            Collections.sort(expenseAmountsList, expenseAmountComparator);
-        } else {
-            Collections.sort(expenseAmountsList, expenseAmountComparator);
+        switch(typeOfSort) {
+            case INCOME_SORT:
+                Collections.sort(incomeAmountsList, incomeAmountComparator);
+                break;
+            case EXPENSE_SORT:
+                Collections.sort(expenseAmountsList, expenseAmountComparator);
+                break;
+            default:
+                Collections.sort(incomeAmountsList, incomeAmountComparator);
+                Collections.sort(expenseAmountsList, expenseAmountComparator);
+                break;
         }
 
         if(!allAmountsList.isEmpty()) {
             allAmountsList.clear();
         }
+
         allAmountsList.addAll(incomeAmountsList);
         allAmountsList.addAll(expenseAmountsList);
     }
@@ -116,7 +123,7 @@ public class Utilities {
         }
     }
 
-    private static String getSaveFormattedMonth(int month) {
+    private static String getDBFormattedMonth(int month) {
         switch (month) {
             case Calendar.JANUARY:
                 return "01";
@@ -147,8 +154,7 @@ public class Utilities {
         }
     }
 
-    //TODO: Refactor this method name to reflect the actionbar date.
-    private static String getFormattedMonth(int month) {
+    private static String getActionBarFormattedMonth(int month) {
            switch (month) {
                case Calendar.JANUARY:
                    return "Jan";
