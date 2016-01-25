@@ -56,6 +56,19 @@ public class DatabaseAccess {
         return db.insert(AMOUNTS_TABLE, null, mapValues);
     }
 
+    //date must be in format: YYYY-MM-DD.
+    public int removeAmount(String amountValue, String date) {
+        String queryFilter = "STRFTIME('%Y-%m',"+DATE_COLUMN+") = STRFTIME('%Y-%m','"+date+"') AND '"+
+                amountValue+"' = "+AMOUNT_COLUMN+" LIMIT 1";
+        String selectFilter = "SELECT cod FROM tb_amount_month WHERE "+queryFilter;
+        String deleteFilter = "cod IN ("+selectFilter+");";
+
+        int returnValue = db.delete(AMOUNTS_TABLE, deleteFilter, null);
+
+        return returnValue;
+    }
+
+    //TODO: Refactor this method to use DATE() instead of DATETIME().
     //initial and finalDateTime must be in format: YYYY-MM-DD HH:MM
     public List<String> getSpecificDateAmounts(String initialDateTime, String finalDateTime) {
         String queryFilter = "DATETIME(" + DATE_COLUMN + ") >= DATETIME('" + initialDateTime + "')" +
@@ -67,7 +80,6 @@ public class DatabaseAccess {
     }
 
     private List<String> getAmountsListFromCursor(Cursor cursor) {
-        //TODO: Verify if the cursor is before first position.
         final int AMOUNT_COLUMN_INDEX = 0;
         List<String> amountsList = new ArrayList<>();
 

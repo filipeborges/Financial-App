@@ -322,18 +322,18 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDismiss(ListView listView, int[] reverseSortedPositions) {
                         int incomeElementsMaxPosition = allAmountsList.size() - expenseAmountsList.size();
+                        String amountToRemove = allAmountsList.get(reverseSortedPositions[0]);
+                        dbAccess.removeAmount(amountToRemove, Utilities.getDBFormattedActualDate());
 
-                        //TODO: The delete from saved data needs to be done inside this if-else statement.
                         //If the element dismissed is Income.
                         if(reverseSortedPositions[0] < incomeElementsMaxPosition) {
-                            incomeAmountsList.remove(allAmountsList.get(reverseSortedPositions[0]));
+                            incomeAmountsList.remove(amountToRemove);
                         } else {
-                            expenseAmountsList.remove(allAmountsList.get(reverseSortedPositions[0]));
+                            expenseAmountsList.remove(amountToRemove);
                         }
                         allAmountsList.remove(reverseSortedPositions[0]);
                         ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
-                        amountSumTextView.setText(Utilities.sumIncomeExpenseItems(allAmountsList, OUT_OF_BOUNDS_LABEL));
-                        graphicBalanceImgView.setImageResource(Utilities.getBalanceGraphicResourceId());
+                        refreshGraphicAndAmountSum(allAmountsList);
                     }
                 });
 
