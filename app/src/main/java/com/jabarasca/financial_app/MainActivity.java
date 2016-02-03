@@ -116,8 +116,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_layout);
 
-        dbAccess = new DatabaseAccess(getApplicationContext());
-
         OUT_OF_BOUNDS_LABEL = getString(R.string.out_of_bounds_label);
         inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
         drawerLayout = (DrawerLayout)findViewById(R.id.activityMainDrawerLay);
@@ -140,13 +138,20 @@ public class MainActivity extends AppCompatActivity {
                 R.layout.amount_list_view_item_layout, R.id.amountItemTextView);
 
         configureAddMenu();
-        setAmountsSaved();
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onResume() {
+        dbAccess = new DatabaseAccess(getApplicationContext());
+        setAmountsSaved();
+        super.onResume();
+    }
+
+    //Caution: This method needs to run very quickly.
+    @Override
+    protected void onPause() {
         dbAccess.closeDatabase();
-        super.onDestroy();
+        super.onPause();
     }
 
     @Override
@@ -235,8 +240,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setAmountsSaved() {
-        List<String> queryAmountsList = dbAccess.getSpecificDateAmounts(Utilities.
-                getDBFormattedActualDate()+" 00:00", Utilities.getDBFormattedActualDate()+" 23:59");
+        List<String> queryAmountsList = dbAccess.getSpecificDateAmounts(Utilities.getDBFormattedActualDate());
 
         if(queryAmountsList.size() > 0) {
             for(int i = 0; i < queryAmountsList.size(); i++) {

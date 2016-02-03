@@ -28,7 +28,11 @@ public class Utilities {
     public static String getDBFormattedActualDate() {
         Calendar actualDate = Calendar.getInstance();
 
-        String day = String.valueOf(actualDate.get(Calendar.DAY_OF_MONTH));
+        int intDay = actualDate.get(Calendar.DAY_OF_MONTH);
+        String day = String.valueOf(intDay);
+        if(intDay < 10) {
+            day = "0"+day;
+        }
         String month = Utilities.getDBFormattedMonth(actualDate.get(Calendar.MONTH));
         String year = String.valueOf(actualDate.get(Calendar.YEAR));
 

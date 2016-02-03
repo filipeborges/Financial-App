@@ -68,11 +68,9 @@ public class DatabaseAccess {
         return returnValue;
     }
 
-    //TODO: Refactor this method to use DATE() instead of DATETIME().
-    //initial and finalDateTime must be in format: YYYY-MM-DD HH:MM
-    public List<String> getSpecificDateAmounts(String initialDateTime, String finalDateTime) {
-        String queryFilter = "DATETIME(" + DATE_COLUMN + ") >= DATETIME('" + initialDateTime + "')" +
-                " AND DATETIME(" + DATE_COLUMN + ") <= DATETIME('" + finalDateTime + "');";
+    //actualFormattedDate must be in format: YYYY-MM-DD.
+    public List<String> getSpecificDateAmounts(String actualFormattedDate) {
+        String queryFilter = "STRFTIME('%Y-%m'," + DATE_COLUMN + ") = STRFTIME('%Y-%m','" + actualFormattedDate + "');";
         Cursor queryCursor = db.query(AMOUNTS_TABLE, new String[]{AMOUNT_COLUMN}, queryFilter,
                 null, null, null, null, null);
 
