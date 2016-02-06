@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class DatabaseAccess {
     private final int DATABASE_VERSION = 1;
     private SQLiteOpenHelper dbOpenHelper;
     private SQLiteDatabase db;
+    private boolean can_write = true;
     private final String AMOUNTS_TABLE = "tb_amount_month";
     private final String AMOUNT_COLUMN = "amount";
     private final String DATE_COLUMN = "date";
@@ -33,12 +35,18 @@ public class DatabaseAccess {
             public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
 
             @Override
-            public void onOpen(SQLiteDatabase db) {
-                //TODO: Verify if the database is READ ONLY.
-            }
+            public void onOpen(SQLiteDatabase db) {}
         };
         //Opens the database to read/write.
-        db = dbOpenHelper.getWritableDatabase();
+        try {
+            db = dbOpenHelper.getWritableDatabase();
+        }catch (SQLiteException sqle) {
+            can_write = false;
+        }
+    }
+
+    public boolean databaseCanWrite() {
+        return can_write;
     }
 
     public void closeDatabase() {

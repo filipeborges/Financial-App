@@ -18,4 +18,6 @@
     <string name="positive_button_message">@android:string/ok</string>
     <string name="balance_label">Total:</string>
     <string name="out_of_bounds_label">Infinito...</string>
+
+    <string name="db_cant_write">Erro! Libere espaço no celular para salvar!</string>
 </resources>

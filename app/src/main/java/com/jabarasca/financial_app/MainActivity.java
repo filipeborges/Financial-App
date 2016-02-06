@@ -142,9 +142,19 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        dbAccess = new DatabaseAccess(getApplicationContext());
-        setAmountsSaved();
         super.onResume();
+        dbAccess = new DatabaseAccess(getApplicationContext());
+        if(dbAccess.databaseCanWrite()) {
+            setAmountsSaved();
+        } else {
+            showAlertDialogWithOk(getString(R.string.db_cant_write),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    });
+        }
     }
 
     //Caution: This method needs to run very quickly.
@@ -189,6 +199,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void showAlertDialogWithOk(String message, DialogInterface.OnClickListener okListener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(message);
+        builder.setPositiveButton(R.string.positive_button_message, okListener);
+        AlertDialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
     }
 
     public void refreshGraphicAndAmountSum(List<String> allAmountsList) {
