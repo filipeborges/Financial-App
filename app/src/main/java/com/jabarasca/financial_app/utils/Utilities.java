@@ -95,9 +95,8 @@ public class Utilities {
                 totalSum += Double.parseDouble(allAmountsListItems.get(i).replace(",","."));
             }
         }
-
-        //TODO: Improve this regex better, if possible, to detect more special cases.
-        if(String.valueOf(totalSum).matches("\\-?[0-9]{1,6}\\.[0-9]+")) {
+        
+        if(String.valueOf(totalSum).matches("\\-?[0-9]{1,7}\\.[0-9]+")) {
             balanceSignal = Math.signum(totalSum);
 
             if (totalSum > 0.0) {

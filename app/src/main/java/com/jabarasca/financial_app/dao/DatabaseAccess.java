@@ -56,7 +56,6 @@ public class DatabaseAccess {
     //The amountValue needs to be string formatted. Return != -1 operation succeeded.
     //dateValue must be in format: YYYY-MM-DD
     public long saveAmount(String amountValue, String dateValue) {
-        //TODO: Verify if the database is opened.
         ContentValues mapValues = new ContentValues();
         mapValues.put(AMOUNT_COLUMN, amountValue);
         mapValues.put(DATE_COLUMN, dateValue);
