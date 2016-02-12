@@ -95,7 +95,7 @@ public class Utilities {
                 totalSum += Double.parseDouble(allAmountsListItems.get(i).replace(",","."));
             }
         }
-        
+
         if(String.valueOf(totalSum).matches("\\-?[0-9]{1,7}\\.[0-9]+")) {
             balanceSignal = Math.signum(totalSum);
 
@@ -121,8 +121,7 @@ public class Utilities {
             case -1:
                 return R.drawable.graphic_down;
             default:
-                //TODO: Return image for infinite value.
-                return -1;
+                return R.drawable.graphic_infinite;
         }
     }
 
