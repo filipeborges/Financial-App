@@ -7,7 +7,7 @@
     <string name="action_bar_add_title">Adicionar</string>
     <string name="add_menu_action_bar_title">Adicionar</string>
     <string name="menu_action_bar_title">Menu</string>
-    
+
     <string name="add_menu_option_1">Despesa</string>
     <string name="add_menu_option_2">Renda</string>
 
@@ -20,4 +20,5 @@
     <string name="out_of_bounds_label">Infinito...</string>
 
     <string name="db_cant_write">Erro! Libere espaço no celular para salvar!</string>
+    <string name="title_activity_calendar">CalendarActivity</string>
 </resources>

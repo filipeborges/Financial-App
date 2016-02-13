@@ -4,7 +4,11 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.util.AttributeSet;
+import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,12 +25,16 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.jabarasca.financial_app.dao.DatabaseAccess;
 import com.jabarasca.financial_app.utils.SwipeDismissListViewTouchListener;
 import com.jabarasca.financial_app.utils.Utilities;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 //Obs: Normal actionBar from Activity doesnt show hamburguer icon.
 public class MainActivity extends AppCompatActivity {
@@ -126,7 +134,8 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
         setSwipeToDismissAmountsListView(R.id.amountsListView);
 
-        getSupportActionBar().setCustomView(R.layout.action_bar_text_layout);
+        setActionBarCustomView(R.layout.action_bar_text_layout);
+
         actionBarTextView = (TextView)findViewById(R.id.actionBarTextView);
         actionBarTextView.setText(actionBarFormattedDate);
 
@@ -330,6 +339,41 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         listView.setAdapter(adapter);
+    }
+
+    private void setActionBarCustomView(int layoutId) {
+        XmlPullParser parser = getResources().getXml(layoutId);
+        while(true) {
+            try {
+                parser.next();
+                if(parser.getEventType() == XmlPullParser.START_TAG) {
+                    if(parser.getName().equals("LinearLayout")) {
+                        break;
+                    }
+                }
+            }catch (XmlPullParserException xmle) {
+                xmle.printStackTrace();
+            }catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+        }
+
+        AttributeSet attrSet = Xml.asAttributeSet(parser);
+        ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(this, attrSet);
+
+        LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
+        ViewGroup actionBarView = (ViewGroup)inflater.inflate(layoutId, null);
+        final MainActivity activity = this;
+
+        actionBarView.getChildAt(0).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(activity, CalendarActivity.class);
+                activity.startActivity(intent);
+            }
+        });
+
+        getSupportActionBar().setCustomView(actionBarView, layoutParams);
     }
 
     private void setSwipeToDismissAmountsListView(int listViewId) {
