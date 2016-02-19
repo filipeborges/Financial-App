@@ -21,4 +21,6 @@
 
     <string name="db_cant_write">Erro! Libere espaço no celular para salvar!</string>
     <string name="title_activity_calendar">CalendarActivity</string>
+
+    <string name="datepicker_title">Selecione...</string>
 </resources>

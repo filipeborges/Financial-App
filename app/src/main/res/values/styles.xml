@@ -17,6 +17,13 @@
         <item name="displayOptions">showHome|homeAsUp|showCustom</item>
     </style>
 
+    <!-- Dialog theme for select date activity -->
+    <style name="DialogTheme"
+        parent="@style/Theme.AppCompat.Light.Dialog">
+        <!-- Changes the datepicker text color -->
+        <item name="android:textColorPrimary">#FFF</item>
+    </style>
+
     <!-- activity_main_layout.xml -->
     <style name="backgroundImgView">
         <item name="android:src">@drawable/background</item>
@@ -45,6 +52,17 @@
         <item name="android:src">@drawable/graphic_neutral</item>
     </style>
 
+    <!-- activity_calendar.xml -->
+    <style name="datePickerStyle">
+        <item name="android:datePickerMode">spinner</item>
+        <item name="android:calendarViewShown">false</item>
+        <item name="android:calendarTextColor">@color/datePickerColor</item>
+    </style>
+
+    <style name="datePickerButtonStyle">
+        <item name="android:textColor">#FFF</item>
+    </style>
+
     <!-- add_menu_item_layout.xml -->
     <style name="addMenuItemTextView">
         <item name="android:textColor">#FFF</item>
@@ -64,7 +82,7 @@
     </style>
 
     <!-- action_bar_text_layout.xml-->
-    <style name="actionBarTextView">
+    <style name="actionBarTextViewStyle">
         <item name="android:textStyle">bold|italic</item>
         <item name="android:textColor">#FFF</item>
         <item name="android:textSize">20sp</item>
