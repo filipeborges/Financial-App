@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        dbAccess = new DatabaseAccess(getApplicationContext());
+        dbAccess = DatabaseAccess.getDBAcessInstance(getApplicationContext());
         if(dbAccess.databaseCanWrite()) {
             setAmountsSaved();
         } else {

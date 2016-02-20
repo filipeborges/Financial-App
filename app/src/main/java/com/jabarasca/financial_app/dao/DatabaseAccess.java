@@ -6,16 +6,19 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+//import android.database.sqlite.SQLiteStatement;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseAccess {
 
+    private static DatabaseAccess dbAccessInstance;
     private final String DATABASE_FILE_NAME = "financial_app_db";
     private final int DATABASE_VERSION = 1;
     private SQLiteOpenHelper dbOpenHelper;
     private SQLiteDatabase db;
+    //private SQLiteStatement sqlStmnt;
     private boolean can_write = true;
     private final String AMOUNTS_TABLE = "tb_amount_month";
     private final String AMOUNT_COLUMN = "amount";
@@ -24,7 +27,7 @@ public class DatabaseAccess {
                                                                         "date TEXT," +
                                                                         "amount TEXT);";
 
-    public DatabaseAccess(Context context) {
+    private DatabaseAccess(Context context) {
         dbOpenHelper = new SQLiteOpenHelper(context, DATABASE_FILE_NAME, null, DATABASE_VERSION) {
             @Override
             public void onCreate(SQLiteDatabase db) {
@@ -45,12 +48,21 @@ public class DatabaseAccess {
         }
     }
 
+    public static DatabaseAccess getDBAcessInstance(Context context) {
+        if(dbAccessInstance == null) {
+            dbAccessInstance = new DatabaseAccess(context);
+        }
+        return dbAccessInstance;
+    }
+
+    //TODO: Move this method inside calls that needs to write on DB.
     public boolean databaseCanWrite() {
         return can_write;
     }
 
     public void closeDatabase() {
         db.close();
+        dbAccessInstance = null;
     }
 
     //The amountValue needs to be string formatted. Return != -1 operation succeeded.
@@ -83,6 +95,14 @@ public class DatabaseAccess {
 
         return  getAmountsListFromCursor(queryCursor);
     }
+
+    /*public String getMinDatePickerValue() {
+        sqlStmnt = db.compileStatement("SELECT MIN(DISTINCT " + DATE_COLUMN + ") FROM " +
+                AMOUNTS_TABLE+";");
+
+        String minDate = sqlStmnt.simpleQueryForString();
+        return minDate;
+    }*/
 
     private List<String> getAmountsListFromCursor(Cursor cursor) {
         final int AMOUNT_COLUMN_INDEX = 0;
