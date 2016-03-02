@@ -4,12 +4,17 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-//import android.database.sqlite.SQLiteStatement;
+import android.database.sqlite.SQLiteStatement;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class DatabaseAccess {
 
@@ -18,7 +23,7 @@ public class DatabaseAccess {
     private final int DATABASE_VERSION = 1;
     private SQLiteOpenHelper dbOpenHelper;
     private SQLiteDatabase db;
-    //private SQLiteStatement sqlStmnt;
+    private SQLiteStatement sqlStmnt;
     private boolean can_write = true;
     private final String AMOUNTS_TABLE = "tb_amount_month";
     private final String AMOUNT_COLUMN = "amount";
@@ -96,13 +101,30 @@ public class DatabaseAccess {
         return  getAmountsListFromCursor(queryCursor);
     }
 
-    /*public String getMinDatePickerValue() {
+    public long getMinDatePickerValue() {
         sqlStmnt = db.compileStatement("SELECT MIN(DISTINCT " + DATE_COLUMN + ") FROM " +
                 AMOUNTS_TABLE+";");
+        final long DEFAULT_TIME = System.currentTimeMillis()-10000;
+        String minDate;
 
-        String minDate = sqlStmnt.simpleQueryForString();
-        return minDate;
-    }*/
+        try {
+            minDate = sqlStmnt.simpleQueryForString();
+        } catch(SQLiteDoneException e) {
+            return DEFAULT_TIME;
+        }
+
+        if(minDate != null) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-d", Locale.getDefault());
+            try {
+                Date date = dateFormat.parse(minDate);
+                return date.getTime();
+            } catch (ParseException e) {
+                return DEFAULT_TIME;
+            }
+        } else {
+            return DEFAULT_TIME;
+        }
+    }
 
     private List<String> getAmountsListFromCursor(Cursor cursor) {
         final int AMOUNT_COLUMN_INDEX = 0;
