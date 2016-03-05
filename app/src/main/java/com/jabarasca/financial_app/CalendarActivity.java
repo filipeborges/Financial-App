@@ -8,13 +8,14 @@ import android.widget.DatePicker;
 
 import com.jabarasca.financial_app.dao.DatabaseAccess;
 
-//TODO: Make a method to calculate Max and Min Date of CalendarView;
 //TODO: Implement Ok Button callback.
 //TODO: Fix bug when user press back button on CalendarActivity.
 public class CalendarActivity extends Activity {
 
     private DatePicker datePicker;
     private DatabaseAccess dbAccess;
+    private final long DEFAULT_MIN_DATE_PICKER = System.currentTimeMillis()-1000;
+    private final long DEFAULT_MAX_DATE_PICKER = System.currentTimeMillis();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +26,9 @@ public class CalendarActivity extends Activity {
         datePicker = (DatePicker)findViewById(R.id.datePicker);
         datePicker.findViewById(Resources.getSystem().getIdentifier("day", "id", "android"))
                 .setVisibility(View.GONE);
-        datePicker.setMinDate(dbAccess.getMinDatePickerValue());
+        datePicker.setMinDate(dbAccess.getDatePickerValue(dbAccess.getMinPickerSqlStmnt(),
+                DEFAULT_MIN_DATE_PICKER));
+        datePicker.setMaxDate(dbAccess.getDatePickerValue(dbAccess.getMaxPickerSqlStmnt(),
+                DEFAULT_MAX_DATE_PICKER));
     }
 }

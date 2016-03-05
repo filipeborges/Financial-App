@@ -23,7 +23,8 @@ public class DatabaseAccess {
     private final int DATABASE_VERSION = 1;
     private SQLiteOpenHelper dbOpenHelper;
     private SQLiteDatabase db;
-    private SQLiteStatement sqlStmnt;
+    private SQLiteStatement minPickerSqlStmnt;
+    private SQLiteStatement maxPickerSqlStmnt;
     private boolean can_write = true;
     private final String AMOUNTS_TABLE = "tb_amount_month";
     private final String AMOUNT_COLUMN = "amount";
@@ -48,6 +49,10 @@ public class DatabaseAccess {
         //Opens the database to read/write.
         try {
             db = dbOpenHelper.getWritableDatabase();
+            minPickerSqlStmnt = db.compileStatement("SELECT MIN(DISTINCT " + DATE_COLUMN + ") FROM " +
+                    AMOUNTS_TABLE + ";");
+            maxPickerSqlStmnt = db.compileStatement("SELECT MAX(DISTINCT " + DATE_COLUMN + ") FROM " +
+                    AMOUNTS_TABLE+";");
         }catch (SQLiteException sqle) {
             can_write = false;
         }
@@ -101,28 +106,32 @@ public class DatabaseAccess {
         return  getAmountsListFromCursor(queryCursor);
     }
 
-    public long getMinDatePickerValue() {
-        sqlStmnt = db.compileStatement("SELECT MIN(DISTINCT " + DATE_COLUMN + ") FROM " +
-                AMOUNTS_TABLE+";");
-        final long DEFAULT_TIME = System.currentTimeMillis()-10000;
-        String minDate;
+    public SQLiteStatement getMinPickerSqlStmnt() {
+        return minPickerSqlStmnt;
+    }
 
+    public SQLiteStatement getMaxPickerSqlStmnt() {
+        return maxPickerSqlStmnt;
+    }
+
+    public long getDatePickerValue(SQLiteStatement sqlStatement, long defaultValue) {
+        String datePickerValue;
         try {
-            minDate = sqlStmnt.simpleQueryForString();
+            datePickerValue = sqlStatement.simpleQueryForString();
         } catch(SQLiteDoneException e) {
-            return DEFAULT_TIME;
+            return defaultValue;
         }
 
-        if(minDate != null) {
+        if(datePickerValue != null) {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-d", Locale.getDefault());
             try {
-                Date date = dateFormat.parse(minDate);
+                Date date = dateFormat.parse(datePickerValue);
                 return date.getTime();
             } catch (ParseException e) {
-                return DEFAULT_TIME;
+                return defaultValue;
             }
         } else {
-            return DEFAULT_TIME;
+            return defaultValue;
         }
     }
 
