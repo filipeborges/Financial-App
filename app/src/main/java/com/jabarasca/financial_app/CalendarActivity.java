@@ -9,13 +9,13 @@ import android.widget.DatePicker;
 import com.jabarasca.financial_app.dao.DatabaseAccess;
 
 //TODO: Implement Ok Button callback.
-//TODO: Fix bug when user press back button on CalendarActivity.
 public class CalendarActivity extends Activity {
 
     private DatePicker datePicker;
     private DatabaseAccess dbAccess;
     private final long DEFAULT_MIN_DATE_PICKER = System.currentTimeMillis()-1000;
     private final long DEFAULT_MAX_DATE_PICKER = System.currentTimeMillis();
+    public static final int CALENDAR_ACTIVITY_ID_REQUEST = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

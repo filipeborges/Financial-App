@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private final int EXPENSE_LISTVIEW_POSITION = 0;
     private final int INCOME_LISTVIEW_POSITION = 1;
     private DatabaseAccess dbAccess;
+    private int activityRequestCode = 0;
 
     public DialogInterface.OnClickListener addAmountDialogListener = new DialogInterface.OnClickListener() {
         @Override
@@ -149,12 +150,20 @@ public class MainActivity extends AppCompatActivity {
         configureAddMenu();
     }
 
+    //TODO: The selected date on CalendarActivity must be obtained via this Intent.
+    @Override
+    protected void onActivityResult (int requestCode, int resultCode, Intent data) {
+        activityRequestCode = requestCode;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         dbAccess = DatabaseAccess.getDBAcessInstance(getApplicationContext());
         if(dbAccess.databaseCanWrite()) {
-            setAmountsSaved();
+            if(activityRequestCode != CalendarActivity.CALENDAR_ACTIVITY_ID_REQUEST) {
+                setAmountsSaved();
+            }
         } else {
             showAlertDialogWithOk(getString(R.string.db_cant_write),
                     new DialogInterface.OnClickListener() {
@@ -369,7 +378,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(activity, CalendarActivity.class);
-                activity.startActivity(intent);
+                activity.startActivityForResult(intent, CalendarActivity
+                        .CALENDAR_ACTIVITY_ID_REQUEST);
             }
         });
 
