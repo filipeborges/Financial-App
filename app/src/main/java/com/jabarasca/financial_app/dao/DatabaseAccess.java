@@ -97,7 +97,7 @@ public class DatabaseAccess {
         return returnValue;
     }
 
-    //actualFormattedDate must be in format: YYYY-MM-DD.
+    //actualFormattedDate must be in format: YYYY-MM-DD only.
     public List<String> getSpecificDateAmounts(String actualFormattedDate) {
         String queryFilter = "STRFTIME('%Y-%m'," + DATE_COLUMN + ") = STRFTIME('%Y-%m','" + actualFormattedDate + "');";
         Cursor queryCursor = db.query(AMOUNTS_TABLE, new String[]{AMOUNT_COLUMN}, queryFilter,

@@ -52,7 +52,7 @@
         <item name="android:src">@drawable/graphic_neutral</item>
     </style>
 
-    <!-- activity_calendar.xml -->
+    <!-- activity_calendar_layout.xml -->
     <style name="datePickerStyle">
         <item name="android:datePickerMode">spinner</item>
         <item name="android:calendarViewShown">false</item>

@@ -14,7 +14,6 @@ public class Utilities {
     public static final int EXPENSE_SORT = 2;
     public static final int INCOME_EXPENSE_SORT = 3;
 
-
     public static String getActionBarFormattedActualDate() {
         Calendar actualDate = Calendar.getInstance();
         String actualMonth = Utilities.getActionBarFormattedMonth(actualDate.get(Calendar.MONTH));
@@ -37,6 +36,14 @@ public class Utilities {
         String year = String.valueOf(actualDate.get(Calendar.YEAR));
 
         return year + "-" + month + "-" + day;
+    }
+
+    public static String getCurrentActionBarDate(String actionBarDateText) {
+        String defaultDay = "10";
+        return String.format("%s-%s-%s",
+                actionBarDateText.substring(4),
+                Utilities.getMonthFromActionBar(actionBarDateText.substring(0,3)),
+                defaultDay);
     }
 
     public static void sortAllAmountsList(List<String> allAmountsList,
@@ -125,7 +132,7 @@ public class Utilities {
         }
     }
 
-    private static String getDBFormattedMonth(int month) {
+    public static String getDBFormattedMonth(int month) {
         switch (month) {
             case Calendar.JANUARY:
                 return "01";
@@ -156,7 +163,37 @@ public class Utilities {
         }
     }
 
-    private static String getActionBarFormattedMonth(int month) {
+    private static String getMonthFromActionBar(String actionBarMonth) {
+        if(actionBarMonth.equals("Jan")) {
+            return "01";
+        } else if(actionBarMonth.equals("Fev")) {
+            return "02";
+        } else if(actionBarMonth.equals("Mar")) {
+            return "03";
+        } else if(actionBarMonth.equals("Abr")) {
+            return "04";
+        } else if(actionBarMonth.equals("Mai")) {
+            return "05";
+        } else if(actionBarMonth.equals("Jun")) {
+            return "06";
+        } else if(actionBarMonth.equals("Jul")) {
+            return "07";
+        } else if(actionBarMonth.equals("Ago")) {
+            return "08";
+        } else if(actionBarMonth.equals("Set")) {
+            return "09";
+        } else if(actionBarMonth.equals("Out")) {
+            return "10";
+        } else if(actionBarMonth.equals("Nov")) {
+            return "11";
+        } else if(actionBarMonth.equals("Dez")) {
+            return "12";
+        } else {
+            return actionBarMonth;
+        }
+    }
+
+    public static String getActionBarFormattedMonth(int month) {
            switch (month) {
                case Calendar.JANUARY:
                    return "Jan";

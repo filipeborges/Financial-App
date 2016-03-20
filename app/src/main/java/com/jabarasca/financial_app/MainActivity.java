@@ -56,6 +56,11 @@ public class MainActivity extends AppCompatActivity {
     private final int INCOME_LISTVIEW_POSITION = 1;
     private DatabaseAccess dbAccess;
     private int activityRequestCode = 0;
+    private int[] selectedDateForQuery = new int[4];
+    private final int CONTAINS_DATA = 0;
+    private final int YEAR = 1;
+    private final int MONTH = 2;
+    private final int DAY = 3;
 
     public DialogInterface.OnClickListener addAmountDialogListener = new DialogInterface.OnClickListener() {
         @Override
@@ -150,19 +155,52 @@ public class MainActivity extends AppCompatActivity {
         configureAddMenu();
     }
 
-    //TODO: The selected date on CalendarActivity must be obtained via this Intent.
     @Override
     protected void onActivityResult (int requestCode, int resultCode, Intent data) {
-        activityRequestCode = requestCode;
+        switch(requestCode) {
+            case CalendarActivity.CALENDAR_ACTIVITY_ID_REQUEST:
+                activityRequestCode = CalendarActivity.CALENDAR_ACTIVITY_ID_REQUEST;
+                if(data != null) {
+                    selectedDateForQuery[CONTAINS_DATA] = 1;
+                    selectedDateForQuery[YEAR] = data.getIntExtra(CalendarActivity.
+                            SELECTED_DATE_YEAR, 0);
+                    selectedDateForQuery[MONTH] = data.getIntExtra(CalendarActivity.
+                            SELECTED_DATE_MONTH, 0);
+                    selectedDateForQuery[DAY] = data.getIntExtra(CalendarActivity.
+                            SELECTED_DATE_DAY, 0);
+                    incomeAmountsList.clear();
+                    expenseAmountsList.clear();
+                }
+                break;
+        }
     }
 
+    //TODO: Fix bug when user press CANCEL on add amount popup.
+    //TODO: Update only if values changed.
     @Override
     protected void onResume() {
         super.onResume();
         dbAccess = DatabaseAccess.getDBAcessInstance(getApplicationContext());
         if(dbAccess.databaseCanWrite()) {
-            if(activityRequestCode != CalendarActivity.CALENDAR_ACTIVITY_ID_REQUEST) {
-                setAmountsSaved();
+            switch(activityRequestCode) {
+                case CalendarActivity.CALENDAR_ACTIVITY_ID_REQUEST:
+                    if(selectedDateForQuery[CONTAINS_DATA] == 1) {
+                        setAmountsSaved(String.format("%s-%s-%s",
+                                        String.valueOf(selectedDateForQuery[YEAR]),
+                                        Utilities.getDBFormattedMonth(selectedDateForQuery[MONTH]),
+                                        String.valueOf(selectedDateForQuery[DAY])
+                                )
+                        );
+                        actionBarFormattedDate = String.format("%s/%s",
+                                Utilities.getActionBarFormattedMonth(selectedDateForQuery[MONTH]),
+                                String.valueOf(selectedDateForQuery[YEAR])
+                        );
+                        actionBarTextView.setText(actionBarFormattedDate);
+                        selectedDateForQuery[CONTAINS_DATA] = 0;
+                    }
+                    break;
+                default:
+                    setAmountsSaved(Utilities.getDBFormattedActualDate());
             }
         } else {
             showAlertDialogWithOk(getString(R.string.db_cant_write),
@@ -276,8 +314,9 @@ public class MainActivity extends AppCompatActivity {
                 R.layout.add_menu_item_layout, R.id.addMenuItemTextView, addMenuItemListener);
     }
 
-    public void setAmountsSaved() {
-        List<String> queryAmountsList = dbAccess.getSpecificDateAmounts(Utilities.getDBFormattedActualDate());
+    //Must be in format: YYYY-MM-DD
+    public void setAmountsSaved(String date) {
+        List<String> queryAmountsList = dbAccess.getSpecificDateAmounts(date);
 
         if(queryAmountsList.size() > 0) {
             for(int i = 0; i < queryAmountsList.size(); i++) {
@@ -293,6 +332,8 @@ public class MainActivity extends AppCompatActivity {
                     expenseAmountsList, Utilities.INCOME_EXPENSE_SORT);
             ListView amountsListView = (ListView)findViewById(R.id.amountsListView);
             ((ArrayAdapter)amountsListView.getAdapter()).notifyDataSetChanged();
+        } else {
+            allAmountsList.clear();
         }
         refreshGraphicAndAmountSum(allAmountsList);
     }
@@ -400,7 +441,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onDismiss(ListView listView, int[] reverseSortedPositions) {
                         int incomeElementsMaxPosition = allAmountsList.size() - expenseAmountsList.size();
                         String amountToRemove = allAmountsList.get(reverseSortedPositions[0]);
-                        dbAccess.removeAmount(amountToRemove, Utilities.getDBFormattedActualDate());
+                        dbAccess.removeAmount(amountToRemove, Utilities.getCurrentActionBarDate(actionBarFormattedDate));
 
                         //If the element dismissed is Income.
                         if(reverseSortedPositions[0] < incomeElementsMaxPosition) {
