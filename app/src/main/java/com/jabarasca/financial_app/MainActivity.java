@@ -68,7 +68,8 @@ public class MainActivity extends AppCompatActivity {
             EditText amountEditText = (EditText) ((Dialog) dialog).findViewById(R.id.addAmountPopupEditText);
 
             if (!amountEditText.getText().toString().equals("") &&
-                    !amountSumTextView.getText().toString().equals(OUT_OF_BOUNDS_LABEL)) {
+                    !amountSumTextView.getText().toString().equals(OUT_OF_BOUNDS_LABEL) &&
+                    id == DialogInterface.BUTTON_POSITIVE) {
                 //"alertTitle" -> name, "id" -> defType, "android" -> package.
                 TextView alertDialogTitle = (TextView)((Dialog) dialog).findViewById(getResources().getIdentifier("alertTitle", "id", "android"));
                 double amount;
@@ -175,8 +176,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //TODO: Fix bug when user press CANCEL on add amount popup.
-    //TODO: Update only if values changed.
+    //TODO: Fix bug with calendar chooser. Current date appear only with insert of amount.
+    //TODO: [Improvement]Update only if values changed.
     @Override
     protected void onResume() {
         super.onResume();
