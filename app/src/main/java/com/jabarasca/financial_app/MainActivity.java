@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     public ImageView graphicBalanceImgView;
     public TextView actionBarTextView;
     public TextView amountSumTextView;
-    public String actionBarFormattedDate = Utilities.getActionBarFormattedActualDate();
+    public String actionBarFormattedDate = Utilities.getNowDateForActionBar();
     public LayoutInflater inflater;
     public List<String> expenseAmountsList = new ArrayList<String>();
     public List<String> incomeAmountsList = new ArrayList<String>();
@@ -78,14 +78,23 @@ public class MainActivity extends AppCompatActivity {
                 if(alertDialogTitle.getText().equals(getString(R.string.income_title))) {
                     amount = Double.parseDouble(amountEditText.getText().toString());
                     String amountString = String.format("+%.2f", amount);
-                    dbAccess.saveAmount(amountString, Utilities.getDBFormattedActualDate());
+                    //TODO: Move this format date to Utilities class.
+                    dbAccess.saveAmount(amountString, String.format("%s-%s-%s",
+                            String.valueOf(selectedDateForQuery[YEAR]),
+                            Utilities.getCalendarMonthForDB(selectedDateForQuery[MONTH]),
+                            Utilities.getCalendarDayForDB(selectedDateForQuery[DAY]))
+                    );
                     incomeAmountsList.add(amountString);
                     Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList,
                             expenseAmountsList, Utilities.INCOME_SORT);
                 } else {
                     amount = Double.parseDouble(amountEditText.getText().toString()) * -1;
                     String amountString = String.format("%.2f", amount);
-                    dbAccess.saveAmount(amountString, Utilities.getDBFormattedActualDate());
+                    dbAccess.saveAmount(amountString, String.format("%s-%s-%s",
+                            String.valueOf(selectedDateForQuery[YEAR]),
+                            Utilities.getCalendarMonthForDB(selectedDateForQuery[MONTH]),
+                            Utilities.getCalendarDayForDB(selectedDateForQuery[DAY]))
+                    );
                     expenseAmountsList.add(amountString);
                     Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList,
                             expenseAmountsList, Utilities.EXPENSE_SORT);
@@ -176,7 +185,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //TODO: Fix bug with calendar chooser. Current date appear only with insert of amount.
     //TODO: [Improvement]Update only if values changed.
     @Override
     protected void onResume() {
@@ -186,14 +194,15 @@ public class MainActivity extends AppCompatActivity {
             switch(activityRequestCode) {
                 case CalendarActivity.CALENDAR_ACTIVITY_ID_REQUEST:
                     if(selectedDateForQuery[CONTAINS_DATA] == 1) {
+                        //TODO: Move this format date to Utilities class.
                         setAmountsSaved(String.format("%s-%s-%s",
                                         String.valueOf(selectedDateForQuery[YEAR]),
-                                        Utilities.getDBFormattedMonth(selectedDateForQuery[MONTH]),
+                                        Utilities.getCalendarMonthForDB(selectedDateForQuery[MONTH]),
                                         String.valueOf(selectedDateForQuery[DAY])
                                 )
                         );
                         actionBarFormattedDate = String.format("%s/%s",
-                                Utilities.getActionBarFormattedMonth(selectedDateForQuery[MONTH]),
+                                Utilities.getCalendarMonthForActionBar(selectedDateForQuery[MONTH]),
                                 String.valueOf(selectedDateForQuery[YEAR])
                         );
                         actionBarTextView.setText(actionBarFormattedDate);
@@ -201,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 default:
-                    setAmountsSaved(Utilities.getDBFormattedActualDate());
+                    setAmountsSaved(Utilities.getNowDateForDB());
             }
         } else {
             showAlertDialogWithOk(getString(R.string.db_cant_write),
@@ -442,7 +451,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onDismiss(ListView listView, int[] reverseSortedPositions) {
                         int incomeElementsMaxPosition = allAmountsList.size() - expenseAmountsList.size();
                         String amountToRemove = allAmountsList.get(reverseSortedPositions[0]);
-                        dbAccess.removeAmount(amountToRemove, Utilities.getCurrentActionBarDate(actionBarFormattedDate));
+                        dbAccess.removeAmount(amountToRemove, Utilities.getPresentedDBDateFromActionBar(actionBarFormattedDate));
 
                         //If the element dismissed is Income.
                         if(reverseSortedPositions[0] < incomeElementsMaxPosition) {

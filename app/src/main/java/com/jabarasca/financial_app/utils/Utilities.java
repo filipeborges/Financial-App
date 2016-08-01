@@ -14,9 +14,9 @@ public class Utilities {
     public static final int EXPENSE_SORT = 2;
     public static final int INCOME_EXPENSE_SORT = 3;
 
-    public static String getActionBarFormattedActualDate() {
+    public static String getNowDateForActionBar() {
         Calendar actualDate = Calendar.getInstance();
-        String actualMonth = Utilities.getActionBarFormattedMonth(actualDate.get(Calendar.MONTH));
+        String actualMonth = Utilities.getCalendarMonthForActionBar(actualDate.get(Calendar.MONTH));
 
         String actualFormattedDate = actualMonth + "/" +
                 String.valueOf(actualDate.get(Calendar.YEAR));
@@ -24,7 +24,7 @@ public class Utilities {
         return actualFormattedDate;
     }
 
-    public static String getDBFormattedActualDate() {
+    public static String getNowDateForDB() {
         Calendar actualDate = Calendar.getInstance();
 
         int intDay = actualDate.get(Calendar.DAY_OF_MONTH);
@@ -32,17 +32,17 @@ public class Utilities {
         if(intDay < 10) {
             day = "0"+day;
         }
-        String month = Utilities.getDBFormattedMonth(actualDate.get(Calendar.MONTH));
+        String month = Utilities.getCalendarMonthForDB(actualDate.get(Calendar.MONTH));
         String year = String.valueOf(actualDate.get(Calendar.YEAR));
 
         return year + "-" + month + "-" + day;
     }
 
-    public static String getCurrentActionBarDate(String actionBarDateText) {
+    public static String getPresentedDBDateFromActionBar(String actionBarDateText) {
         String defaultDay = "10";
         return String.format("%s-%s-%s",
                 actionBarDateText.substring(4),
-                Utilities.getMonthFromActionBar(actionBarDateText.substring(0,3)),
+                Utilities.getDBMonthFromActionBar(actionBarDateText.substring(0,3)),
                 defaultDay);
     }
 
@@ -132,7 +132,15 @@ public class Utilities {
         }
     }
 
-    public static String getDBFormattedMonth(int month) {
+    public static String getCalendarDayForDB(int day) {
+        if(day < 10) {
+            return "0" + String.valueOf(day);
+        } else {
+            return String.valueOf(day);
+        }
+    }
+
+    public static String getCalendarMonthForDB(int month) {
         switch (month) {
             case Calendar.JANUARY:
                 return "01";
@@ -163,7 +171,7 @@ public class Utilities {
         }
     }
 
-    private static String getMonthFromActionBar(String actionBarMonth) {
+    private static String getDBMonthFromActionBar(String actionBarMonth) {
         if(actionBarMonth.equals("Jan")) {
             return "01";
         } else if(actionBarMonth.equals("Fev")) {
@@ -193,7 +201,7 @@ public class Utilities {
         }
     }
 
-    public static String getActionBarFormattedMonth(int month) {
+    public static String getCalendarMonthForActionBar(int month) {
            switch (month) {
                case Calendar.JANUARY:
                    return "Jan";
