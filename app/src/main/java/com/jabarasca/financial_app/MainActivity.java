@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private final int YEAR = 1;
     private final int MONTH = 2;
     private final int DAY = 3;
+    private MainActivity activity;
 
     public DialogInterface.OnClickListener addAmountDialogListener = new DialogInterface.OnClickListener() {
         @Override
@@ -115,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
             String title;
 
+            //TODO: Move the constants positions to local variables.
             switch (position) {
                 case EXPENSE_LISTVIEW_POSITION:
                     title = getString(R.string.expense_title);
@@ -132,6 +134,20 @@ public class MainActivity extends AppCompatActivity {
             alertDialog.setMessage(getString(R.string.income_expense_popup_message));
             alertDialog.setView(inflater.inflate(R.layout.add_amount_popup_layout, null));
             alertDialog.show();
+        }
+    };
+
+    public AdapterView.OnItemClickListener actBarDrawToggleItemListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            final int GRAPHIC_ANALYSIS = 0;
+
+            switch (position) {
+                case GRAPHIC_ANALYSIS:
+                    Intent intent = new Intent(activity, GraphicActivity.class);
+                    activity.startActivity(intent);
+                    break;
+            }
         }
     };
 
@@ -162,7 +178,9 @@ public class MainActivity extends AppCompatActivity {
         setAmountListViewItems(R.id.amountsListView, allAmountsList,
                 R.layout.amount_list_view_item_layout, R.id.amountItemTextView);
 
-        configureAddMenu();
+        configureActBarDrawToogleOptions();
+        configureAddMenuOptions();
+        activity = this;
     }
 
     @Override
@@ -315,13 +333,49 @@ public class MainActivity extends AppCompatActivity {
         return actionBarDrawerToggle;
     }
 
-    public void configureAddMenu() {
+    //TODO: Sets menu icon dinamically.
+    public void configureActBarDrawToogleOptions() {
+        ListView leftDrawListView = (ListView)findViewById(R.id.activityMainLeftDrawerListView);
+        leftDrawListView.setOnItemClickListener(actBarDrawToggleItemListener);
+
+        List<String> actBarDrawToggleOptionsList = new ArrayList<String>();
+        actBarDrawToggleOptionsList.add(getString(R.string.actbardrawtoggle_menu_option_1));
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
+                R.layout.menu_item_layout, R.id.menuItemTextView,
+                actBarDrawToggleOptionsList);
+
+        leftDrawListView.setAdapter(adapter);
+    }
+
+    public void configureAddMenuOptions() {
         List<String> addMenuOptionsList = new ArrayList<String>();
         addMenuOptionsList.add(getString(R.string.add_menu_option_1));
         addMenuOptionsList.add(getString(R.string.add_menu_option_2));
 
-        setAddMenuListViewItems(R.id.activityMainRightDrawerListView, addMenuOptionsList,
-                R.layout.add_menu_item_layout, R.id.addMenuItemTextView, addMenuItemListener);
+        ListView rightDrawListView = (ListView)findViewById(R.id.activityMainRightDrawerListView);
+        rightDrawListView.setOnItemClickListener(addMenuItemListener);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
+                R.layout.menu_item_layout, R.id.menuItemTextView, addMenuOptionsList) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                if(convertView == null) {
+                    LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    convertView = inflater.inflate(R.layout.menu_item_layout, parent, false);
+                }
+                switch (position) {
+                    case EXPENSE_LISTVIEW_POSITION:
+                        ((ImageView)((RelativeLayout)convertView).getChildAt(0)).setImageResource(R.drawable.negative_plus);
+                        break;
+                    case INCOME_LISTVIEW_POSITION:
+                        ((ImageView)((RelativeLayout)convertView).getChildAt(0)).setImageResource(R.drawable.plus);
+                        break;
+                }
+                return super.getView(position, convertView, parent);
+            }
+        };
+        rightDrawListView.setAdapter(adapter);
     }
 
     //Must be in format: YYYY-MM-DD
@@ -373,34 +427,6 @@ public class MainActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
     }
 
-    public void setAddMenuListViewItems(int listViewId, List<String> listViewItemsStrings, final int listItemLayoutId,
-                                         int listItemTextViewId, AdapterView.OnItemClickListener itemListener) {
-
-        ListView listView = (ListView)findViewById(listViewId);
-        listView.setOnItemClickListener(itemListener);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
-                listItemLayoutId, listItemTextViewId, listViewItemsStrings) {
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                if(convertView == null) {
-                    LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    convertView = inflater.inflate(listItemLayoutId, parent, false);
-                }
-                switch (position) {
-                    case EXPENSE_LISTVIEW_POSITION:
-                        ((ImageView)((RelativeLayout)convertView).getChildAt(0)).setImageResource(R.drawable.negative_plus);
-                        break;
-                    case INCOME_LISTVIEW_POSITION:
-                        ((ImageView)((RelativeLayout)convertView).getChildAt(0)).setImageResource(R.drawable.plus);
-                        break;
-                }
-                return super.getView(position, convertView, parent);
-            }
-        };
-        listView.setAdapter(adapter);
-    }
-
     private void setActionBarCustomView(int layoutId) {
         XmlPullParser parser = getResources().getXml(layoutId);
         while(true) {
@@ -423,7 +449,6 @@ public class MainActivity extends AppCompatActivity {
 
         LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
         ViewGroup actionBarView = (ViewGroup)inflater.inflate(layoutId, null);
-        final MainActivity activity = this;
 
         actionBarView.getChildAt(0).setOnClickListener(new View.OnClickListener() {
             @Override
