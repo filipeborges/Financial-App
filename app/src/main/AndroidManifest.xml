@@ -20,7 +20,7 @@
         <activity
             android:name=".CalendarActivity"
             android:theme="@style/DialogTheme" />
-        <activity android:name=".GraphicActivity">
+        <activity android:name=".ChartActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.jabarasca.financial_app.MainActivity" />

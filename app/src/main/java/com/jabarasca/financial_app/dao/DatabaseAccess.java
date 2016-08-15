@@ -8,13 +8,13 @@ import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
+import android.util.SparseArray;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import com.jabarasca.financial_app.CalendarActivity;
+import com.jabarasca.financial_app.utils.Utilities;
+
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class DatabaseAccess {
 
@@ -23,8 +23,8 @@ public class DatabaseAccess {
     private final int DATABASE_VERSION = 1;
     private SQLiteOpenHelper dbOpenHelper;
     private SQLiteDatabase db;
-    private SQLiteStatement minPickerSqlStmnt;
-    private SQLiteStatement maxPickerSqlStmnt;
+    private SQLiteStatement minPickerSqlStmntMainActv;
+    private SQLiteStatement maxPickerSqlStmntMainActv;
     private boolean can_write = true;
     private final String AMOUNTS_TABLE = "tb_amount_month";
     private final String AMOUNT_COLUMN = "amount";
@@ -49,10 +49,6 @@ public class DatabaseAccess {
         //Opens the database to read/write.
         try {
             db = dbOpenHelper.getWritableDatabase();
-            minPickerSqlStmnt = db.compileStatement("SELECT MIN(DISTINCT " + DATE_COLUMN + ") FROM " +
-                    AMOUNTS_TABLE + ";");
-            maxPickerSqlStmnt = db.compileStatement("SELECT MAX(DISTINCT " + DATE_COLUMN + ") FROM " +
-                    AMOUNTS_TABLE+";");
         }catch (SQLiteException sqle) {
             can_write = false;
         }
@@ -71,6 +67,12 @@ public class DatabaseAccess {
     }
 
     public void closeDatabase() {
+        if(minPickerSqlStmntMainActv != null) {
+            minPickerSqlStmntMainActv.close();
+        }
+        if(maxPickerSqlStmntMainActv != null) {
+            maxPickerSqlStmntMainActv.close();
+        }
         db.close();
         dbAccessInstance = null;
     }
@@ -103,50 +105,69 @@ public class DatabaseAccess {
         Cursor queryCursor = db.query(AMOUNTS_TABLE, new String[]{AMOUNT_COLUMN}, queryFilter,
                 null, null, null, null, null);
 
-        return  getAmountsListFromCursor(queryCursor);
-    }
-
-    public SQLiteStatement getMinPickerSqlStmnt() {
-        return minPickerSqlStmnt;
-    }
-
-    public SQLiteStatement getMaxPickerSqlStmnt() {
-        return maxPickerSqlStmnt;
-    }
-
-    public long getDatePickerValue(SQLiteStatement sqlStatement, long defaultValue) {
-        String datePickerValue;
-        try {
-            datePickerValue = sqlStatement.simpleQueryForString();
-        } catch(SQLiteDoneException e) {
-            return defaultValue;
-        }
-
-        if(datePickerValue != null) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-d", Locale.getDefault());
-            try {
-                Date date = dateFormat.parse(datePickerValue);
-                return date.getTime();
-            } catch (ParseException e) {
-                return defaultValue;
-            }
-        } else {
-            return defaultValue;
-        }
-    }
-
-    private List<String> getAmountsListFromCursor(Cursor cursor) {
         final int AMOUNT_COLUMN_INDEX = 0;
         List<String> amountsList = new ArrayList<>();
 
-        if(!cursor.moveToFirst()) {
-            return amountsList;
-        } else {
-            for (int i = 0; i < cursor.getCount(); i++) {
-                amountsList.add(cursor.getString(AMOUNT_COLUMN_INDEX));
-                cursor.moveToNext();
+        if(queryCursor.moveToFirst()) {
+            for (int i = 0; i < queryCursor.getCount(); i++) {
+                amountsList.add(queryCursor.getString(AMOUNT_COLUMN_INDEX));
+                queryCursor.moveToNext();
             }
-            return amountsList;
         }
+        queryCursor.close();
+        return amountsList;
+    }
+
+    public long getDatePickerValue(int typeOfValue) {
+        SQLiteStatement sqLiteStatement;
+        if(typeOfValue == CalendarActivity.DATE_PICKER_MIN_VALUE) {
+            if(minPickerSqlStmntMainActv == null) {
+                minPickerSqlStmntMainActv = db.compileStatement("SELECT MIN(DISTINCT " + DATE_COLUMN + ") FROM " +
+                        AMOUNTS_TABLE + ";");
+            }
+            sqLiteStatement = minPickerSqlStmntMainActv;
+        } else {
+            if(maxPickerSqlStmntMainActv == null) {
+                maxPickerSqlStmntMainActv = db.compileStatement("SELECT MAX(DISTINCT " + DATE_COLUMN + ") FROM " +
+                        AMOUNTS_TABLE+";");
+            }
+            sqLiteStatement = maxPickerSqlStmntMainActv;
+        }
+        String dbReturnedDate;
+        try {
+            dbReturnedDate = sqLiteStatement.simpleQueryForString();
+            if(dbReturnedDate == null) {
+                dbReturnedDate = Utilities.getNowDateForDB();
+            }
+        } catch(SQLiteDoneException e) {
+            dbReturnedDate = Utilities.getNowDateForDB();
+        }
+
+        return Utilities.getLongValueFromDBDate(dbReturnedDate);
+    }
+
+    public SparseArray<Float> getAnnualReportValues(int year) {
+        SparseArray<Float> annualReportValues = new SparseArray<>();
+        String sql = "SELECT %s, STRFTIME('%%m', %s) AS month FROM %s " +
+                "WHERE STRFTIME('%%Y', %s) = ? ORDER BY month";
+        sql = String.format(sql, AMOUNT_COLUMN, DATE_COLUMN, AMOUNTS_TABLE, DATE_COLUMN);
+
+        for(int i = 1; i <= 12; i++) {
+            annualReportValues.put(i, (float)0);
+        }
+        Cursor resultCur = db.rawQuery(sql, new String[]{String.valueOf(year)});
+        //If cursor has result.
+        if(resultCur.moveToFirst()) {
+            int totalRows = resultCur.getCount();
+            for(int i = 0; i < totalRows; i ++) {
+                int actualMonth = Integer.parseInt(resultCur.getString(1));
+                float actualAmount = resultCur.getFloat(0);
+                actualAmount += annualReportValues.get(actualMonth);
+                annualReportValues.put(actualMonth, actualAmount);
+                resultCur.moveToNext();
+            }
+        }
+        resultCur.close();
+        return annualReportValues;
     }
 }

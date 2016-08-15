@@ -2,9 +2,12 @@ package com.jabarasca.financial_app.utils;
 
 import com.jabarasca.financial_app.R;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 public class Utilities {
@@ -22,6 +25,16 @@ public class Utilities {
                 String.valueOf(actualDate.get(Calendar.YEAR));
 
         return actualFormattedDate;
+    }
+
+    public static long getLongValueFromDBDate(String dbDate) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-d");
+        try {
+            Date date = dateFormat.parse(dbDate);
+            return date.getTime();
+        } catch (ParseException e) {
+            return System.currentTimeMillis();
+        }
     }
 
     public static String getNowDateForDB() {
@@ -129,14 +142,6 @@ public class Utilities {
                 return R.drawable.graphic_down;
             default:
                 return R.drawable.graphic_infinite;
-        }
-    }
-
-    public static String getCalendarDayForDB(int day) {
-        if(day < 10) {
-            return "0" + String.valueOf(day);
-        } else {
-            return String.valueOf(day);
         }
     }
 

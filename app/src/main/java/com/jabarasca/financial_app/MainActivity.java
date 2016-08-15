@@ -80,10 +80,10 @@ public class MainActivity extends AppCompatActivity {
                     amount = Double.parseDouble(amountEditText.getText().toString());
                     String amountString = String.format("+%.2f", amount);
                     //TODO: Move this format date to Utilities class.
-                    dbAccess.saveAmount(amountString, String.format("%s-%s-%s",
-                            String.valueOf(selectedDateForQuery[YEAR]),
+                    dbAccess.saveAmount(amountString, String.format("%d-%s-%d",
+                            selectedDateForQuery[YEAR],
                             Utilities.getCalendarMonthForDB(selectedDateForQuery[MONTH]),
-                            Utilities.getCalendarDayForDB(selectedDateForQuery[DAY]))
+                            selectedDateForQuery[DAY])
                     );
                     incomeAmountsList.add(amountString);
                     Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList,
@@ -91,10 +91,10 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     amount = Double.parseDouble(amountEditText.getText().toString()) * -1;
                     String amountString = String.format("%.2f", amount);
-                    dbAccess.saveAmount(amountString, String.format("%s-%s-%s",
-                            String.valueOf(selectedDateForQuery[YEAR]),
+                    dbAccess.saveAmount(amountString, String.format("%d-%s-%d",
+                            selectedDateForQuery[YEAR],
                             Utilities.getCalendarMonthForDB(selectedDateForQuery[MONTH]),
-                            Utilities.getCalendarDayForDB(selectedDateForQuery[DAY]))
+                            selectedDateForQuery[DAY])
                     );
                     expenseAmountsList.add(amountString);
                     Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList,
@@ -140,16 +140,19 @@ public class MainActivity extends AppCompatActivity {
     public AdapterView.OnItemClickListener actBarDrawToggleItemListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            final int GRAPHIC_ANALYSIS = 0;
+            final int CHART_ANALYSIS = 0;
 
             switch (position) {
-                case GRAPHIC_ANALYSIS:
-                    Intent intent = new Intent(activity, GraphicActivity.class);
+                case CHART_ANALYSIS:
+                    Intent intent = new Intent(activity, ChartActivity.class);
+                    intent.putExtra(ChartActivity.CURRENT_DATE, actionBarFormattedDate);
                     activity.startActivity(intent);
                     break;
             }
         }
     };
+
+    //TODO: Verify viability of save on DB with correct day.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,6 +164,11 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = (DrawerLayout)findViewById(R.id.activityMainDrawerLay);
         rightDrawerListView = findViewById(R.id.activityMainRightDrawerListView);
         graphicBalanceImgView = (ImageView)findViewById(R.id.bottomBarGraphicImgView);
+
+        String nowDate = Utilities.getNowDateForDB();
+        selectedDateForQuery[YEAR] = Integer.parseInt(nowDate.substring(0,4));
+        selectedDateForQuery[MONTH] = Integer.parseInt(nowDate.substring(5,7)) - 1;
+        selectedDateForQuery[DAY] = CalendarActivity.DEFAULT_DAY;
 
         actionBarDrawerToggle = getActionBarDrawerToogle();
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
