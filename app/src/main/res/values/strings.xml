@@ -7,7 +7,7 @@
     <string name="action_bar_add_title">Adicionar</string>
     <string name="add_menu_action_bar_title">Adicionar</string>
     <string name="menu_action_bar_title">Menu</string>
-    <string name="graphic_activ_action_bar_title">Gráfico</string>
+    <string name="chart_activ_action_bar_title">Análise - %d</string>
 
     <string name="add_menu_option_1">Despesa</string>
     <string name="add_menu_option_2">Renda</string>

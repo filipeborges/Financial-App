@@ -1,8 +1,12 @@
 package com.jabarasca.financial_app;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
@@ -11,10 +15,14 @@ import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jabarasca.financial_app.dao.DatabaseAccess;
+import com.jabarasca.financial_app.utils.Utilities;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -24,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lecho.lib.hellocharts.formatter.AxisValueFormatter;
+import lecho.lib.hellocharts.formatter.LineChartValueFormatter;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.model.Line;
@@ -39,15 +48,10 @@ public class ChartActivity extends AppCompatActivity {
 
     private ChartActivity activity;
     private DatabaseAccess dbAccess;
-
-    /*TODO:
-        1- A partir do mes atual, calcular o offset do mes atual com base no mes escolhido
-        pelo usuario. Este offset sera usado para dizer o intervalo no eixo X do grafico.
-        2- Obter o valor CALENDAR de cada mes. Ja eh conhecido o valor atual e o valor
-        que o usuario escolheu. Portanto eh possivel fazer o calculo.
-        3- Montar a regra no formatter do grafico.*/
-
-    private AxisValueFormatter formatter = new AxisValueFormatter() {
+    private Handler handler = new Handler(Looper.getMainLooper());
+    private TextView actionBarTextView;
+    private Bitmap lineChartBitmap;
+    private AxisValueFormatter axisValueFormatter = new AxisValueFormatter() {
         /**
          * Formats AxisValue for manual(custom) axis. Result is stored in (output) formattedValue array. Method
          * returns number of chars of formatted value. The formatted value starts at index [formattedValue.length -
@@ -55,14 +59,12 @@ public class ChartActivity extends AppCompatActivity {
          */
         @Override
         public int formatValueForManualAxis(char[] formattedValue, AxisValue axisValue) {
-            if(axisValue.getValue() == 1.0) {
-                formattedValue[0] = 'J';
-                return formattedValue.length;
-            } else {
-                formattedValue[0] = 'K';
-                return formattedValue.length;
-            }
-
+            int axisCalendarValue = (int)axisValue.getValue() - 1;
+            String month = Utilities.getCalendarMonthForActionBar(axisCalendarValue);
+            formattedValue[0] = month.charAt(0);
+            formattedValue[1] = month.charAt(1);
+            formattedValue[2] = month.charAt(2);
+            return formattedValue.length;
         }
 
         @Override
@@ -71,10 +73,56 @@ public class ChartActivity extends AppCompatActivity {
         }
     };
 
+    private Runnable longPressRunnable = new Runnable() {
+        @Override
+        public void run() {
+            Toast.makeText(getApplicationContext(), "LongPress", Toast.LENGTH_SHORT).show();
+        }
+    };
+    private View.OnTouchListener customTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            int pixelColor = lineChartBitmap.getPixel((int)event.getX(), (int)event.getY());
+            int eventAction = event.getActionMasked();
+            if(eventAction == MotionEvent.ACTION_DOWN &&
+                    pixelColor == getResources().getColor(R.color.chart_line_point)) {
+                handler.postDelayed(longPressRunnable, 1000);
+            } else if(eventAction == MotionEvent.ACTION_MOVE || eventAction == MotionEvent.ACTION_UP) {
+                handler.removeCallbacks(longPressRunnable);
+            }
+            return false;
+        }
+    };
+
+    private LineChartValueFormatter lineLabelFormatter = new LineChartValueFormatter() {
+        @Override
+        public int formatChartValue(char[] formattedValue, PointValue value) {
+            int arrayLength = formattedValue.length;
+            for(int i = 0; i < arrayLength; i++) {
+                if(formattedValue[i] == '\0') {
+                    break;
+                } else {
+                    formattedValue[i] = '\0';
+                }
+            }
+            String yValue = String.format("%.2f", value.getY());
+            arrayLength = yValue.length();
+
+            for(int i = 0; i < arrayLength; i++) {
+                formattedValue[i] = yValue.charAt(i);
+            }
+            return formattedValue.length;
+        }
+    };
+
     @Override
     protected void onActivityResult (int requestCode, int resultCode, Intent intent) {
         //TODO: Verify default value from the intent.
         int selectedYear = intent.getIntExtra(CalendarActivity.SELECTED_DATE_YEAR, 0);
+        actionBarTextView.setText(
+                String.format(getResources().getString(R.string.chart_activ_action_bar_title),
+                        selectedYear)
+        );
         configureLineChart(dbAccess.getAnnualReportValues(selectedYear));
     }
 
@@ -84,16 +132,17 @@ public class ChartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chart_layout);
 
         activity = this;
-        setActionBarCustomView(R.layout.action_bar_text_layout);
-        TextView actionBarTextView = (TextView)findViewById(R.id.actionBarTextView);
-        actionBarTextView.setText(getString(R.string.graphic_activ_action_bar_title));
+        String actBarCurrentDate = getIntent().getStringExtra(CURRENT_DATE);
+        int currentYear = Integer.parseInt(actBarCurrentDate.substring(4));
 
+        setActionBarCustomView(R.layout.action_bar_text_layout);
+        actionBarTextView = (TextView)findViewById(R.id.actionBarTextView);
+        actionBarTextView.setText(getResources().getString(R.string.actbardrawtoggle_menu_option_1));
         dbAccess = DatabaseAccess.getDBAcessInstance(getApplicationContext());
-        String currentDate = getIntent().getStringExtra(CURRENT_DATE);
 
         Intent intent = new Intent(activity, CalendarActivity.class);
         intent.putExtra(ChartActivity.CHART_ACTIVITY_REQUEST, true);
-        intent.putExtra(ChartActivity.CURRENT_YEAR, Integer.parseInt(currentDate.substring(4)));
+        intent.putExtra(ChartActivity.CURRENT_YEAR, currentYear);
         activity.startActivityForResult(intent, CalendarActivity.CALENDAR_ACTIVITY_ID_REQUEST);
     }
 
@@ -117,34 +166,36 @@ public class ChartActivity extends AppCompatActivity {
     private void configureLineChart(SparseArray<Float> annualReportValues) {
         LineChartView lineChart = (LineChartView)findViewById(R.id.lineChartView);
 
-        List<PointValue> values = new ArrayList<PointValue>();
+        List<PointValue> amountValues = new ArrayList<>();
         for(int i = 1; i <= annualReportValues.size(); i++) {
-            values.add(new PointValue(i, annualReportValues.get(i)));
+            amountValues.add(new PointValue(i, annualReportValues.get(i)));
         }
 
-        Line line = new Line(values).setColor(Color.BLUE);
-        List<Line> lines = new ArrayList<Line>();
-        lines.add(line);
+        Line amountLine = new Line(amountValues).setColor(getResources().
+                getColor(R.color.chart_line_color));
+        amountLine.setHasLabels(true);
+        amountLine.setHasLabelsOnlyForSelected(true);
+        amountLine.setFormatter(lineLabelFormatter);
+        amountLine.setPointColor(getResources().getColor(R.color.chart_line_point));
+        List<Line> lines = new ArrayList<>();
+        lines.add(amountLine);
 
         Axis axisX = Axis.generateAxisFromRange(1,annualReportValues.size(),(float)1);
-        axisX.setName("Mês");
-        axisX.setMaxLabelChars(2);
-        //axisX.setAutoGenerated(false);
-        //axisX.setFormatter(formatter);
-        //axisX.setHasLines(true);
-        //axisX.setLineColor(Color.DKGRAY);
+        axisX.setMaxLabelChars(1);
+        axisX.setFormatter(axisValueFormatter);
         axisX.setTextColor(Color.BLACK);
-
-        /*Axis axisY = Axis.generateAxisFromRange(-1000,1000, (float)1);
-        axisY.setLineColor(Color.DKGRAY);
-        axisY.setTextColor(Color.BLACK);
-        axisY.setMaxLabelChars(4);*/
+        axisX.setTextSize(10);
 
         LineChartData data = new LineChartData();
         data.setAxisXBottom(axisX);
-        //data.setAxisYLeft(axisY);
         data.setLines(lines);
         lineChart.setLineChartData(data);
+        lineChart.setOnTouchListener(customTouchListener);
+
+        lineChartBitmap = Bitmap.createBitmap(lineChart.getWidth(), lineChart.getHeight(),
+                Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(lineChartBitmap);
+        lineChart.draw(canvas);
     }
 
     private void setActionBarCustomView(int layoutId) {
