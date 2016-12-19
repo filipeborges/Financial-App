@@ -51,12 +51,44 @@ public class Utilities {
         return year + "-" + month + "-" + day;
     }
 
-    public static String getPresentedDBDateFromActionBar(String actionBarDateText) {
+    //Return date on format: YYYY-MM-DD
+    public static String getDBDateFromActionBarDate(String actionBarDateText) {
         String defaultDay = "10";
         return String.format("%s-%s-%s",
                 actionBarDateText.substring(4),
                 Utilities.getDBMonthFromActionBar(actionBarDateText.substring(0,3)),
                 defaultDay);
+    }
+
+    public static String getMonthFromChartSelectedValue(float value) {
+        switch((int)value) {
+            case 1:
+                return "01";
+            case 2:
+                return "02";
+            case 3:
+                return "03";
+            case 4:
+                return "04";
+            case 5:
+                return "05";
+            case 6:
+                return "06";
+            case 7:
+                return "07";
+            case 8:
+                return "08";
+            case 9:
+                return "09";
+            case 10:
+                return "10";
+            case 11:
+                return "11";
+            case 12:
+                return "12";
+            default:
+                return "";
+        }
     }
 
     public static void sortAllAmountsList(List<String> allAmountsList,
@@ -99,9 +131,9 @@ public class Utilities {
                 break;
         }
 
-        if(!allAmountsList.isEmpty()) {
+        //if(!allAmountsList.isEmpty()) {
             allAmountsList.clear();
-        }
+        //}
 
         allAmountsList.addAll(incomeAmountsList);
         allAmountsList.addAll(expenseAmountsList);

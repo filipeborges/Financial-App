@@ -165,15 +165,7 @@ public class MainActivity extends AppCompatActivity {
         rightDrawerListView = findViewById(R.id.activityMainRightDrawerListView);
         graphicBalanceImgView = (ImageView)findViewById(R.id.bottomBarGraphicImgView);
 
-        String nowDate = Utilities.getNowDateForDB();
-        selectedDateForQuery[YEAR] = Integer.parseInt(nowDate.substring(0,4));
-        selectedDateForQuery[MONTH] = Integer.parseInt(nowDate.substring(5,7)) - 1;
-        selectedDateForQuery[DAY] = CalendarActivity.DEFAULT_DAY;
-
-        actionBarDrawerToggle = getActionBarDrawerToogle();
-        drawerLayout.setDrawerListener(actionBarDrawerToggle);
         setSwipeToDismissAmountsListView(R.id.amountsListView);
-
         setActionBarCustomView(R.layout.action_bar_text_layout);
 
         actionBarTextView = (TextView)findViewById(R.id.actionBarTextView);
@@ -186,9 +178,26 @@ public class MainActivity extends AppCompatActivity {
         setAmountListViewItems(R.id.amountsListView, allAmountsList,
                 R.layout.amount_list_view_item_layout, R.id.amountItemTextView);
 
-        configureActBarDrawToogleOptions();
         configureAddMenuOptions();
         activity = this;
+
+        //Specific code if activity was not started from ChartActivity.
+        boolean isFromChartAct = getIntent().getBooleanExtra(ChartActivity.
+                CHART_ACTIVITY_REQUEST, false);
+        actionBarDrawerToggle = getActionBarDrawerToogle(isFromChartAct);
+        drawerLayout.setDrawerListener(actionBarDrawerToggle);
+
+        String nowDate;
+        if(isFromChartAct) {
+            nowDate = getIntent().getStringExtra(ChartActivity.CHART_ACTIVITY_DB_DATE);
+        } else {
+            nowDate = Utilities.getNowDateForDB();
+            configureActBarDrawToogleOptions();
+        }
+        //TODO: Verify null point exception on this line, when started from ChartActivity
+        selectedDateForQuery[YEAR] = Integer.parseInt(nowDate.substring(0,4));
+        selectedDateForQuery[MONTH] = Integer.parseInt(nowDate.substring(5,7)) - 1;
+        selectedDateForQuery[DAY] = CalendarActivity.DEFAULT_DAY;
     }
 
     @Override
@@ -236,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 default:
-                    setAmountsSaved(Utilities.getNowDateForDB());
+                    setAmountsSaved(Utilities.getDBDateFromActionBarDate(actionBarFormattedDate));
             }
         } else {
             showAlertDialogWithOk(getString(R.string.db_cant_write),
@@ -307,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
         graphicBalanceImgView.setImageResource(Utilities.getBalanceGraphicResourceId());
     }
 
-    public ActionBarDrawerToggle getActionBarDrawerToogle() {
+    public ActionBarDrawerToggle getActionBarDrawerToogle(boolean isCommingFromChartAct) {
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
                 R.string.open_drawer, R.string.close_drawer) {
             @Override
@@ -326,6 +335,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else {
                     if(slideOffset > 0.1) {
+                        //TODO: Find a way to hide ADDBUTTON.
                         menu.findItem(R.id.addButton).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
                         actionBarTextView.setText(getString(R.string.menu_action_bar_title));
                     }
@@ -337,6 +347,10 @@ public class MainActivity extends AppCompatActivity {
                 super.onDrawerSlide(drawerView, slideOffset);
             }
         };
+
+        if(isCommingFromChartAct) {
+            actionBarDrawerToggle.setDrawerIndicatorEnabled(false);
+        }
 
         return actionBarDrawerToggle;
     }
@@ -389,6 +403,8 @@ public class MainActivity extends AppCompatActivity {
     //Must be in format: YYYY-MM-DD
     public void setAmountsSaved(String date) {
         List<String> queryAmountsList = dbAccess.getSpecificDateAmounts(date);
+        expenseAmountsList.clear();
+        incomeAmountsList.clear();
 
         if(queryAmountsList.size() > 0) {
             for(int i = 0; i < queryAmountsList.size(); i++) {
@@ -484,7 +500,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onDismiss(ListView listView, int[] reverseSortedPositions) {
                         int incomeElementsMaxPosition = allAmountsList.size() - expenseAmountsList.size();
                         String amountToRemove = allAmountsList.get(reverseSortedPositions[0]);
-                        dbAccess.removeAmount(amountToRemove, Utilities.getPresentedDBDateFromActionBar(actionBarFormattedDate));
+                        dbAccess.removeAmount(amountToRemove, Utilities.getDBDateFromActionBarDate(actionBarFormattedDate));
 
                         //If the element dismissed is Income.
                         if(reverseSortedPositions[0] < incomeElementsMaxPosition) {

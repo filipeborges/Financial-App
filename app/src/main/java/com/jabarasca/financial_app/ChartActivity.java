@@ -14,12 +14,8 @@ import android.util.SparseArray;
 import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jabarasca.financial_app.dao.DatabaseAccess;
 import com.jabarasca.financial_app.utils.Utilities;
@@ -33,6 +29,7 @@ import java.util.List;
 
 import lecho.lib.hellocharts.formatter.AxisValueFormatter;
 import lecho.lib.hellocharts.formatter.LineChartValueFormatter;
+import lecho.lib.hellocharts.listener.LineChartOnValueSelectListener;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.model.Line;
@@ -43,9 +40,11 @@ import lecho.lib.hellocharts.view.LineChartView;
 public class ChartActivity extends AppCompatActivity {
 
     public static final String CHART_ACTIVITY_REQUEST = "chartActivity";
+    public static final String CHART_ACTIVITY_DB_DATE = "dbDateChartActivity";
     public static final String CURRENT_DATE = "currentDate";
     public static final String CURRENT_YEAR = "currentYear";
 
+    private Menu menu;
     private ChartActivity activity;
     private DatabaseAccess dbAccess;
     private Handler handler = new Handler(Looper.getMainLooper());
@@ -73,24 +72,17 @@ public class ChartActivity extends AppCompatActivity {
         }
     };
 
-    private Runnable longPressRunnable = new Runnable() {
+    private final float INVALID_CHART_VALUE = (float)-1.0;
+    private float chartSelectedValue = INVALID_CHART_VALUE;
+
+    private LineChartOnValueSelectListener chartValueSelectListener = new LineChartOnValueSelectListener() {
         @Override
-        public void run() {
-            Toast.makeText(getApplicationContext(), "LongPress", Toast.LENGTH_SHORT).show();
+        public void onValueSelected(int lineIndex, int pointIndex, PointValue value) {
+            chartSelectedValue = value.getX();
         }
-    };
-    private View.OnTouchListener customTouchListener = new View.OnTouchListener() {
         @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            int pixelColor = lineChartBitmap.getPixel((int)event.getX(), (int)event.getY());
-            int eventAction = event.getActionMasked();
-            if(eventAction == MotionEvent.ACTION_DOWN &&
-                    pixelColor == getResources().getColor(R.color.chart_line_point)) {
-                handler.postDelayed(longPressRunnable, 1000);
-            } else if(eventAction == MotionEvent.ACTION_MOVE || eventAction == MotionEvent.ACTION_UP) {
-                handler.removeCallbacks(longPressRunnable);
-            }
-            return false;
+        public void onValueDeselected() {
+            chartSelectedValue = INVALID_CHART_VALUE;
         }
     };
 
@@ -117,13 +109,16 @@ public class ChartActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult (int requestCode, int resultCode, Intent intent) {
-        //TODO: Verify default value from the intent.
-        int selectedYear = intent.getIntExtra(CalendarActivity.SELECTED_DATE_YEAR, 0);
-        actionBarTextView.setText(
-                String.format(getResources().getString(R.string.chart_activ_action_bar_title),
-                        selectedYear)
-        );
-        configureLineChart(dbAccess.getAnnualReportValues(selectedYear));
+        if(resultCode == RESULT_OK) {
+            int selectedYear = intent.getIntExtra(CalendarActivity.SELECTED_DATE_YEAR, 0);
+            actionBarTextView.setText(
+                    String.format(getResources().getString(R.string.chart_activ_action_bar_title),
+                            selectedYear)
+            );
+            configureLineChart(dbAccess.getAnnualReportValues(selectedYear));
+        } else {
+            finish();
+        }
     }
 
     @Override
@@ -143,44 +138,47 @@ public class ChartActivity extends AppCompatActivity {
         Intent intent = new Intent(activity, CalendarActivity.class);
         intent.putExtra(ChartActivity.CHART_ACTIVITY_REQUEST, true);
         intent.putExtra(ChartActivity.CURRENT_YEAR, currentYear);
+
         activity.startActivityForResult(intent, CalendarActivity.CALENDAR_ACTIVITY_ID_REQUEST);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.activity_chart_action_bar_items, menu);
-        //this.menu = menu;
-        return super.onCreateOptionsMenu(menu);
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.activity_chart_action_bar_items, menu);
+//        return super.onCreateOptionsMenu(menu);
+//    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.calendarButton) {
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        if(item.getItemId() == R.id.calendarButton) {
+//            return true;
+//        } else {
+//            return super.onOptionsItemSelected(item);
+//        }
+//    }
 
+    //TODO: This method needs to be called on onStart(), because when the user add or delete
+    //some amount on the MainActivity initiated from ChartActivity and press back button,
+    //the chart needs to be updated.
     private void configureLineChart(SparseArray<Float> annualReportValues) {
-        LineChartView lineChart = (LineChartView)findViewById(R.id.lineChartView);
-
         List<PointValue> amountValues = new ArrayList<>();
         for(int i = 1; i <= annualReportValues.size(); i++) {
-            amountValues.add(new PointValue(i, annualReportValues.get(i)));
+            if(!Float.isNaN(annualReportValues.get(i))) {
+                //Elements must be added on month crescent order ie. add(1,), add(2,), add(3,)...
+                amountValues.add(new PointValue(i, annualReportValues.get(i)));
+            }
         }
-
         Line amountLine = new Line(amountValues).setColor(getResources().
                 getColor(R.color.chart_line_color));
-        amountLine.setHasLabels(true);
+        amountLine.setHasLines(true);
         amountLine.setHasLabelsOnlyForSelected(true);
         amountLine.setFormatter(lineLabelFormatter);
         amountLine.setPointColor(getResources().getColor(R.color.chart_line_point));
         List<Line> lines = new ArrayList<>();
         lines.add(amountLine);
 
-        Axis axisX = Axis.generateAxisFromRange(1,annualReportValues.size(),(float)1);
+        Axis axisX = Axis.generateAxisFromRange(1,12,(float)1);
         axisX.setMaxLabelChars(1);
         axisX.setFormatter(axisValueFormatter);
         axisX.setTextColor(Color.BLACK);
@@ -189,8 +187,12 @@ public class ChartActivity extends AppCompatActivity {
         LineChartData data = new LineChartData();
         data.setAxisXBottom(axisX);
         data.setLines(lines);
+
+        LineChartView lineChart = (LineChartView)findViewById(R.id.lineChartView);
+        lineChart.setZoomEnabled(false);
+        lineChart.setValueSelectionEnabled(true);
         lineChart.setLineChartData(data);
-        lineChart.setOnTouchListener(customTouchListener);
+        lineChart.setOnValueTouchListener(chartValueSelectListener);
 
         lineChartBitmap = Bitmap.createBitmap(lineChart.getWidth(), lineChart.getHeight(),
                 Bitmap.Config.ARGB_8888);

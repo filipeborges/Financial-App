@@ -146,6 +146,7 @@ public class DatabaseAccess {
         return Utilities.getLongValueFromDBDate(dbReturnedDate);
     }
 
+    //TODO: Return NaN on nothing returned from DB.
     public SparseArray<Float> getAnnualReportValues(int year) {
         SparseArray<Float> annualReportValues = new SparseArray<>();
         String sql = "SELECT %s, STRFTIME('%%m', %s) AS month FROM %s " +
@@ -153,8 +154,9 @@ public class DatabaseAccess {
         sql = String.format(sql, AMOUNT_COLUMN, DATE_COLUMN, AMOUNTS_TABLE, DATE_COLUMN);
 
         for(int i = 1; i <= 12; i++) {
-            annualReportValues.put(i, (float)0);
+            annualReportValues.put(i, Float.NaN);
         }
+
         Cursor resultCur = db.rawQuery(sql, new String[]{String.valueOf(year)});
         //If cursor has result.
         if(resultCur.moveToFirst()) {
@@ -162,7 +164,9 @@ public class DatabaseAccess {
             for(int i = 0; i < totalRows; i ++) {
                 int actualMonth = Integer.parseInt(resultCur.getString(1));
                 float actualAmount = resultCur.getFloat(0);
-                actualAmount += annualReportValues.get(actualMonth);
+                if(!Float.isNaN(annualReportValues.get(actualMonth))) {
+                    actualAmount += annualReportValues.get(actualMonth);
+                }
                 annualReportValues.put(actualMonth, actualAmount);
                 resultCur.moveToNext();
             }
