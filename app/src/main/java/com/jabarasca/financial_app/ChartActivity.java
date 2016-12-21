@@ -1,5 +1,6 @@
 package com.jabarasca.financial_app;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -8,12 +9,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -43,7 +46,13 @@ public class ChartActivity extends AppCompatActivity {
     public static final String CHART_ACTIVITY_DB_DATE = "dbDateChartActivity";
     public static final String CURRENT_DATE = "currentDate";
     public static final String CURRENT_YEAR = "currentYear";
+    public static final int CHART_ACTIVITY_CODE = 2;
 
+    private final int INVALID_CHART_VALUE = -1;
+
+    private int selectedYear;
+    private int chartSelectedMonth = INVALID_CHART_VALUE;
+    private MenuItem detailButton;
     private Menu menu;
     private ChartActivity activity;
     private DatabaseAccess dbAccess;
@@ -72,19 +81,26 @@ public class ChartActivity extends AppCompatActivity {
         }
     };
 
-    private final float INVALID_CHART_VALUE = (float)-1.0;
-    private float chartSelectedValue = INVALID_CHART_VALUE;
-
     private LineChartOnValueSelectListener chartValueSelectListener = new LineChartOnValueSelectListener() {
         @Override
         public void onValueSelected(int lineIndex, int pointIndex, PointValue value) {
-            chartSelectedValue = value.getX();
+            chartSelectedMonth = (int)value.getX() - 1;
+            updateActionBar();
         }
         @Override
         public void onValueDeselected() {
-            chartSelectedValue = INVALID_CHART_VALUE;
+            chartSelectedMonth = INVALID_CHART_VALUE;
+            updateActionBar();
         }
     };
+
+    private void updateActionBar() {
+        if(chartSelectedMonth != INVALID_CHART_VALUE) {
+            detailButton.setVisible(true);
+        } else {
+            detailButton.setVisible(false);
+        }
+    }
 
     private LineChartValueFormatter lineLabelFormatter = new LineChartValueFormatter() {
         @Override
@@ -110,7 +126,7 @@ public class ChartActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult (int requestCode, int resultCode, Intent intent) {
         if(resultCode == RESULT_OK) {
-            int selectedYear = intent.getIntExtra(CalendarActivity.SELECTED_DATE_YEAR, 0);
+            selectedYear = intent.getIntExtra(Utilities.KEY_INTENT_YEAR, 0);
             actionBarTextView.setText(
                     String.format(getResources().getString(R.string.chart_activ_action_bar_title),
                             selectedYear)
@@ -139,65 +155,91 @@ public class ChartActivity extends AppCompatActivity {
         intent.putExtra(ChartActivity.CHART_ACTIVITY_REQUEST, true);
         intent.putExtra(ChartActivity.CURRENT_YEAR, currentYear);
 
-        activity.startActivityForResult(intent, CalendarActivity.CALENDAR_ACTIVITY_ID_REQUEST);
+        activity.startActivityForResult(intent, CalendarActivity.CALENDAR_ACTIVITY_CODE);
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.activity_chart_action_bar_items, menu);
-//        return super.onCreateOptionsMenu(menu);
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.activity_chart_action_bar_items, menu);
+        detailButton = menu.findItem(R.id.detailButton);
+        detailButton.setVisible(false);
+        this.menu = menu;
+        return super.onCreateOptionsMenu(menu);
+    }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        if(item.getItemId() == R.id.calendarButton) {
-//            return true;
-//        } else {
-//            return super.onOptionsItemSelected(item);
-//        }
-//    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.detailButton) {
+            Intent intent = new Intent();
+            intent.putExtra(Utilities.KEY_INTENT_DAY, CalendarActivity.DEFAULT_DAY);
+            intent.putExtra(Utilities.KEY_INTENT_MONTH, chartSelectedMonth);
+            intent.putExtra(Utilities.KEY_INTENT_YEAR, selectedYear);
+            setResult(RESULT_OK, intent);
+            finish();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
 
-    //TODO: This method needs to be called on onStart(), because when the user add or delete
-    //some amount on the MainActivity initiated from ChartActivity and press back button,
-    //the chart needs to be updated.
+    //TODO: Chart draw needs two or more points. Need to display some message when has one or zero
+    //points
     private void configureLineChart(SparseArray<Float> annualReportValues) {
         List<PointValue> amountValues = new ArrayList<>();
+        int numberOfPointsToDraw = 0;
+
         for(int i = 1; i <= annualReportValues.size(); i++) {
             if(!Float.isNaN(annualReportValues.get(i))) {
                 //Elements must be added on month crescent order ie. add(1,), add(2,), add(3,)...
                 amountValues.add(new PointValue(i, annualReportValues.get(i)));
+                numberOfPointsToDraw++;
             }
         }
-        Line amountLine = new Line(amountValues).setColor(getResources().
-                getColor(R.color.chart_line_color));
-        amountLine.setHasLines(true);
-        amountLine.setHasLabelsOnlyForSelected(true);
-        amountLine.setFormatter(lineLabelFormatter);
-        amountLine.setPointColor(getResources().getColor(R.color.chart_line_point));
-        List<Line> lines = new ArrayList<>();
-        lines.add(amountLine);
 
-        Axis axisX = Axis.generateAxisFromRange(1,12,(float)1);
-        axisX.setMaxLabelChars(1);
-        axisX.setFormatter(axisValueFormatter);
-        axisX.setTextColor(Color.BLACK);
-        axisX.setTextSize(10);
+        if(numberOfPointsToDraw >= 2) {
+            Line amountLine = new Line(amountValues).setColor(getResources().
+                    getColor(R.color.chart_line_color));
+            amountLine.setHasLines(true);
+            amountLine.setHasLabelsOnlyForSelected(true);
+            amountLine.setFormatter(lineLabelFormatter);
+            amountLine.setPointColor(getResources().getColor(R.color.chart_line_point));
+            List<Line> lines = new ArrayList<>();
+            lines.add(amountLine);
 
-        LineChartData data = new LineChartData();
-        data.setAxisXBottom(axisX);
-        data.setLines(lines);
+            Axis axisX = Axis.generateAxisFromRange(1,12,(float)1);
+            axisX.setMaxLabelChars(1);
+            axisX.setFormatter(axisValueFormatter);
+            axisX.setTextColor(Color.BLACK);
+            axisX.setTextSize(Axis.DEFAULT_TEXT_SIZE_SP);
 
-        LineChartView lineChart = (LineChartView)findViewById(R.id.lineChartView);
-        lineChart.setZoomEnabled(false);
-        lineChart.setValueSelectionEnabled(true);
-        lineChart.setLineChartData(data);
-        lineChart.setOnValueTouchListener(chartValueSelectListener);
+            LineChartData data = new LineChartData();
+            data.setAxisXBottom(axisX);
+            data.setLines(lines);
 
-        lineChartBitmap = Bitmap.createBitmap(lineChart.getWidth(), lineChart.getHeight(),
-                Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(lineChartBitmap);
-        lineChart.draw(canvas);
+            LineChartView lineChart = (LineChartView)findViewById(R.id.lineChartView);
+            lineChart.setZoomEnabled(false);
+            lineChart.setValueSelectionEnabled(true);
+            lineChart.setLineChartData(data);
+            lineChart.setOnValueTouchListener(chartValueSelectListener);
+
+            lineChartBitmap = Bitmap.createBitmap(lineChart.getWidth(), lineChart.getHeight(),
+                    Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(lineChartBitmap);
+            lineChart.draw(canvas);
+        } else {
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(ChartActivity.this);
+            alertDialog.setPositiveButton(getResources().getString(R.string.positive_button_message),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            setResult(RESULT_CANCELED);
+                            finish();
+                        }
+                    });
+            alertDialog.setMessage(getString(R.string.chart_not_enough_values));
+            alertDialog.show();
+        }
     }
 
     private void setActionBarCustomView(int layoutId) {

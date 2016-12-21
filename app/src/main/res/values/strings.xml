@@ -4,6 +4,7 @@
     <string name="open_drawer">Aberto</string>
     <string name="close_drawer">Fechado</string>
 
+    <string name="action_bar_month_detail">Detalhes</string>
     <string name="action_bar_add_title">Adicionar</string>
     <string name="add_menu_action_bar_title">Adicionar</string>
     <string name="menu_action_bar_title">Menu</string>
@@ -21,6 +22,7 @@
     <string name="positive_button_message">@android:string/ok</string>
     <string name="balance_label">Total:</string>
     <string name="out_of_bounds_label">Infinito...</string>
+    <string name="chart_not_enough_values">É necessário que você tenha acompanhado suas despezas por dois meses ou mais.</string>
 
     <string name="db_cant_write">Erro! Libere espaço no celular para salvar!</string>
     <string name="title_activity_calendar">CalendarActivity</string>

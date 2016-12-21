@@ -9,15 +9,13 @@ import android.widget.Button;
 import android.widget.DatePicker;
 
 import com.jabarasca.financial_app.dao.DatabaseAccess;
+import com.jabarasca.financial_app.utils.Utilities;
 
 public class CalendarActivity extends Activity {
 
     private DatePicker datePicker;
     private DatabaseAccess dbAccess;
-    public static final int CALENDAR_ACTIVITY_ID_REQUEST = 1;
-    public static final String SELECTED_DATE_YEAR = "SELECTED_DATE_YEAR";
-    public static final String SELECTED_DATE_MONTH = "SELECTED_DATE_MONTH";
-    public static final String SELECTED_DATE_DAY = "SELECTED_DATE_DAY";
+    public static final int CALENDAR_ACTIVITY_CODE = 1;
     public static final int DEFAULT_DAY = 10;
 
     public static final int DATE_PICKER_MAX_VALUE = 1;
@@ -30,10 +28,11 @@ public class CalendarActivity extends Activity {
         public void onClick(View v) {
             Intent intent = new Intent();
             if(!isChartActivityRequest) {
-                intent.putExtra(SELECTED_DATE_MONTH, datePicker.getMonth());
-                intent.putExtra(SELECTED_DATE_DAY, DEFAULT_DAY); //Default day to meet the format: YYYY-MM-DD
+                intent.putExtra(Utilities.KEY_INTENT_MONTH, datePicker.getMonth());
+                //Default day to meet the format: YYYY-MM-DD
+                intent.putExtra(Utilities.KEY_INTENT_DAY, DEFAULT_DAY);
             }
-            intent.putExtra(SELECTED_DATE_YEAR, datePicker.getYear());
+            intent.putExtra(Utilities.KEY_INTENT_YEAR, datePicker.getYear());
             setResult(RESULT_OK, intent);
             finish();
         }

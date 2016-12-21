@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
                 case CHART_ANALYSIS:
                     Intent intent = new Intent(activity, ChartActivity.class);
                     intent.putExtra(ChartActivity.CURRENT_DATE, actionBarFormattedDate);
-                    activity.startActivity(intent);
+                    activity.startActivityForResult(intent, ChartActivity.CHART_ACTIVITY_CODE);
                     break;
             }
         }
@@ -202,21 +202,23 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult (int requestCode, int resultCode, Intent data) {
-        switch(requestCode) {
-            case CalendarActivity.CALENDAR_ACTIVITY_ID_REQUEST:
-                activityRequestCode = CalendarActivity.CALENDAR_ACTIVITY_ID_REQUEST;
-                if(data != null) {
+        activityRequestCode = 0;
+        if(resultCode == RESULT_OK) {
+            activityRequestCode = requestCode;
+            switch(requestCode) {
+                case ChartActivity.CHART_ACTIVITY_CODE:
+                    drawerLayout.closeDrawers();
+                case CalendarActivity.CALENDAR_ACTIVITY_CODE:
                     selectedDateForQuery[CONTAINS_DATA] = 1;
-                    selectedDateForQuery[YEAR] = data.getIntExtra(CalendarActivity.
-                            SELECTED_DATE_YEAR, 0);
-                    selectedDateForQuery[MONTH] = data.getIntExtra(CalendarActivity.
-                            SELECTED_DATE_MONTH, 0);
-                    selectedDateForQuery[DAY] = data.getIntExtra(CalendarActivity.
-                            SELECTED_DATE_DAY, 0);
+                    selectedDateForQuery[YEAR] = data.getIntExtra(Utilities.KEY_INTENT_YEAR, 0);
+                    selectedDateForQuery[MONTH] = data.getIntExtra(Utilities.KEY_INTENT_MONTH, 0);
+                    selectedDateForQuery[DAY] = data.getIntExtra(Utilities.KEY_INTENT_DAY, 0);
                     incomeAmountsList.clear();
                     expenseAmountsList.clear();
-                }
-                break;
+                    break;
+            }
+        } else if(requestCode == ChartActivity.CHART_ACTIVITY_CODE){
+            drawerLayout.closeDrawers();
         }
     }
 
@@ -227,7 +229,8 @@ public class MainActivity extends AppCompatActivity {
         dbAccess = DatabaseAccess.getDBAcessInstance(getApplicationContext());
         if(dbAccess.databaseCanWrite()) {
             switch(activityRequestCode) {
-                case CalendarActivity.CALENDAR_ACTIVITY_ID_REQUEST:
+                case ChartActivity.CHART_ACTIVITY_CODE:
+                case CalendarActivity.CALENDAR_ACTIVITY_CODE:
                     if(selectedDateForQuery[CONTAINS_DATA] == 1) {
                         //TODO: Move this format date to Utilities class.
                         setAmountsSaved(String.format("%s-%s-%s",
@@ -479,7 +482,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(activity, CalendarActivity.class);
                 activity.startActivityForResult(intent, CalendarActivity
-                        .CALENDAR_ACTIVITY_ID_REQUEST);
+                        .CALENDAR_ACTIVITY_CODE);
             }
         });
 
