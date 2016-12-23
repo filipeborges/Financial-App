@@ -8,12 +8,12 @@
     <string name="action_bar_add_title">Adicionar</string>
     <string name="add_menu_action_bar_title">Adicionar</string>
     <string name="menu_action_bar_title">Menu</string>
-    <string name="chart_activ_action_bar_title">Análise - %d</string>
+    <string name="chart_activ_action_bar_title">Acompanhamento - %d</string>
 
     <string name="add_menu_option_1">Despesa</string>
     <string name="add_menu_option_2">Renda</string>
 
-    <string name="actbardrawtoggle_menu_option_1">Desempenho Anual</string>
+    <string name="actbardrawtoggle_menu_option_1">Acompanhamento Anual</string>
 
     <string name="expense_title">Adicionar Despesa</string>
     <string name="income_title">Adicionar Renda</string>

@@ -338,12 +338,11 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else {
                     if(slideOffset > 0.1) {
-                        //TODO: Find a way to hide ADDBUTTON.
-                        menu.findItem(R.id.addButton).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+                        menu.findItem(R.id.addButton).setVisible(false);
                         actionBarTextView.setText(getString(R.string.menu_action_bar_title));
                     }
                     else if(slideOffset <= 0.1) {
-                        menu.findItem(R.id.addButton).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+                        menu.findItem(R.id.addButton).setVisible(true);
                         actionBarTextView.setText(actionBarFormattedDate);
                     }
                 }
@@ -367,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
         actBarDrawToggleOptionsList.add(getString(R.string.actbardrawtoggle_menu_option_1));
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
-                R.layout.menu_item_layout, R.id.menuItemTextView,
+                R.layout.left_drawer_menu_item_layout, R.id.leftMenuItemTextView,
                 actBarDrawToggleOptionsList);
 
         leftDrawListView.setAdapter(adapter);
@@ -382,12 +381,12 @@ public class MainActivity extends AppCompatActivity {
         rightDrawListView.setOnItemClickListener(addMenuItemListener);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
-                R.layout.menu_item_layout, R.id.menuItemTextView, addMenuOptionsList) {
+                R.layout.right_drawer_menu_item_layout, R.id.rightMenuItemTextView, addMenuOptionsList) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 if(convertView == null) {
                     LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    convertView = inflater.inflate(R.layout.menu_item_layout, parent, false);
+                    convertView = inflater.inflate(R.layout.right_drawer_menu_item_layout, parent, false);
                 }
                 switch (position) {
                     case EXPENSE_LISTVIEW_POSITION:

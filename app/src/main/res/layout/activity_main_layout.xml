@@ -70,14 +70,14 @@
     <!-- Left Drawer ListView -->
     <ListView android:id="@+id/activityMainLeftDrawerListView"
         android:layout_width="240dp"
-        android:layout_height="match_parent"
+        android:layout_height="50dp"
         android:layout_gravity="start"
         style="@style/drawerStyle"/>
 
     <!-- Right Drawer ListView -->
     <ListView android:id="@+id/activityMainRightDrawerListView"
         android:layout_width="240dp"
-        android:layout_height="match_parent"
+        android:layout_height="100dp"
         android:layout_gravity="end"
         style="@style/drawerStyle"/>
 

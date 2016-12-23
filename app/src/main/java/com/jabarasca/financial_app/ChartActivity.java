@@ -238,6 +238,7 @@ public class ChartActivity extends AppCompatActivity {
                         }
                     });
             alertDialog.setMessage(getString(R.string.chart_not_enough_values));
+            alertDialog.setTitle(R.string.actbardrawtoggle_menu_option_1);
             alertDialog.show();
         }
     }
