@@ -20,6 +20,11 @@ public class Utilities {
     public static final String KEY_INTENT_MONTH = "com.jabarasca.financial_app.MONTH";
     public static final String KEY_INTENT_YEAR = "com.jabarasca.financial_app.YEAR";
 
+    public static String formatDate(int datePickerDay, int datePickerMonth, int datePickerYear) {
+        return String.format("%d-%s-%s", datePickerYear,
+                Utilities.getCalendarMonthForDB(datePickerMonth), String.valueOf(datePickerDay));
+    }
+
     public static String getNowDateForActionBar() {
         Calendar actualDate = Calendar.getInstance();
         String actualMonth = Utilities.getCalendarMonthForActionBar(actualDate.get(Calendar.MONTH));
@@ -134,9 +139,7 @@ public class Utilities {
                 break;
         }
 
-        //if(!allAmountsList.isEmpty()) {
-            allAmountsList.clear();
-        //}
+        allAmountsList.clear();
 
         allAmountsList.addAll(incomeAmountsList);
         allAmountsList.addAll(expenseAmountsList);

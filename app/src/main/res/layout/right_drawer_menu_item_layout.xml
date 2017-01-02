@@ -19,5 +19,5 @@
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="90dp"
         android:id="@+id/rightMenuItemTextView"
-        style="@style/menuItemTextView" />
+        style="@style/drawerMenuItemTextView" />
 </RelativeLayout>

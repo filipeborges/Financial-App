@@ -55,14 +55,10 @@ public class CalendarActivity extends Activity {
         if(isChartActivityRequest) {
             datePicker.findViewById(Resources.getSystem().getIdentifier("month", "id", "android"))
                     .setVisibility(View.GONE);
-            //TODO: Verify default value from the intent.
             int currentYear = getIntent().getIntExtra(ChartActivity.CURRENT_YEAR, 0);
             //Only the year is important.
             datePicker.updateDate(currentYear, 0, DEFAULT_DAY);
         }
-
-        //TODO: Maybe will be needed to receive presented date from MainActivity,
-        // to set the datePicker to correct position with presented date.
 
         datePicker.setMinDate(dbAccess.getDatePickerValue(DATE_PICKER_MIN_VALUE));
         datePicker.setMaxDate(System.currentTimeMillis());

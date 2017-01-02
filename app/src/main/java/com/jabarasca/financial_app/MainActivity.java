@@ -74,32 +74,30 @@ public class MainActivity extends AppCompatActivity {
                 //"alertTitle" -> name, "id" -> defType, "android" -> package.
                 TextView alertDialogTitle = (TextView)((Dialog) dialog).findViewById(getResources().getIdentifier("alertTitle", "id", "android"));
                 double amount;
+                List<String> listToAdd;
+                int typeOfSort;
+                String format = "%.2f";
 
                 //If its a income amount.
                 if(alertDialogTitle.getText().equals(getString(R.string.income_title))) {
                     amount = Double.parseDouble(amountEditText.getText().toString());
-                    String amountString = String.format("+%.2f", amount);
-                    //TODO: Move this format date to Utilities class.
-                    dbAccess.saveAmount(amountString, String.format("%d-%s-%d",
-                            selectedDateForQuery[YEAR],
-                            Utilities.getCalendarMonthForDB(selectedDateForQuery[MONTH]),
-                            selectedDateForQuery[DAY])
-                    );
-                    incomeAmountsList.add(amountString);
-                    Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList,
-                            expenseAmountsList, Utilities.INCOME_SORT);
+                    format = "+" + format;
+                    listToAdd = incomeAmountsList;
+                    typeOfSort = Utilities.INCOME_SORT;
                 } else {
                     amount = Double.parseDouble(amountEditText.getText().toString()) * -1;
-                    String amountString = String.format("%.2f", amount);
-                    dbAccess.saveAmount(amountString, String.format("%d-%s-%d",
-                            selectedDateForQuery[YEAR],
-                            Utilities.getCalendarMonthForDB(selectedDateForQuery[MONTH]),
-                            selectedDateForQuery[DAY])
-                    );
-                    expenseAmountsList.add(amountString);
-                    Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList,
-                            expenseAmountsList, Utilities.EXPENSE_SORT);
+                    listToAdd = expenseAmountsList;
+                    typeOfSort = Utilities.EXPENSE_SORT;
                 }
+
+                String amountString = String.format(format, amount);
+                dbAccess.saveAmount(amountString, Utilities.formatDate(
+                        selectedDateForQuery[DAY], selectedDateForQuery[MONTH],
+                        selectedDateForQuery[YEAR])
+                );
+                listToAdd.add(amountString);
+                Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList,
+                        expenseAmountsList, typeOfSort);
 
                 ListView listView = (ListView) findViewById(R.id.amountsListView);
                 ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();

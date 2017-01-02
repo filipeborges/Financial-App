@@ -146,8 +146,7 @@ public class DatabaseAccess {
         return Utilities.getLongValueFromDBDate(dbReturnedDate);
     }
 
-    //TODO: Return NaN on nothing returned from DB.
-    public SparseArray<Float> getAnnualReportValues(int year) {
+    public SparseArray<Float> getGraphicAnalysisValues(int year) {
         SparseArray<Float> annualReportValues = new SparseArray<>();
         String sql = "SELECT %s, STRFTIME('%%m', %s) AS month FROM %s " +
                 "WHERE STRFTIME('%%Y', %s) = ? ORDER BY month";

@@ -131,7 +131,7 @@ public class ChartActivity extends AppCompatActivity {
                     String.format(getResources().getString(R.string.chart_activ_action_bar_title),
                             selectedYear)
             );
-            configureLineChart(dbAccess.getAnnualReportValues(selectedYear));
+            configureLineChart(dbAccess.getGraphicAnalysisValues(selectedYear));
         } else {
             finish();
         }
@@ -183,8 +183,6 @@ public class ChartActivity extends AppCompatActivity {
         }
     }
 
-    //TODO: Chart draw needs two or more points. Need to display some message when has one or zero
-    //points
     private void configureLineChart(SparseArray<Float> annualReportValues) {
         List<PointValue> amountValues = new ArrayList<>();
         int numberOfPointsToDraw = 0;
