@@ -52,8 +52,8 @@ public class MainActivity extends AppCompatActivity {
     public List<String> incomeAmountsList = new ArrayList<String>();
     public List<String> allAmountsList = new ArrayList<String>();
     public String OUT_OF_BOUNDS_LABEL = null;
-    private final int EXPENSE_LISTVIEW_POSITION = 0;
-    private final int INCOME_LISTVIEW_POSITION = 1;
+    private final int EXPENSE_LISTVIEW_POSITION = 0, INCOME_LISTVIEW_POSITION = 1;
+    private final int ANNUAL_ANALYSIS_POSITION = 0;
     private DatabaseAccess dbAccess;
     private int activityRequestCode = 0;
     private int[] selectedDateForQuery = new int[4];
@@ -114,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
             String title;
 
-            //TODO: Move the constants positions to local variables.
             switch (position) {
                 case EXPENSE_LISTVIEW_POSITION:
                     title = getString(R.string.expense_title);
@@ -192,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
             nowDate = Utilities.getNowDateForDB();
             configureActBarDrawToogleOptions();
         }
-        //TODO: Verify null point exception on this line, when started from ChartActivity
+
         selectedDateForQuery[YEAR] = Integer.parseInt(nowDate.substring(0,4));
         selectedDateForQuery[MONTH] = Integer.parseInt(nowDate.substring(5,7)) - 1;
         selectedDateForQuery[DAY] = CalendarActivity.DEFAULT_DAY;
@@ -230,12 +229,9 @@ public class MainActivity extends AppCompatActivity {
                 case ChartActivity.CHART_ACTIVITY_CODE:
                 case CalendarActivity.CALENDAR_ACTIVITY_CODE:
                     if(selectedDateForQuery[CONTAINS_DATA] == 1) {
-                        //TODO: Move this format date to Utilities class.
-                        setAmountsSaved(String.format("%s-%s-%s",
-                                        String.valueOf(selectedDateForQuery[YEAR]),
-                                        Utilities.getCalendarMonthForDB(selectedDateForQuery[MONTH]),
-                                        String.valueOf(selectedDateForQuery[DAY])
-                                )
+                        setAmountsSaved(Utilities.formatDate(selectedDateForQuery[DAY],
+                                selectedDateForQuery[MONTH],
+                                selectedDateForQuery[YEAR])
                         );
                         actionBarFormattedDate = String.format("%s/%s",
                                 Utilities.getCalendarMonthForActionBar(selectedDateForQuery[MONTH]),
@@ -355,18 +351,30 @@ public class MainActivity extends AppCompatActivity {
         return actionBarDrawerToggle;
     }
 
-    //TODO: Sets menu icon dinamically.
     public void configureActBarDrawToogleOptions() {
         ListView leftDrawListView = (ListView)findViewById(R.id.activityMainLeftDrawerListView);
         leftDrawListView.setOnItemClickListener(actBarDrawToggleItemListener);
 
-        List<String> actBarDrawToggleOptionsList = new ArrayList<String>();
-        actBarDrawToggleOptionsList.add(getString(R.string.actbardrawtoggle_menu_option_1));
+        List<String> leftDrawerOptionsList = new ArrayList<String>();
+        leftDrawerOptionsList.add(getString(R.string.actbardrawtoggle_menu_option_1));
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
                 R.layout.left_drawer_menu_item_layout, R.id.leftMenuItemTextView,
-                actBarDrawToggleOptionsList);
-
+                leftDrawerOptionsList) {
+            @Override
+            public View getView (int position, View convertView, ViewGroup parent) {
+                if(convertView == null) {
+                    LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    convertView = inflater.inflate(R.layout.left_drawer_menu_item_layout, parent, false);
+                }
+                switch (position) {
+                    case ANNUAL_ANALYSIS_POSITION:
+                        ((ImageView)((RelativeLayout)convertView).getChildAt(0)).setImageResource(R.drawable.annual_analysis);
+                        break;
+                }
+                return super.getView(position, convertView, parent);
+            }
+        };
         leftDrawListView.setAdapter(adapter);
     }
 
