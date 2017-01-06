@@ -43,7 +43,6 @@ import lecho.lib.hellocharts.view.LineChartView;
 public class ChartActivity extends AppCompatActivity {
 
     public static final String CHART_ACTIVITY_REQUEST = "chartActivity";
-    public static final String CHART_ACTIVITY_DB_DATE = "dbDateChartActivity";
     public static final String CURRENT_DATE = "currentDate";
     public static final String CURRENT_YEAR = "currentYear";
     public static final int CHART_ACTIVITY_CODE = 2;

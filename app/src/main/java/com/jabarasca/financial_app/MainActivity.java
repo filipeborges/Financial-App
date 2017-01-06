@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private final int EXPENSE_LISTVIEW_POSITION = 0, INCOME_LISTVIEW_POSITION = 1;
     private final int ANNUAL_ANALYSIS_POSITION = 0;
     private DatabaseAccess dbAccess;
+    private boolean isAddButtonHided = false;
     private int activityRequestCode = 0;
     private int[] selectedDateForQuery = new int[4];
     private final int CONTAINS_DATA = 0;
@@ -184,37 +185,42 @@ public class MainActivity extends AppCompatActivity {
         actionBarDrawerToggle = getActionBarDrawerToogle(isFromChartAct);
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
 
-        String nowDate;
-        if(isFromChartAct) {
-            nowDate = getIntent().getStringExtra(ChartActivity.CHART_ACTIVITY_DB_DATE);
-        } else {
-            nowDate = Utilities.getNowDateForDB();
-            configureActBarDrawToogleOptions();
-        }
-
+        String nowDate = Utilities.getNowDateForDB();
+        //selectedDateForQuery must containt data in Calendar format.
         selectedDateForQuery[YEAR] = Integer.parseInt(nowDate.substring(0,4));
         selectedDateForQuery[MONTH] = Integer.parseInt(nowDate.substring(5,7)) - 1;
-        selectedDateForQuery[DAY] = CalendarActivity.DEFAULT_DAY;
+        selectedDateForQuery[DAY] = Integer.parseInt(nowDate.substring(8,10));
+
+        configureActBarDrawToogleOptions();
     }
 
     @Override
     protected void onActivityResult (int requestCode, int resultCode, Intent data) {
+        //TODO: Refactor this code - Duplicated code.
         activityRequestCode = 0;
         if(resultCode == RESULT_OK) {
             activityRequestCode = requestCode;
             switch(requestCode) {
                 case ChartActivity.CHART_ACTIVITY_CODE:
+                    selectedDateForQuery[CONTAINS_DATA] = 0;
                     drawerLayout.closeDrawers();
                 case CalendarActivity.CALENDAR_ACTIVITY_CODE:
                     selectedDateForQuery[CONTAINS_DATA] = 1;
                     selectedDateForQuery[YEAR] = data.getIntExtra(Utilities.KEY_INTENT_YEAR, 0);
                     selectedDateForQuery[MONTH] = data.getIntExtra(Utilities.KEY_INTENT_MONTH, 0);
                     selectedDateForQuery[DAY] = data.getIntExtra(Utilities.KEY_INTENT_DAY, 0);
+                    isAddButtonHided = !data.getBooleanExtra(Utilities.KEY_INTENT_COMPARE_DATE, false);
+                    if(data.getBooleanExtra(Utilities.KEY_INTENT_COMPARE_DATE, false)) {
+                        menu.findItem(R.id.addButton).setVisible(true);
+                    } else {
+                        menu.findItem(R.id.addButton).setVisible(false);
+                    }
                     incomeAmountsList.clear();
                     expenseAmountsList.clear();
                     break;
             }
         } else if(requestCode == ChartActivity.CHART_ACTIVITY_CODE){
+            selectedDateForQuery[CONTAINS_DATA] = 0;
             drawerLayout.closeDrawers();
         }
     }
@@ -332,11 +338,15 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else {
                     if(slideOffset > 0.1) {
-                        menu.findItem(R.id.addButton).setVisible(false);
+                        if(!isAddButtonHided) {
+                            menu.findItem(R.id.addButton).setVisible(false);
+                        }
                         actionBarTextView.setText(getString(R.string.menu_action_bar_title));
                     }
                     else if(slideOffset <= 0.1) {
-                        menu.findItem(R.id.addButton).setVisible(true);
+                        if(!isAddButtonHided) {
+                            menu.findItem(R.id.addButton).setVisible(true);
+                        }
                         actionBarTextView.setText(actionBarFormattedDate);
                     }
                 }
@@ -408,6 +418,7 @@ public class MainActivity extends AppCompatActivity {
         rightDrawListView.setAdapter(adapter);
     }
 
+    //TODO: Maybe needs to refactor to consider the correct day.
     //Must be in format: YYYY-MM-DD
     public void setAmountsSaved(String date) {
         List<String> queryAmountsList = dbAccess.getSpecificDateAmounts(date);
@@ -508,6 +519,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onDismiss(ListView listView, int[] reverseSortedPositions) {
                         int incomeElementsMaxPosition = allAmountsList.size() - expenseAmountsList.size();
                         String amountToRemove = allAmountsList.get(reverseSortedPositions[0]);
+                        //TODO: Refactor to use selectedDateForQuery
                         dbAccess.removeAmount(amountToRemove, Utilities.getDBDateFromActionBarDate(actionBarFormattedDate));
 
                         //If the element dismissed is Income.

@@ -77,8 +77,7 @@ public class DatabaseAccess {
         dbAccessInstance = null;
     }
 
-    //The amountValue needs to be string formatted. Return != -1 operation succeeded.
-    //dateValue must be in format: YYYY-MM-DD
+    //dateValue must be in format: YYYY-MM-DD. Return != -1 operation succeeded.
     public long saveAmount(String amountValue, String dateValue) {
         ContentValues mapValues = new ContentValues();
         mapValues.put(AMOUNT_COLUMN, amountValue);
@@ -87,6 +86,7 @@ public class DatabaseAccess {
         return db.insert(AMOUNTS_TABLE, null, mapValues);
     }
 
+    //TODO: Need to refactor to use the day
     //date must be in format: YYYY-MM-DD.
     public int removeAmount(String amountValue, String date) {
         String queryFilter = "STRFTIME('%Y-%m',"+DATE_COLUMN+") = STRFTIME('%Y-%m','"+date+"') AND '"+

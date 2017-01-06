@@ -19,10 +19,15 @@ public class Utilities {
     public static final String KEY_INTENT_DAY = "com.jabarasca.financial_app.DAY";
     public static final String KEY_INTENT_MONTH = "com.jabarasca.financial_app.MONTH";
     public static final String KEY_INTENT_YEAR = "com.jabarasca.financial_app.YEAR";
+    public static final String KEY_INTENT_COMPARE_DATE = "com.jabarasca.financial_app.COMPARE_DATE";
 
     public static String formatDate(int datePickerDay, int datePickerMonth, int datePickerYear) {
+        String day = String.valueOf(datePickerDay);
+        if(datePickerDay < 10) {
+            day = "0" + day;
+        }
         return String.format("%d-%s-%s", datePickerYear,
-                Utilities.getCalendarMonthForDB(datePickerMonth), String.valueOf(datePickerDay));
+                Utilities.getDBMonthFromCalendarMonth(datePickerMonth), day);
     }
 
     public static String getNowDateForActionBar() {
@@ -47,16 +52,8 @@ public class Utilities {
 
     public static String getNowDateForDB() {
         Calendar actualDate = Calendar.getInstance();
-
-        int intDay = actualDate.get(Calendar.DAY_OF_MONTH);
-        String day = String.valueOf(intDay);
-        if(intDay < 10) {
-            day = "0"+day;
-        }
-        String month = Utilities.getCalendarMonthForDB(actualDate.get(Calendar.MONTH));
-        String year = String.valueOf(actualDate.get(Calendar.YEAR));
-
-        return year + "-" + month + "-" + day;
+        return Utilities.formatDate(actualDate.get(Calendar.DAY_OF_MONTH),
+                actualDate.get(Calendar.MONTH), actualDate.get(Calendar.YEAR));
     }
 
     //Return date on format: YYYY-MM-DD
@@ -183,7 +180,7 @@ public class Utilities {
         }
     }
 
-    public static String getCalendarMonthForDB(int month) {
+    public static String getDBMonthFromCalendarMonth(int month) {
         switch (month) {
             case Calendar.JANUARY:
                 return "01";

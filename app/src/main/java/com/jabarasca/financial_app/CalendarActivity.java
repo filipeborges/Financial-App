@@ -29,8 +29,18 @@ public class CalendarActivity extends Activity {
             Intent intent = new Intent();
             if(!isChartActivityRequest) {
                 intent.putExtra(Utilities.KEY_INTENT_MONTH, datePicker.getMonth());
+                String selectedDate = Utilities.formatDate(datePicker.getDayOfMonth(),
+                        datePicker.getMonth(), datePicker.getYear());
+                String actualDate = Utilities.getNowDateForDB();
+
+                boolean isActualDate = selectedDate.substring(0,3).equals(actualDate.substring(0,3)) &&
+                        selectedDate.substring(5,7).equals(actualDate.substring(5,7)) &&
+                        selectedDate.substring(8,10).equals(actualDate.substring(8,10));
+                intent.putExtra(Utilities.KEY_INTENT_COMPARE_DATE, isActualDate);
+
                 //Default day to meet the format: YYYY-MM-DD
-                intent.putExtra(Utilities.KEY_INTENT_DAY, DEFAULT_DAY);
+                int day = isActualDate ? Integer.parseInt(actualDate.substring(8,10)) : DEFAULT_DAY;
+                intent.putExtra(Utilities.KEY_INTENT_DAY, day);
             }
             intent.putExtra(Utilities.KEY_INTENT_YEAR, datePicker.getYear());
             setResult(RESULT_OK, intent);
