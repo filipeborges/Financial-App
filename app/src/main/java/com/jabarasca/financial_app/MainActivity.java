@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     public List<String> expenseAmountsList = new ArrayList<String>();
     public List<String> incomeAmountsList = new ArrayList<String>();
     public List<String> allAmountsList = new ArrayList<String>();
+    public List<String> dateList = new ArrayList<>();
     public String OUT_OF_BOUNDS_LABEL = null;
     private final int EXPENSE_LISTVIEW_POSITION = 0, INCOME_LISTVIEW_POSITION = 1;
     private final int ANNUAL_ANALYSIS_POSITION = 0;
@@ -92,21 +93,27 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 String amountString = String.format(format, amount);
-                dbAccess.saveAmount(amountString, Utilities.formatDate(
+                dbAccess.saveAmount(amountString, Utilities.formatDateWithTimeFromDatePicker(
                         selectedDateForQuery[DAY], selectedDateForQuery[MONTH],
                         selectedDateForQuery[YEAR])
                 );
                 listToAdd.add(amountString);
-                Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList,
-                        expenseAmountsList, typeOfSort);
-
-                ListView listView = (ListView) findViewById(R.id.amountsListView);
-                ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
-                refreshGraphicAndAmountSum(allAmountsList);
+                updateAmountsOnScreen(typeOfSort);
             }
             drawerLayout.closeDrawers();
         }
     };
+
+    public void updateAmountsOnScreen(int typeOfSort) {
+        String date = Utilities.getDBDateFromActionBarDate(actionBarFormattedDate);
+        List<String> queryAmountsList = dbAccess.getSpecificMonthlyAmounts(date);
+
+        Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList,
+                expenseAmountsList, dateList, queryAmountsList, typeOfSort);
+        ListView listView = (ListView) findViewById(R.id.amountsListView);
+        ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
+        refreshGraphicAndAmountSum(allAmountsList);
+    }
 
     public AdapterView.OnItemClickListener addMenuItemListener = new AdapterView.OnItemClickListener() {
         @Override
@@ -150,8 +157,6 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    //TODO: Verify viability of save on DB with correct day.
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -185,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
         actionBarDrawerToggle = getActionBarDrawerToogle(isFromChartAct);
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
 
-        String nowDate = Utilities.getNowDateForDB();
+        String nowDate = Utilities.getNowDateWithoutTimeForDB();
         //selectedDateForQuery must containt data in Calendar format.
         selectedDateForQuery[YEAR] = Integer.parseInt(nowDate.substring(0,4));
         selectedDateForQuery[MONTH] = Integer.parseInt(nowDate.substring(5,7)) - 1;
@@ -232,10 +237,11 @@ public class MainActivity extends AppCompatActivity {
         dbAccess = DatabaseAccess.getDBAcessInstance(getApplicationContext());
         if(dbAccess.databaseCanWrite()) {
             switch(activityRequestCode) {
+                //TODO: Verify with this case is valid for Chart and Calendar.
                 case ChartActivity.CHART_ACTIVITY_CODE:
                 case CalendarActivity.CALENDAR_ACTIVITY_CODE:
                     if(selectedDateForQuery[CONTAINS_DATA] == 1) {
-                        setAmountsSaved(Utilities.formatDate(selectedDateForQuery[DAY],
+                        setAmountsFromDB(Utilities.formatDateFromDatePicker(selectedDateForQuery[DAY],
                                 selectedDateForQuery[MONTH],
                                 selectedDateForQuery[YEAR])
                         );
@@ -248,7 +254,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 default:
-                    setAmountsSaved(Utilities.getDBDateFromActionBarDate(actionBarFormattedDate));
+                    setAmountsFromDB(Utilities.getDBDateFromActionBarDate(actionBarFormattedDate));
             }
         } else {
             showAlertDialogWithOk(getString(R.string.db_cant_write),
@@ -418,16 +424,17 @@ public class MainActivity extends AppCompatActivity {
         rightDrawListView.setAdapter(adapter);
     }
 
-    //TODO: Maybe needs to refactor to consider the correct day.
     //Must be in format: YYYY-MM-DD
-    public void setAmountsSaved(String date) {
-        List<String> queryAmountsList = dbAccess.getSpecificDateAmounts(date);
+    public void setAmountsFromDB(String date) {
+        List<String> queryAmountsList = dbAccess.getSpecificMonthlyAmounts(date);
         expenseAmountsList.clear();
         incomeAmountsList.clear();
 
         if(queryAmountsList.size() > 0) {
-            for(int i = 0; i < queryAmountsList.size(); i++) {
-                String amount = queryAmountsList.get(i);
+            for(int i = 0; i < queryAmountsList.size(); i ++) {
+                String amountWithDate = queryAmountsList.get(i);
+                String amount = amountWithDate.substring(0, amountWithDate.indexOf("&"));
+
                 //Brazilian float number.
                 if(Double.parseDouble(amount.replace(",",".")) > 0.0) {
                     incomeAmountsList.add(amount);
@@ -436,7 +443,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList,
-                    expenseAmountsList, Utilities.INCOME_EXPENSE_SORT);
+                    expenseAmountsList, dateList, queryAmountsList, Utilities.INCOME_EXPENSE_SORT);
             ListView amountsListView = (ListView)findViewById(R.id.amountsListView);
             ((ArrayAdapter)amountsListView.getAdapter()).notifyDataSetChanged();
         } else {

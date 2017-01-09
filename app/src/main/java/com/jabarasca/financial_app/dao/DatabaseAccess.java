@@ -77,7 +77,7 @@ public class DatabaseAccess {
         dbAccessInstance = null;
     }
 
-    //dateValue must be in format: YYYY-MM-DD. Return != -1 operation succeeded.
+    //dateValue must be in format: YYYY-MM-DD HH:MM:SS. Return != -1 operation succeeded.
     public long saveAmount(String amountValue, String dateValue) {
         ContentValues mapValues = new ContentValues();
         mapValues.put(AMOUNT_COLUMN, amountValue);
@@ -87,7 +87,7 @@ public class DatabaseAccess {
     }
 
     //TODO: Need to refactor to use the day
-    //date must be in format: YYYY-MM-DD.
+    //date must be in format: YYYY-MM-DD HH:MI:SS.
     public int removeAmount(String amountValue, String date) {
         String queryFilter = "STRFTIME('%Y-%m',"+DATE_COLUMN+") = STRFTIME('%Y-%m','"+date+"') AND '"+
                 amountValue+"' = "+AMOUNT_COLUMN+" LIMIT 1";
@@ -100,17 +100,19 @@ public class DatabaseAccess {
     }
 
     //actualFormattedDate must be in format: YYYY-MM-DD only.
-    public List<String> getSpecificDateAmounts(String actualFormattedDate) {
+    public List<String> getSpecificMonthlyAmounts(String actualFormattedDate) {
         String queryFilter = "STRFTIME('%Y-%m'," + DATE_COLUMN + ") = STRFTIME('%Y-%m','" + actualFormattedDate + "');";
-        Cursor queryCursor = db.query(AMOUNTS_TABLE, new String[]{AMOUNT_COLUMN}, queryFilter,
+        Cursor queryCursor = db.query(AMOUNTS_TABLE, new String[]{AMOUNT_COLUMN, DATE_COLUMN}, queryFilter,
                 null, null, null, null, null);
 
         final int AMOUNT_COLUMN_INDEX = 0;
+        final int DATE_COLUMN_INDEX = 1;
         List<String> amountsList = new ArrayList<>();
 
         if(queryCursor.moveToFirst()) {
             for (int i = 0; i < queryCursor.getCount(); i++) {
-                amountsList.add(queryCursor.getString(AMOUNT_COLUMN_INDEX));
+                amountsList.add(queryCursor.getString(AMOUNT_COLUMN_INDEX) + "&" + queryCursor.
+                        getString(DATE_COLUMN_INDEX));
                 queryCursor.moveToNext();
             }
         }
@@ -137,10 +139,10 @@ public class DatabaseAccess {
         try {
             dbReturnedDate = sqLiteStatement.simpleQueryForString();
             if(dbReturnedDate == null) {
-                dbReturnedDate = Utilities.getNowDateForDB();
+                dbReturnedDate = Utilities.getNowDateWithoutTimeForDB();
             }
         } catch(SQLiteDoneException e) {
-            dbReturnedDate = Utilities.getNowDateForDB();
+            dbReturnedDate = Utilities.getNowDateWithoutTimeForDB();
         }
 
         return Utilities.getLongValueFromDBDate(dbReturnedDate);

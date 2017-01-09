@@ -29,9 +29,9 @@ public class CalendarActivity extends Activity {
             Intent intent = new Intent();
             if(!isChartActivityRequest) {
                 intent.putExtra(Utilities.KEY_INTENT_MONTH, datePicker.getMonth());
-                String selectedDate = Utilities.formatDate(datePicker.getDayOfMonth(),
+                String selectedDate = Utilities.formatDateFromDatePicker(datePicker.getDayOfMonth(),
                         datePicker.getMonth(), datePicker.getYear());
-                String actualDate = Utilities.getNowDateForDB();
+                String actualDate = Utilities.getNowDateWithoutTimeForDB();
 
                 boolean isActualDate = selectedDate.substring(0,3).equals(actualDate.substring(0,3)) &&
                         selectedDate.substring(5,7).equals(actualDate.substring(5,7)) &&

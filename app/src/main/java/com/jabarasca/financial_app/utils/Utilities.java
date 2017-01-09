@@ -21,13 +21,25 @@ public class Utilities {
     public static final String KEY_INTENT_YEAR = "com.jabarasca.financial_app.YEAR";
     public static final String KEY_INTENT_COMPARE_DATE = "com.jabarasca.financial_app.COMPARE_DATE";
 
-    public static String formatDate(int datePickerDay, int datePickerMonth, int datePickerYear) {
+    public static String formatDateFromDatePicker(int datePickerDay, int datePickerMonth, int datePickerYear) {
         String day = String.valueOf(datePickerDay);
-        if(datePickerDay < 10) {
-            day = "0" + day;
-        }
+        day = datePickerDay < 10 ? "0" + day : day;
         return String.format("%d-%s-%s", datePickerYear,
                 Utilities.getDBMonthFromCalendarMonth(datePickerMonth), day);
+    }
+
+    public static String formatDateWithTimeFromDatePicker(int datePickerDay, int datePickerMonth,
+                                                          int datePickerYear) {
+        Calendar actualCalendar = Calendar.getInstance();
+        int timeField = actualCalendar.get(Calendar.HOUR_OF_DAY);
+        String hour = timeField < 10 ? "0" + timeField : String.valueOf(timeField);
+        timeField = actualCalendar.get(Calendar.MINUTE);
+        String minutes = timeField < 10 ? "0" + timeField : String.valueOf(timeField);
+        timeField = actualCalendar.get(Calendar.SECOND);
+        String seconds = timeField < 10 ? "0" + timeField : String.valueOf(timeField);
+        String date = formatDateFromDatePicker(datePickerDay, datePickerMonth, datePickerYear);
+
+        return String.format("%s %s:%s:%s", date, hour, minutes, seconds);
     }
 
     public static String getNowDateForActionBar() {
@@ -50,9 +62,9 @@ public class Utilities {
         }
     }
 
-    public static String getNowDateForDB() {
+    public static String getNowDateWithoutTimeForDB() {
         Calendar actualDate = Calendar.getInstance();
-        return Utilities.formatDate(actualDate.get(Calendar.DAY_OF_MONTH),
+        return Utilities.formatDateFromDatePicker(actualDate.get(Calendar.DAY_OF_MONTH),
                 actualDate.get(Calendar.MONTH), actualDate.get(Calendar.YEAR));
     }
 
@@ -65,44 +77,48 @@ public class Utilities {
                 defaultDay);
     }
 
-    public static String getMonthFromChartSelectedValue(float value) {
-        switch((int)value) {
-            case 1:
-                return "01";
-            case 2:
-                return "02";
-            case 3:
-                return "03";
-            case 4:
-                return "04";
-            case 5:
-                return "05";
-            case 6:
-                return "06";
-            case 7:
-                return "07";
-            case 8:
-                return "08";
-            case 9:
-                return "09";
-            case 10:
-                return "10";
-            case 11:
-                return "11";
-            case 12:
-                return "12";
-            default:
-                return "";
+    private static void setDateListValues(List<String> amountDateValues,
+                                          List<String> orderedAllAmountsList,
+                                          List<String> dateList) {
+        String dateToCompare, amountToCompare, amount;
+        boolean dateExists = false;
+        dateList.clear();
+
+        for(int i = 0; i < orderedAllAmountsList.size(); i++) {
+            amount = orderedAllAmountsList.get(i);
+            for(int a = 0; a < amountDateValues.size(); a++) {
+                amountToCompare = amountDateValues.get(a).substring(0, amountDateValues.get(a).indexOf("&"));
+                dateToCompare = amountDateValues.get(a);
+                dateToCompare = dateToCompare.substring(dateToCompare.indexOf("&") + 1, dateToCompare.length());
+
+                if(amount.equals(amountToCompare)) {
+                    for(int b = 0; b < dateList.size(); b++) {
+                        if(dateList.get(b).equals(dateToCompare)) {
+                            dateExists = true;
+                            break;
+                        }
+                    }
+                    if(!dateExists) {
+                        dateList.add(dateToCompare);
+                        break;
+                    } else {
+                        dateExists = false;
+                    }
+                }
+            }
         }
     }
 
     public static void sortAllAmountsList(List<String> allAmountsList,
                                           List<String> incomeAmountsList,
-                                          List<String> expenseAmountsList, int typeOfSort) {
+                                          List<String> expenseAmountsList,
+                                          List<String> dateList,
+                                          List<String> amountDateValues,
+                                          int typeOfSort) {
         Comparator<String> expenseAmountComparator = new Comparator<String>() {
             @Override
             public int compare(String lhs, String rhs) {
-                //For incresing order(negative number): lhs > rhs == -1; lhs == rhs == 0; lhs < rhs == 1;
+                //For increasing order(negative number): lhs > rhs == -1; lhs == rhs == 0; lhs < rhs == 1;
                 //Number will come with ',' for decimal separator (Brazilian Device). Need to replace ',' to '.' for parseFloat() to works.
                 if(lhs.contains(",") && rhs.contains(",")) {
                     lhs = lhs.replace(',','.');
@@ -140,6 +156,7 @@ public class Utilities {
 
         allAmountsList.addAll(incomeAmountsList);
         allAmountsList.addAll(expenseAmountsList);
+        setDateListValues(amountDateValues, allAmountsList, dateList);
     }
 
     public static String sumIncomeExpenseItems(List<String> allAmountsListItems, String outOfBoundsLabel) {
