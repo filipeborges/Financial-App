@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/amountDetailActivRelLay"
+    style="@style/dialogRelLay"
+    tools:context="com.jabarasca.financial_app.AmountDetailActivity">
+
+    <TextView
+        android:textSize="22sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="80dp"
+        android:id="@+id/amountDetailValue" />
+
+    <TextView
+        android:text="@string/amount_detail_date_title"
+        android:textColor="#FFF"
+        android:textStyle="italic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/amountDetailValue"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:id="@+id/amountDetailDateLabel" />
+
+    <TextView
+        android:textSize="18sp"
+        android:textColor="#FFF"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:id="@+id/amountDetailDateValue"
+        android:layout_below="@+id/amountDetailDateLabel"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/amountDetailButton"
+        android:layout_below="@+id/amountDetailDateValue"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        style="@style/dialogOkButton"/>
+
+</RelativeLayout>

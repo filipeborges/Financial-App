@@ -39,7 +39,21 @@ public class Utilities {
         String seconds = timeField < 10 ? "0" + timeField : String.valueOf(timeField);
         String date = formatDateFromDatePicker(datePickerDay, datePickerMonth, datePickerYear);
 
+        //TODO: Use mask string on strings.xml
         return String.format("%s %s:%s:%s", date, hour, minutes, seconds);
+    }
+
+    public static String formatDateFromDB(String dbDate) {
+        //TODO: Use mask string on strings.xml
+        //yyyy-mm-dd hh:mi:ss
+        String year = dbDate.substring(0,4);
+        String month = dbDate.substring(5,7);
+        String day = dbDate.substring(8,10);
+        String hour = dbDate.substring(11,13);
+        String minutes = dbDate.substring(14,16);
+        String seconds = dbDate.substring(17,19);
+
+        return String.format("%s/%s/%s %s:%s:%s", day, month, year, hour, minutes, seconds);
     }
 
     public static String getNowDateForActionBar() {
@@ -52,6 +66,8 @@ public class Utilities {
         return actualFormattedDate;
     }
 
+    //TODO: Verify this: New DB date mask yyyy-mm-dd hh:mm:ss
+    //TODO: Move DB mask in strings.xml
     public static long getLongValueFromDBDate(String dbDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-d");
         try {

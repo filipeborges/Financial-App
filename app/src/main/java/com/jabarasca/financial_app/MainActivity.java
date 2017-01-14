@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
         rightDrawerListView = findViewById(R.id.activityMainRightDrawerListView);
         graphicBalanceImgView = (ImageView)findViewById(R.id.bottomBarGraphicImgView);
 
-        setSwipeToDismissAmountsListView(R.id.amountsListView);
+        configureAmountsListView(R.id.amountsListView);
         setActionBarCustomView(R.layout.action_bar_text_layout);
 
         actionBarTextView = (TextView)findViewById(R.id.actionBarTextView);
@@ -227,6 +227,8 @@ public class MainActivity extends AppCompatActivity {
         } else if(requestCode == ChartActivity.CHART_ACTIVITY_CODE){
             selectedDateForQuery[CONTAINS_DATA] = 0;
             drawerLayout.closeDrawers();
+        } else if(requestCode == AmountDetailActivity.AMOUNT_DETAIL_ACTIV_CODE) {
+            activityRequestCode = requestCode;
         }
     }
 
@@ -237,6 +239,8 @@ public class MainActivity extends AppCompatActivity {
         dbAccess = DatabaseAccess.getDBAcessInstance(getApplicationContext());
         if(dbAccess.databaseCanWrite()) {
             switch(activityRequestCode) {
+                case AmountDetailActivity.AMOUNT_DETAIL_ACTIV_CODE:
+                    break;
                 //TODO: Verify with this case is valid for Chart and Calendar.
                 case ChartActivity.CHART_ACTIVITY_CODE:
                 case CalendarActivity.CALENDAR_ACTIVITY_CODE:
@@ -442,6 +446,7 @@ public class MainActivity extends AppCompatActivity {
                     expenseAmountsList.add(amount);
                 }
             }
+            //TODO: Verify possibility to use updateAmountsOnScreen().
             Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList,
                     expenseAmountsList, dateList, queryAmountsList, Utilities.INCOME_EXPENSE_SORT);
             ListView amountsListView = (ListView)findViewById(R.id.amountsListView);
@@ -512,8 +517,19 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setCustomView(actionBarView, layoutParams);
     }
 
-    private void setSwipeToDismissAmountsListView(int listViewId) {
+    private void configureAmountsListView(int listViewId) {
         ListView listView = (ListView)findViewById(listViewId);
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(activity, AmountDetailActivity.class);
+                intent.putExtra(AmountDetailActivity.KEY_INTENT_DATE, dateList.get(position));
+                intent.putExtra(AmountDetailActivity.KEY_INTENT_AMOUNT, allAmountsList.get(position));
+                activity.startActivityForResult(intent, AmountDetailActivity.AMOUNT_DETAIL_ACTIV_CODE);
+                return true;
+            }
+        });
 
         SwipeDismissListViewTouchListener swipeToDismissListViewListener = new SwipeDismissListViewTouchListener(listView,
                 new SwipeDismissListViewTouchListener.DismissCallbacks() {
@@ -529,15 +545,16 @@ public class MainActivity extends AppCompatActivity {
                         //TODO: Refactor to use selectedDateForQuery
                         dbAccess.removeAmount(amountToRemove, Utilities.getDBDateFromActionBarDate(actionBarFormattedDate));
 
+                        int typeOfSort;
                         //If the element dismissed is Income.
                         if(reverseSortedPositions[0] < incomeElementsMaxPosition) {
                             incomeAmountsList.remove(amountToRemove);
+                            typeOfSort = Utilities.INCOME_SORT;
                         } else {
                             expenseAmountsList.remove(amountToRemove);
+                            typeOfSort = Utilities.EXPENSE_SORT;
                         }
-                        allAmountsList.remove(reverseSortedPositions[0]);
-                        ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
-                        refreshGraphicAndAmountSum(allAmountsList);
+                        updateAmountsOnScreen(typeOfSort);
                     }
                 });
 

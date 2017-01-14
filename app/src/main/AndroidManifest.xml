@@ -13,18 +13,16 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".CalendarActivity"
             android:theme="@style/DialogTheme" />
-        <activity android:name=".ChartActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
+        <activity android:name=".ChartActivity"
                 android:value="com.jabarasca.financial_app.MainActivity" />
-        </activity>
+        <activity android:name=".AmountDetailActivity"
+            android:theme="@style/DialogTheme"/>
     </application>
 
 </manifest>

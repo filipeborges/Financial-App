@@ -28,4 +28,5 @@
     <string name="title_activity_calendar">CalendarActivity</string>
 
     <string name="datepicker_title">Selecione...</string>
+    <string name="amount_detail_date_title">Cadastrado em:</string>
 </resources>
