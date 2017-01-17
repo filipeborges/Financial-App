@@ -177,6 +177,10 @@ public class ChartActivity extends AppCompatActivity {
             setResult(RESULT_OK, intent);
             finish();
             return true;
+        } else if(item.getItemId() == android.R.id.home) {
+            setResult(RESULT_CANCELED);
+            finish();
+            return true;
         } else {
             return super.onOptionsItemSelected(item);
         }

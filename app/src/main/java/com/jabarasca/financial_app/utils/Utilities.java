@@ -93,9 +93,9 @@ public class Utilities {
                 defaultDay);
     }
 
-    private static void setDateListValues(List<String> amountDateValues,
-                                          List<String> orderedAllAmountsList,
-                                          List<String> dateList) {
+    private static void sortDateListValues(List<String> amountDateValues,
+                                           List<String> orderedAllAmountsList,
+                                           List<String> dateList) {
         String dateToCompare, amountToCompare, amount;
         boolean dateExists = false;
         dateList.clear();
@@ -172,7 +172,7 @@ public class Utilities {
 
         allAmountsList.addAll(incomeAmountsList);
         allAmountsList.addAll(expenseAmountsList);
-        setDateListValues(amountDateValues, allAmountsList, dateList);
+        sortDateListValues(amountDateValues, allAmountsList, dateList);
     }
 
     public static String sumIncomeExpenseItems(List<String> allAmountsListItems, String outOfBoundsLabel) {

@@ -98,13 +98,13 @@ public class MainActivity extends AppCompatActivity {
                         selectedDateForQuery[YEAR])
                 );
                 listToAdd.add(amountString);
-                updateAmountsOnScreen(typeOfSort);
+                updateAmountsOnScreenWithActionBarDate(typeOfSort);
             }
             drawerLayout.closeDrawers();
         }
     };
 
-    public void updateAmountsOnScreen(int typeOfSort) {
+    public void updateAmountsOnScreenWithActionBarDate(int typeOfSort) {
         String date = Utilities.getDBDateFromActionBarDate(actionBarFormattedDate);
         List<String> queryAmountsList = dbAccess.getSpecificMonthlyAmounts(date);
 
@@ -183,11 +183,7 @@ public class MainActivity extends AppCompatActivity {
 
         configureAddMenuOptions();
         activity = this;
-
-        //Specific code if activity was not started from ChartActivity.
-        boolean isFromChartAct = getIntent().getBooleanExtra(ChartActivity.
-                CHART_ACTIVITY_REQUEST, false);
-        actionBarDrawerToggle = getActionBarDrawerToogle(isFromChartAct);
+        actionBarDrawerToggle = getActionBarDrawerToogle();
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
 
         String nowDate = Utilities.getNowDateWithoutTimeForDB();
@@ -201,13 +197,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult (int requestCode, int resultCode, Intent data) {
-        //TODO: Refactor this code - Duplicated code.
         activityRequestCode = 0;
         if(resultCode == RESULT_OK) {
             activityRequestCode = requestCode;
             switch(requestCode) {
                 case ChartActivity.CHART_ACTIVITY_CODE:
-                    selectedDateForQuery[CONTAINS_DATA] = 0;
                     drawerLayout.closeDrawers();
                 case CalendarActivity.CALENDAR_ACTIVITY_CODE:
                     selectedDateForQuery[CONTAINS_DATA] = 1;
@@ -220,15 +214,13 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         menu.findItem(R.id.addButton).setVisible(false);
                     }
-                    incomeAmountsList.clear();
-                    expenseAmountsList.clear();
                     break;
             }
-        } else if(requestCode == ChartActivity.CHART_ACTIVITY_CODE){
+        } else {
             selectedDateForQuery[CONTAINS_DATA] = 0;
-            drawerLayout.closeDrawers();
-        } else if(requestCode == AmountDetailActivity.AMOUNT_DETAIL_ACTIV_CODE) {
-            activityRequestCode = requestCode;
+            if(requestCode == ChartActivity.CHART_ACTIVITY_CODE) {
+                drawerLayout.closeDrawers();
+            }
         }
     }
 
@@ -240,8 +232,6 @@ public class MainActivity extends AppCompatActivity {
         if(dbAccess.databaseCanWrite()) {
             switch(activityRequestCode) {
                 case AmountDetailActivity.AMOUNT_DETAIL_ACTIV_CODE:
-                    break;
-                //TODO: Verify with this case is valid for Chart and Calendar.
                 case ChartActivity.CHART_ACTIVITY_CODE:
                 case CalendarActivity.CALENDAR_ACTIVITY_CODE:
                     if(selectedDateForQuery[CONTAINS_DATA] == 1) {
@@ -329,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
         graphicBalanceImgView.setImageResource(Utilities.getBalanceGraphicResourceId());
     }
 
-    public ActionBarDrawerToggle getActionBarDrawerToogle(boolean isCommingFromChartAct) {
+    public ActionBarDrawerToggle getActionBarDrawerToogle() {
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
                 R.string.open_drawer, R.string.close_drawer) {
             @Override
@@ -338,12 +328,14 @@ public class MainActivity extends AppCompatActivity {
                     if(slideOffset > 0.1) {
                         menu.findItem(R.id.addButton).setIcon(R.drawable.minus);
                         actionBarTextView.setText(getString(R.string.add_menu_action_bar_title));
+                        actionBarTextView.setClickable(false);
                         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                     }
                     else if(slideOffset <= 0.1) {
                         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                         menu.findItem(R.id.addButton).setIcon(R.drawable.plus);
                         actionBarTextView.setText(actionBarFormattedDate);
+                        actionBarTextView.setClickable(true);
                     }
                 }
                 else {
@@ -352,21 +344,19 @@ public class MainActivity extends AppCompatActivity {
                             menu.findItem(R.id.addButton).setVisible(false);
                         }
                         actionBarTextView.setText(getString(R.string.menu_action_bar_title));
+                        actionBarTextView.setClickable(false);
                     }
                     else if(slideOffset <= 0.1) {
                         if(!isAddButtonHided) {
                             menu.findItem(R.id.addButton).setVisible(true);
                         }
                         actionBarTextView.setText(actionBarFormattedDate);
+                        actionBarTextView.setClickable(true);
                     }
                 }
                 super.onDrawerSlide(drawerView, slideOffset);
             }
         };
-
-        if(isCommingFromChartAct) {
-            actionBarDrawerToggle.setDrawerIndicatorEnabled(false);
-        }
 
         return actionBarDrawerToggle;
     }
@@ -446,7 +436,6 @@ public class MainActivity extends AppCompatActivity {
                     expenseAmountsList.add(amount);
                 }
             }
-            //TODO: Verify possibility to use updateAmountsOnScreen().
             Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList,
                     expenseAmountsList, dateList, queryAmountsList, Utilities.INCOME_EXPENSE_SORT);
             ListView amountsListView = (ListView)findViewById(R.id.amountsListView);
@@ -542,9 +531,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onDismiss(ListView listView, int[] reverseSortedPositions) {
                         int incomeElementsMaxPosition = allAmountsList.size() - expenseAmountsList.size();
                         String amountToRemove = allAmountsList.get(reverseSortedPositions[0]);
-                        //TODO: Refactor to use selectedDateForQuery
-                        dbAccess.removeAmount(amountToRemove, Utilities.getDBDateFromActionBarDate(actionBarFormattedDate));
-
+                        dbAccess.removeAmount(amountToRemove, dateList.get(reverseSortedPositions[0]));
                         int typeOfSort;
                         //If the element dismissed is Income.
                         if(reverseSortedPositions[0] < incomeElementsMaxPosition) {
@@ -554,7 +541,7 @@ public class MainActivity extends AppCompatActivity {
                             expenseAmountsList.remove(amountToRemove);
                             typeOfSort = Utilities.EXPENSE_SORT;
                         }
-                        updateAmountsOnScreen(typeOfSort);
+                        updateAmountsOnScreenWithActionBarDate(typeOfSort);
                     }
                 });
 

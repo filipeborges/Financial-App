@@ -86,14 +86,12 @@ public class DatabaseAccess {
         return db.insert(AMOUNTS_TABLE, null, mapValues);
     }
 
-    //TODO: Need to refactor to use the day
     //date must be in format: YYYY-MM-DD HH:MI:SS.
     public int removeAmount(String amountValue, String date) {
-        String queryFilter = "STRFTIME('%Y-%m',"+DATE_COLUMN+") = STRFTIME('%Y-%m','"+date+"') AND '"+
-                amountValue+"' = "+AMOUNT_COLUMN+" LIMIT 1";
-        String selectFilter = "SELECT cod FROM tb_amount_month WHERE "+queryFilter;
-        String deleteFilter = "cod IN ("+selectFilter+");";
-
+        String queryFilter = String.format("%s = '%s' AND %s = '%s'", DATE_COLUMN, date,
+                AMOUNT_COLUMN, amountValue);
+        String subQueryFilter = "SELECT cod FROM tb_amount_month WHERE " + queryFilter;
+        String deleteFilter = "cod IN (" + subQueryFilter + ");";
         int returnValue = db.delete(AMOUNTS_TABLE, deleteFilter, null);
 
         return returnValue;
