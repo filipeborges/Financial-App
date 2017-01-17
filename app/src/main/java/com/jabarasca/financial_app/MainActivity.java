@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     public ImageView graphicBalanceImgView;
     public TextView actionBarTextView;
     public TextView amountSumTextView;
-    public String actionBarFormattedDate = Utilities.getNowDateForActionBar();
+    public String actionBarFormattedDate = Utilities.getNowActionBarDate();
     public LayoutInflater inflater;
     public List<String> expenseAmountsList = new ArrayList<String>();
     public List<String> incomeAmountsList = new ArrayList<String>();
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 String amountString = String.format(format, amount);
-                dbAccess.saveAmount(amountString, Utilities.formatDateWithTimeFromDatePicker(
+                dbAccess.saveAmount(amountString, Utilities.formatDbDateWithTimeFromDatePicker(
                         selectedDateForQuery[DAY], selectedDateForQuery[MONTH],
                         selectedDateForQuery[YEAR])
                 );
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     public void updateAmountsOnScreenWithActionBarDate(int typeOfSort) {
-        String date = Utilities.getDBDateFromActionBarDate(actionBarFormattedDate);
+        String date = Utilities.formatDbDateFromActionBarDate(actionBarFormattedDate);
         List<String> queryAmountsList = dbAccess.getSpecificMonthlyAmounts(date);
 
         Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList,
@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
         actionBarDrawerToggle = getActionBarDrawerToogle();
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
 
-        String nowDate = Utilities.getNowDateWithoutTimeForDB();
+        String nowDate = Utilities.getNowDbDateWithoutTime();
         //selectedDateForQuery must containt data in Calendar format.
         selectedDateForQuery[YEAR] = Integer.parseInt(nowDate.substring(0,4));
         selectedDateForQuery[MONTH] = Integer.parseInt(nowDate.substring(5,7)) - 1;
@@ -224,7 +224,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //TODO: [Improvement]Update only if values changed.
     @Override
     protected void onResume() {
         super.onResume();
@@ -234,13 +233,16 @@ public class MainActivity extends AppCompatActivity {
                 case AmountDetailActivity.AMOUNT_DETAIL_ACTIV_CODE:
                 case ChartActivity.CHART_ACTIVITY_CODE:
                 case CalendarActivity.CALENDAR_ACTIVITY_CODE:
-                    if(selectedDateForQuery[CONTAINS_DATA] == 1) {
-                        setAmountsFromDB(Utilities.formatDateFromDatePicker(selectedDateForQuery[DAY],
+                    if(selectedDateForQuery[CONTAINS_DATA] == 1 &&
+                            !Utilities.datePickerDateMatchesActBarDate(selectedDateForQuery[MONTH],
+                                    selectedDateForQuery[YEAR], actionBarFormattedDate)
+                    ) {
+                        setAmountsFromDB(Utilities.formatDbDateFromDatePicker(selectedDateForQuery[DAY],
                                 selectedDateForQuery[MONTH],
                                 selectedDateForQuery[YEAR])
                         );
                         actionBarFormattedDate = String.format("%s/%s",
-                                Utilities.getCalendarMonthForActionBar(selectedDateForQuery[MONTH]),
+                                Utilities.getActionBarMonthFromDatePickerMonth(selectedDateForQuery[MONTH]),
                                 String.valueOf(selectedDateForQuery[YEAR])
                         );
                         actionBarTextView.setText(actionBarFormattedDate);
@@ -248,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 default:
-                    setAmountsFromDB(Utilities.getDBDateFromActionBarDate(actionBarFormattedDate));
+                    setAmountsFromDB(Utilities.formatDbDateFromActionBarDate(actionBarFormattedDate));
             }
         } else {
             showAlertDialogWithOk(getString(R.string.db_cant_write),

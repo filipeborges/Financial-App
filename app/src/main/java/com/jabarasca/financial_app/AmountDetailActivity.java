@@ -30,7 +30,7 @@ public class AmountDetailActivity extends Activity {
         }
         amountDetailTxtVw.setText(amountValue);
 
-        String date = Utilities.formatDateFromDB(getIntent().getStringExtra(KEY_INTENT_DATE));
+        String date = Utilities.formatHumanDateFromDbDate(getIntent().getStringExtra(KEY_INTENT_DATE));
         amountDetailDateTxtVw.setText(date);
 
         Button amountDetailOkBtn = (Button)findViewById(R.id.amountDetailButton);

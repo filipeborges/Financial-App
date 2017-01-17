@@ -21,15 +21,16 @@ public class Utilities {
     public static final String KEY_INTENT_YEAR = "com.jabarasca.financial_app.YEAR";
     public static final String KEY_INTENT_COMPARE_DATE = "com.jabarasca.financial_app.COMPARE_DATE";
 
-    public static String formatDateFromDatePicker(int datePickerDay, int datePickerMonth, int datePickerYear) {
+    public static String formatDbDateFromDatePicker(int datePickerDay, int datePickerMonth, int datePickerYear) {
         String day = String.valueOf(datePickerDay);
         day = datePickerDay < 10 ? "0" + day : day;
         return String.format("%d-%s-%s", datePickerYear,
-                Utilities.getDBMonthFromCalendarMonth(datePickerMonth), day);
+                Utilities.getDBMonthFromDatePickerMonth(datePickerMonth), day);
     }
 
-    public static String formatDateWithTimeFromDatePicker(int datePickerDay, int datePickerMonth,
-                                                          int datePickerYear) {
+    //Returned format: YYYY-MM-DD HH:MM:SS
+    public static String formatDbDateWithTimeFromDatePicker(int datePickerDay, int datePickerMonth,
+                                                            int datePickerYear) {
         Calendar actualCalendar = Calendar.getInstance();
         int timeField = actualCalendar.get(Calendar.HOUR_OF_DAY);
         String hour = timeField < 10 ? "0" + timeField : String.valueOf(timeField);
@@ -37,15 +38,13 @@ public class Utilities {
         String minutes = timeField < 10 ? "0" + timeField : String.valueOf(timeField);
         timeField = actualCalendar.get(Calendar.SECOND);
         String seconds = timeField < 10 ? "0" + timeField : String.valueOf(timeField);
-        String date = formatDateFromDatePicker(datePickerDay, datePickerMonth, datePickerYear);
+        String date = formatDbDateFromDatePicker(datePickerDay, datePickerMonth, datePickerYear);
 
-        //TODO: Use mask string on strings.xml
         return String.format("%s %s:%s:%s", date, hour, minutes, seconds);
     }
 
-    public static String formatDateFromDB(String dbDate) {
-        //TODO: Use mask string on strings.xml
-        //yyyy-mm-dd hh:mi:ss
+    //Returned format: DD/MM/YYYY HH:MM:SS
+    public static String formatHumanDateFromDbDate(String dbDate) {
         String year = dbDate.substring(0,4);
         String month = dbDate.substring(5,7);
         String day = dbDate.substring(8,10);
@@ -56,9 +55,9 @@ public class Utilities {
         return String.format("%s/%s/%s %s:%s:%s", day, month, year, hour, minutes, seconds);
     }
 
-    public static String getNowDateForActionBar() {
+    public static String getNowActionBarDate() {
         Calendar actualDate = Calendar.getInstance();
-        String actualMonth = Utilities.getCalendarMonthForActionBar(actualDate.get(Calendar.MONTH));
+        String actualMonth = Utilities.getActionBarMonthFromDatePickerMonth(actualDate.get(Calendar.MONTH));
 
         String actualFormattedDate = actualMonth + "/" +
                 String.valueOf(actualDate.get(Calendar.YEAR));
@@ -66,10 +65,9 @@ public class Utilities {
         return actualFormattedDate;
     }
 
-    //TODO: Verify this: New DB date mask yyyy-mm-dd hh:mm:ss
-    //TODO: Move DB mask in strings.xml
     public static long getLongValueFromDBDate(String dbDate) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-d");
+        //Only needed the YEAR and MONTH portions of the date.
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
         try {
             Date date = dateFormat.parse(dbDate);
             return date.getTime();
@@ -78,14 +76,22 @@ public class Utilities {
         }
     }
 
-    public static String getNowDateWithoutTimeForDB() {
+    public static boolean datePickerDateMatchesActBarDate(int datePickerMonth,
+                                                          int datePickerYear,
+                                                          String pActBarDate) {
+        String actBarDate = String.format("%s/%d",
+                getActionBarMonthFromDatePickerMonth(datePickerMonth), datePickerYear);
+        return pActBarDate.equals(actBarDate);
+    }
+
+    public static String getNowDbDateWithoutTime() {
         Calendar actualDate = Calendar.getInstance();
-        return Utilities.formatDateFromDatePicker(actualDate.get(Calendar.DAY_OF_MONTH),
+        return Utilities.formatDbDateFromDatePicker(actualDate.get(Calendar.DAY_OF_MONTH),
                 actualDate.get(Calendar.MONTH), actualDate.get(Calendar.YEAR));
     }
 
     //Return date on format: YYYY-MM-DD
-    public static String getDBDateFromActionBarDate(String actionBarDateText) {
+    public static String formatDbDateFromActionBarDate(String actionBarDateText) {
         String defaultDay = "10";
         return String.format("%s-%s-%s",
                 actionBarDateText.substring(4),
@@ -213,7 +219,7 @@ public class Utilities {
         }
     }
 
-    public static String getDBMonthFromCalendarMonth(int month) {
+    public static String getDBMonthFromDatePickerMonth(int month) {
         switch (month) {
             case Calendar.JANUARY:
                 return "01";
@@ -274,7 +280,7 @@ public class Utilities {
         }
     }
 
-    public static String getCalendarMonthForActionBar(int month) {
+    public static String getActionBarMonthFromDatePickerMonth(int month) {
            switch (month) {
                case Calendar.JANUARY:
                    return "Jan";

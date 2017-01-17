@@ -67,7 +67,7 @@ public class ChartActivity extends AppCompatActivity {
         @Override
         public int formatValueForManualAxis(char[] formattedValue, AxisValue axisValue) {
             int axisCalendarValue = (int)axisValue.getValue() - 1;
-            String month = Utilities.getCalendarMonthForActionBar(axisCalendarValue);
+            String month = Utilities.getActionBarMonthFromDatePickerMonth(axisCalendarValue);
             formattedValue[0] = month.charAt(0);
             formattedValue[1] = month.charAt(1);
             formattedValue[2] = month.charAt(2);

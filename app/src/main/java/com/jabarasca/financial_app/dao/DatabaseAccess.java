@@ -137,10 +137,10 @@ public class DatabaseAccess {
         try {
             dbReturnedDate = sqLiteStatement.simpleQueryForString();
             if(dbReturnedDate == null) {
-                dbReturnedDate = Utilities.getNowDateWithoutTimeForDB();
+                dbReturnedDate = Utilities.getNowDbDateWithoutTime();
             }
         } catch(SQLiteDoneException e) {
-            dbReturnedDate = Utilities.getNowDateWithoutTimeForDB();
+            dbReturnedDate = Utilities.getNowDbDateWithoutTime();
         }
 
         return Utilities.getLongValueFromDBDate(dbReturnedDate);
