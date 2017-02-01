@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.util.AttributeSet;
+import android.util.SparseIntArray;
 import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     public List<String> expenseAmountsList = new ArrayList<String>();
     public List<String> incomeAmountsList = new ArrayList<String>();
     public List<String> allAmountsList = new ArrayList<String>();
-    public List<String> dateList = new ArrayList<>();
+    public SparseIntArray codList = new SparseIntArray();
     public String OUT_OF_BOUNDS_LABEL = null;
     private final int EXPENSE_LISTVIEW_POSITION = 0, INCOME_LISTVIEW_POSITION = 1;
     private final int ANNUAL_ANALYSIS_POSITION = 0;
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         List<String> queryAmountsList = dbAccess.getSpecificMonthlyAmounts(date);
 
         Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList,
-                expenseAmountsList, dateList, queryAmountsList, typeOfSort);
+                expenseAmountsList, codList, queryAmountsList, typeOfSort);
         ListView listView = (ListView) findViewById(R.id.amountsListView);
         ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
         refreshGraphicAndAmountSum(allAmountsList);
@@ -427,7 +428,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             Utilities.sortAllAmountsList(allAmountsList, incomeAmountsList,
-                    expenseAmountsList, dateList, queryAmountsList, Utilities.INCOME_EXPENSE_SORT);
+                    expenseAmountsList, codList, queryAmountsList, Utilities.INCOME_EXPENSE_SORT);
             ListView amountsListView = (ListView)findViewById(R.id.amountsListView);
             ((ArrayAdapter)amountsListView.getAdapter()).notifyDataSetChanged();
         } else {
@@ -503,7 +504,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(activity, AmountDetailActivity.class);
-                intent.putExtra(AmountDetailActivity.KEY_INTENT_DATE, dateList.get(position));
+                String date = dbAccess.getDateFromCod(codList.get(position));
+                intent.putExtra(AmountDetailActivity.KEY_INTENT_DATE, date);
                 intent.putExtra(AmountDetailActivity.KEY_INTENT_AMOUNT, allAmountsList.get(position));
                 activity.startActivityForResult(intent, AmountDetailActivity.AMOUNT_DETAIL_ACTIV_CODE);
                 return true;
@@ -521,7 +523,8 @@ public class MainActivity extends AppCompatActivity {
                     public void onDismiss(ListView listView, int[] reverseSortedPositions) {
                         int incomeElementsMaxPosition = allAmountsList.size() - expenseAmountsList.size();
                         String amountToRemove = allAmountsList.get(reverseSortedPositions[0]);
-                        dbAccess.removeAmount(amountToRemove, dateList.get(reverseSortedPositions[0]));
+                        String date = dbAccess.getDateFromCod(codList.get(reverseSortedPositions[0]));
+                        dbAccess.removeAmount(amountToRemove, date);
                         int typeOfSort;
                         //If the element dismissed is Income.
                         if(reverseSortedPositions[0] < incomeElementsMaxPosition) {

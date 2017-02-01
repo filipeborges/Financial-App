@@ -26,10 +26,12 @@ public class DatabaseAccess {
     private SQLiteStatement minPickerSqlStmntMainActv;
     private SQLiteStatement maxPickerSqlStmntMainActv;
     private boolean can_write = true;
+    //TODO: Refactor table name to tb_amount
     private final String AMOUNTS_TABLE = "tb_amount_month";
     private final String AMOUNT_COLUMN = "amount";
     private final String DATE_COLUMN = "date";
     private final String TITLE_COLUMN = "title";
+    private final String COD_COLUMN = "cod";
     private final String CREATE_TB_MONTH = "CREATE TABLE tb_amount_month(cod INTEGER PRIMARY KEY AUTOINCREMENT," +
                                                                         "date TEXT," +
                                                                         "amount TEXT," +
@@ -104,18 +106,18 @@ public class DatabaseAccess {
 
     //actualFormattedDate must be in format: YYYY-MM-DD only.
     public List<String> getSpecificMonthlyAmounts(String actualFormattedDate) {
-        String queryFilter = "STRFTIME('%Y-%m'," + DATE_COLUMN + ") = STRFTIME('%Y-%m','" + actualFormattedDate + "');";
-        Cursor queryCursor = db.query(AMOUNTS_TABLE, new String[]{AMOUNT_COLUMN, DATE_COLUMN}, queryFilter,
-                null, null, null, null, null);
+        String queryFilter = "STRFTIME('%Y-%m'," + DATE_COLUMN + ")" +
+                "= STRFTIME('%Y-%m','" + actualFormattedDate + "');";
+        Cursor queryCursor = db.query(AMOUNTS_TABLE, new String[]{AMOUNT_COLUMN, COD_COLUMN},
+                queryFilter, null, null, null, null, null);
 
-        final int AMOUNT_COLUMN_INDEX = 0;
-        final int DATE_COLUMN_INDEX = 1;
+        final int AMOUNT_COLUMN_INDEX = 0, COD_COLUMN_INDEX = 1;
         List<String> amountsList = new ArrayList<>();
 
         if(queryCursor.moveToFirst()) {
             for (int i = 0; i < queryCursor.getCount(); i++) {
-                amountsList.add(queryCursor.getString(AMOUNT_COLUMN_INDEX) + "&" + queryCursor.
-                        getString(DATE_COLUMN_INDEX));
+                amountsList.add(queryCursor.getString(AMOUNT_COLUMN_INDEX) + "&" + queryCursor
+                        .getString(COD_COLUMN_INDEX));
                 queryCursor.moveToNext();
             }
         }
@@ -149,6 +151,16 @@ public class DatabaseAccess {
         }
 
         return Utilities.getLongValueFromDBDate(dbReturnedDate);
+    }
+
+    public String getDateFromCod(int cod) {
+        String sql = "SELECT %s FROM %s WHERE %s = ?";
+        sql = String.format(sql, DATE_COLUMN, AMOUNTS_TABLE, COD_COLUMN);
+        Cursor resultCur = db.rawQuery(sql, new String[]{String.valueOf(cod)});
+        resultCur.moveToFirst();
+        String date = resultCur.getString(0);
+        resultCur.close();
+        return date;
     }
 
     public SparseArray<Float> getGraphicAnalysisValues(int year) {

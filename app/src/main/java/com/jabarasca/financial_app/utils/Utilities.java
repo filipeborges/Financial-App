@@ -1,5 +1,7 @@
 package com.jabarasca.financial_app.utils;
 
+import android.util.SparseIntArray;
+
 import com.jabarasca.financial_app.R;
 
 import java.text.ParseException;
@@ -99,32 +101,27 @@ public class Utilities {
                 defaultDay);
     }
 
-    private static void sortDateListValues(List<String> amountDateValues,
-                                           List<String> orderedAllAmountsList,
-                                           List<String> dateList) {
-        String dateToCompare, amountToCompare, amount;
-        boolean dateExists = false;
-        dateList.clear();
+    private static void sortCodListValues(List<String> amountCodValues,
+                                          List<String> orderedAllAmountsList,
+                                          SparseIntArray codList) {
+        String amountToCompare, currentListValue;
+        int amountCod;
+        codList.clear();
+        for(int i = 0; i < amountCodValues.size(); i++) {
+            currentListValue = amountCodValues.get(i);
+            amountToCompare = currentListValue.substring(0, currentListValue.indexOf("&"));
+            amountCod = Integer.parseInt(
+                    currentListValue.substring(currentListValue.indexOf("&") + 1,
+                                               currentListValue.length())
+            );
 
-        for(int i = 0; i < orderedAllAmountsList.size(); i++) {
-            amount = orderedAllAmountsList.get(i);
-            for(int a = 0; a < amountDateValues.size(); a++) {
-                amountToCompare = amountDateValues.get(a).substring(0, amountDateValues.get(a).indexOf("&"));
-                dateToCompare = amountDateValues.get(a);
-                dateToCompare = dateToCompare.substring(dateToCompare.indexOf("&") + 1, dateToCompare.length());
-
-                if(amount.equals(amountToCompare)) {
-                    for(int b = 0; b < dateList.size(); b++) {
-                        if(dateList.get(b).equals(dateToCompare)) {
-                            dateExists = true;
-                            break;
-                        }
-                    }
-                    if(!dateExists) {
-                        dateList.add(dateToCompare);
+            for(int a = 0; a < orderedAllAmountsList.size(); a++) {
+                currentListValue = orderedAllAmountsList.get(a);
+                if(amountToCompare.equals(currentListValue)) {
+                    //Doesnt have the key inserted.
+                    if(codList.indexOfKey(a) < 0) {
+                        codList.append(a, amountCod);
                         break;
-                    } else {
-                        dateExists = false;
                     }
                 }
             }
@@ -134,8 +131,8 @@ public class Utilities {
     public static void sortAllAmountsList(List<String> allAmountsList,
                                           List<String> incomeAmountsList,
                                           List<String> expenseAmountsList,
-                                          List<String> dateList,
-                                          List<String> amountDateValues,
+                                          SparseIntArray codList,
+                                          List<String> amountCodValues,
                                           int typeOfSort) {
         Comparator<String> expenseAmountComparator = new Comparator<String>() {
             @Override
@@ -175,10 +172,9 @@ public class Utilities {
         }
 
         allAmountsList.clear();
-
         allAmountsList.addAll(incomeAmountsList);
         allAmountsList.addAll(expenseAmountsList);
-        sortDateListValues(amountDateValues, allAmountsList, dateList);
+        sortCodListValues(amountCodValues, allAmountsList, codList);
     }
 
 //    TODO: Parameter outOfBoundsLabel never used
