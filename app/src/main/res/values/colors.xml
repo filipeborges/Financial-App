@@ -3,7 +3,7 @@
     <color name="expense_amount_color">#c81f1f</color>
     <color name="income_amount_color">#2c9a16</color>
     <color name="action_bar_color">#023c48</color>
-    <color name="datePickerColor">#FFF</color>
+    <color name="textDialogColor">#FFF</color>
     <color name="chart_line_color">#4d4dff</color>
     <color name="chart_line_point">#0000cc</color>
 </resources>

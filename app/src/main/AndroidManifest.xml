@@ -19,10 +19,14 @@
         <activity
             android:name=".CalendarActivity"
             android:theme="@style/DialogTheme" />
-        <activity android:name=".ChartActivity"
-                android:value="com.jabarasca.financial_app.MainActivity" />
-        <activity android:name=".AmountDetailActivity"
+        <activity
+            android:name=".AmountDetailActivity"
             android:theme="@style/DialogTheme"/>
+        <activity
+            android:name=".ChartActivity"
+            android:value="com.jabarasca.financial_app.MainActivity" />
+        <activity android:name=".AddAmountActivity"
+            android:theme="@style/DialogTheme" />
     </application>
 
 </manifest>

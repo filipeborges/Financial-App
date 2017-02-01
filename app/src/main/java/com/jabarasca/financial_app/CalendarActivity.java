@@ -11,6 +11,7 @@ import android.widget.DatePicker;
 import com.jabarasca.financial_app.dao.DatabaseAccess;
 import com.jabarasca.financial_app.utils.Utilities;
 
+//TODO: Use only Activity instead of AppCompatActivity
 public class CalendarActivity extends Activity {
 
     private DatePicker datePicker;
@@ -52,7 +53,7 @@ public class CalendarActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar_layout);
-        dbAccess = DatabaseAccess.getDBAcessInstance(getApplicationContext());
+        dbAccess = DatabaseAccess.getDBAccessInstance(getApplicationContext());
         datePicker = (DatePicker)findViewById(R.id.datePicker);
 
         datePicker.findViewById(Resources.getSystem().getIdentifier("day", "id", "android"))

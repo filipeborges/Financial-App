@@ -65,11 +65,12 @@
         <item name="android:src">@drawable/graphic_neutral</item>
     </style>
 
+    <!-- TODO: Test this on API < 21 -->
     <!-- activity_calendar_layout.xml -->
     <style name="datePickerStyle">
         <item name="android:datePickerMode">spinner</item>
         <item name="android:calendarViewShown">false</item>
-        <item name="android:calendarTextColor">@color/datePickerColor</item>
+        <item name="android:calendarTextColor">@color/textDialogColor</item>
     </style>
 
     <!-- drawer_menu_item_layout.xml -->
@@ -84,6 +85,7 @@
         <item name="android:textSize">23sp</item>
     </style>
 
+    <!--TODO: Delete this XML layout-->
     <!-- add_amount_popup_layout -->
     <style name="addAmountPopupEditText">
         <item name="android:inputType">numberDecimal</item>
@@ -97,4 +99,25 @@
         <item name="android:textSize">20sp</item>
     </style>
 
+    <!--amount_dialog_layout.xml-->
+    <style name="amountDialogEditTextStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/textDialogColor</item>
+        <item name="android:textStyle">italic</item>
+        <item name="android:ems">10</item>
+        <item name="android:textColorHint">@color/textDialogColor</item>
+    </style>
+
+    <style name="amountDialogRadioBtnStyle">
+        <item name="android:textColor">@color/textDialogColor</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="amountDialogTitlePromptStyle">
+        <item name="android:textColor">@color/textDialogColor</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
 </resources>

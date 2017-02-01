@@ -29,4 +29,12 @@
 
     <string name="datepicker_title">Selecione...</string>
     <string name="amount_detail_date_title">Cadastrado em:</string>
+
+    <string name="amount_hint">Valor</string>
+    <string name="amount_title_prompt">Deseja adicionar um título:</string>
+    <string name="amount_title_no">Não</string>
+    <string name="amount_title_yes">Sim</string>
+    <string name="amount_title_hint">Título</string>
+    <string name="amount_invalid_value">Não é possível inserir o valor informado!</string>
+    <string name="amount_invalid_title">O título não pode ficar em branco!</string>
 </resources>

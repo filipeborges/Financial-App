@@ -29,9 +29,11 @@ public class DatabaseAccess {
     private final String AMOUNTS_TABLE = "tb_amount_month";
     private final String AMOUNT_COLUMN = "amount";
     private final String DATE_COLUMN = "date";
+    private final String TITLE_COLUMN = "title";
     private final String CREATE_TB_MONTH = "CREATE TABLE tb_amount_month(cod INTEGER PRIMARY KEY AUTOINCREMENT," +
                                                                         "date TEXT," +
-                                                                        "amount TEXT);";
+                                                                        "amount TEXT," +
+                                                                        "title TEXT);";
 
     private DatabaseAccess(Context context) {
         dbOpenHelper = new SQLiteOpenHelper(context, DATABASE_FILE_NAME, null, DATABASE_VERSION) {
@@ -54,7 +56,7 @@ public class DatabaseAccess {
         }
     }
 
-    public static DatabaseAccess getDBAcessInstance(Context context) {
+    public static DatabaseAccess getDBAccessInstance(Context context) {
         if(dbAccessInstance == null) {
             dbAccessInstance = new DatabaseAccess(context);
         }
@@ -78,10 +80,13 @@ public class DatabaseAccess {
     }
 
     //dateValue must be in format: YYYY-MM-DD HH:MM:SS. Return != -1 operation succeeded.
-    public long saveAmount(String amountValue, String dateValue) {
+    public long saveAmount(String amountValue, String dateValue, String titleName) {
         ContentValues mapValues = new ContentValues();
         mapValues.put(AMOUNT_COLUMN, amountValue);
         mapValues.put(DATE_COLUMN, dateValue);
+        if(titleName.length() > 0) {
+            mapValues.put(TITLE_COLUMN, titleName);
+        }
 
         return db.insert(AMOUNTS_TABLE, null, mapValues);
     }

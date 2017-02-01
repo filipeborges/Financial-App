@@ -41,7 +41,7 @@ import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.view.LineChartView;
 
 public class ChartActivity extends AppCompatActivity {
-
+    //TODO: Refactor Intent KEYs
     public static final String CHART_ACTIVITY_REQUEST = "chartActivity";
     public static final String CURRENT_DATE = "currentDate";
     public static final String CURRENT_YEAR = "currentYear";
@@ -148,7 +148,7 @@ public class ChartActivity extends AppCompatActivity {
         setActionBarCustomView(R.layout.action_bar_text_layout);
         actionBarTextView = (TextView)findViewById(R.id.actionBarTextView);
         actionBarTextView.setText(getResources().getString(R.string.actbardrawtoggle_menu_option_1));
-        dbAccess = DatabaseAccess.getDBAcessInstance(getApplicationContext());
+        dbAccess = DatabaseAccess.getDBAccessInstance(getApplicationContext());
 
         Intent intent = new Intent(activity, CalendarActivity.class);
         intent.putExtra(ChartActivity.CHART_ACTIVITY_REQUEST, true);

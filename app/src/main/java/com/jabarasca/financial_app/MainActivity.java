@@ -1,7 +1,6 @@
 package com.jabarasca.financial_app;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -65,44 +63,32 @@ public class MainActivity extends AppCompatActivity {
     private final int DAY = 3;
     private MainActivity activity;
 
-    public DialogInterface.OnClickListener addAmountDialogListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int id) {
-            EditText amountEditText = (EditText) ((Dialog) dialog).findViewById(R.id.addAmountPopupEditText);
+    public void saveAmount(String amountValue, int typeOfAmount, String titleName) {
+        double amount;
+        List<String> listToAdd;
+        int typeOfSort;
+        String format = "%.2f";
 
-            if (!amountEditText.getText().toString().equals("") &&
-                    !amountSumTextView.getText().toString().equals(OUT_OF_BOUNDS_LABEL) &&
-                    id == DialogInterface.BUTTON_POSITIVE) {
-                //"alertTitle" -> name, "id" -> defType, "android" -> package.
-                TextView alertDialogTitle = (TextView)((Dialog) dialog).findViewById(getResources().getIdentifier("alertTitle", "id", "android"));
-                double amount;
-                List<String> listToAdd;
-                int typeOfSort;
-                String format = "%.2f";
-
-                //If its a income amount.
-                if(alertDialogTitle.getText().equals(getString(R.string.income_title))) {
-                    amount = Double.parseDouble(amountEditText.getText().toString());
-                    format = "+" + format;
-                    listToAdd = incomeAmountsList;
-                    typeOfSort = Utilities.INCOME_SORT;
-                } else {
-                    amount = Double.parseDouble(amountEditText.getText().toString()) * -1;
-                    listToAdd = expenseAmountsList;
-                    typeOfSort = Utilities.EXPENSE_SORT;
-                }
-
-                String amountString = String.format(format, amount);
-                dbAccess.saveAmount(amountString, Utilities.formatDbDateWithTimeFromDatePicker(
-                        selectedDateForQuery[DAY], selectedDateForQuery[MONTH],
-                        selectedDateForQuery[YEAR])
-                );
-                listToAdd.add(amountString);
-                updateAmountsOnScreenWithActionBarDate(typeOfSort);
-            }
-            drawerLayout.closeDrawers();
+        if(typeOfAmount == AddAmountActivity.INCOME_AMOUNT) {
+            amount = Double.parseDouble(amountValue);
+            format = "+" + format;
+            listToAdd = incomeAmountsList;
+            typeOfSort = Utilities.INCOME_SORT;
+        } else {
+            amount = Double.parseDouble(amountValue) * -1;
+            listToAdd = expenseAmountsList;
+            typeOfSort = Utilities.EXPENSE_SORT;
         }
-    };
+
+        String amountString = String.format(format, amount);
+        dbAccess.saveAmount(amountString, Utilities.formatDbDateWithTimeFromDatePicker(
+                selectedDateForQuery[DAY], selectedDateForQuery[MONTH],
+                selectedDateForQuery[YEAR]), titleName
+        );
+
+        listToAdd.add(amountString);
+        updateAmountsOnScreenWithActionBarDate(typeOfSort);
+    }
 
     public void updateAmountsOnScreenWithActionBarDate(int typeOfSort) {
         String date = Utilities.formatDbDateFromActionBarDate(actionBarFormattedDate);
@@ -118,10 +104,7 @@ public class MainActivity extends AppCompatActivity {
     public AdapterView.OnItemClickListener addMenuItemListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            //AlertDialog.Builder constructor must use Activity reference instead of Context.
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
-            String title;
-
+            String title = "";
             switch (position) {
                 case EXPENSE_LISTVIEW_POSITION:
                     title = getString(R.string.expense_title);
@@ -129,16 +112,11 @@ public class MainActivity extends AppCompatActivity {
                 case INCOME_LISTVIEW_POSITION:
                     title = getString(R.string.income_title);
                     break;
-                default:
-                    throw new IllegalArgumentException("Invalid ListView position: "+position);
             }
-
-            alertDialog.setNegativeButton(getResources().getString(R.string.negative_button_message), addAmountDialogListener);
-            alertDialog.setPositiveButton(getResources().getString(R.string.positive_button_message), addAmountDialogListener);
-            alertDialog.setTitle(title);
-            alertDialog.setMessage(getString(R.string.income_expense_popup_message));
-            alertDialog.setView(inflater.inflate(R.layout.add_amount_popup_layout, null));
-            alertDialog.show();
+            Intent intent = new Intent(activity, AddAmountActivity.class);
+            intent.putExtra(AddAmountActivity.KEY_ADD_AMOUNT_TITLE, title);
+            intent.putExtra(AddAmountActivity.KEY_TOTAL_AMOUNT, amountSumTextView.getText().toString());
+            activity.startActivityForResult(intent, AddAmountActivity.ADD_AMOUNT_ACTIVITY_CODE);
         }
     };
 
@@ -215,10 +193,19 @@ public class MainActivity extends AppCompatActivity {
                         menu.findItem(R.id.addButton).setVisible(false);
                     }
                     break;
+                case AddAmountActivity.ADD_AMOUNT_ACTIVITY_CODE:
+                    drawerLayout.closeDrawers();
+                    int typeOfAmount = data.getIntExtra(AddAmountActivity
+                            .KEY_TYPE_AMOUNT_RETURNED, 0);
+                    String amount = data.getStringExtra(AddAmountActivity.KEY_AMOUNT_RETURNED);
+                    String title = data.getStringExtra(AddAmountActivity.KEY_TITLE_NAME_RETURNED);
+                    saveAmount(amount, typeOfAmount, title);
+                    break;
             }
         } else {
             selectedDateForQuery[CONTAINS_DATA] = 0;
-            if(requestCode == ChartActivity.CHART_ACTIVITY_CODE) {
+            if(requestCode == ChartActivity.CHART_ACTIVITY_CODE ||
+                    requestCode == AddAmountActivity.ADD_AMOUNT_ACTIVITY_CODE) {
                 drawerLayout.closeDrawers();
             }
         }
@@ -227,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        dbAccess = DatabaseAccess.getDBAcessInstance(getApplicationContext());
+        dbAccess = DatabaseAccess.getDBAccessInstance(getApplicationContext());
         if(dbAccess.databaseCanWrite()) {
             switch(activityRequestCode) {
                 case AmountDetailActivity.AMOUNT_DETAIL_ACTIV_CODE:
@@ -264,9 +251,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Caution: This method needs to run very quickly.
+    //TODO: Database cannot be closed on onPause() anymore.
     @Override
     protected void onPause() {
-        dbAccess.closeDatabase();
+        //dbAccess.closeDatabase();
         super.onPause();
     }
 

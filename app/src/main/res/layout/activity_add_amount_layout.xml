@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="235dp"
+    android:id="@+id/amountDialogRelLay"
+    style="@style/dialogRelLay">
+
+    <TextView
+        android:id="@+id/amountDialogName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        style="@style/actionBarTextViewStyle"/>
+
+    <EditText
+        android:id="@+id/amountEditText"
+        android:inputType="numberDecimal"
+        android:maxLength="6"
+        android:layout_marginTop="20dp"
+        android:hint="@string/amount_hint"
+        android:layout_below="@+id/amountDialogName"
+        android:layout_centerHorizontal="true"
+        style="@style/amountDialogEditTextStyle" />
+
+    <TextView
+        android:id="@+id/titlePromptEditText"
+        android:text="@string/amount_title_prompt"
+        android:layout_below="@+id/amountEditText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        style="@style/amountDialogTitlePromptStyle" />
+
+    <RadioButton
+        android:id="@+id/titleNoRadioBtn"
+        android:text="@string/amount_title_no"
+        android:layout_marginTop="5dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="30dp"
+        android:layout_below="@+id/titlePromptEditText"
+        android:checked="true"
+        style="@style/amountDialogRadioBtnStyle" />
+
+    <RadioButton
+        android:id="@+id/titleYesRadioBtn"
+        android:text="@string/amount_title_yes"
+        android:layout_below="@+id/titlePromptEditText"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="5dp"
+        style="@style/amountDialogRadioBtnStyle" />
+
+    <EditText
+        android:id="@+id/titleEditText"
+        android:layout_below="@+id/titleYesRadioBtn"
+        android:layout_centerHorizontal="true"
+        android:maxLength="15"
+        android:visibility="invisible"
+        android:layout_marginTop="10dp"
+        android:hint="@string/amount_title_hint"
+        style="@style/amountDialogEditTextStyle"/>
+
+    <Button
+        android:text="@string/positive_button_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/titleNoRadioBtn"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="30dp"
+        android:id="@+id/amountDialogButtonOk" />
+
+    <Button
+        android:text="@string/negative_button_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/titleYesRadioBtn"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="30dp"
+        android:id="@+id/amountDialogButtonCancel" />
+
+</RelativeLayout>
