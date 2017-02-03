@@ -80,6 +80,8 @@ public class ChartActivity extends AppCompatActivity {
         }
     };
 
+    //TODO: Click on actual month needs to pass some parameter back to MainActivity to enable + on
+    //Action Bar.
     private LineChartOnValueSelectListener chartValueSelectListener = new LineChartOnValueSelectListener() {
         @Override
         public void onValueSelected(int lineIndex, int pointIndex, PointValue value) {

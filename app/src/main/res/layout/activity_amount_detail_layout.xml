@@ -6,17 +6,28 @@
     tools:context="com.jabarasca.financial_app.AmountDetailActivity">
 
     <TextView
+        android:id="@+id/amountDetailTitleValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:textColor="@color/textDialogColor"
+        android:textStyle="bold"
+        android:textSize="22sp" />
+
+    <TextView
         android:textSize="22sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="80dp"
+        android:layout_below="@id/amountDetailTitleValue"
+        android:layout_marginTop="100dp"
         android:id="@+id/amountDetailValue" />
 
     <TextView
         android:text="@string/amount_detail_date_title"
-        android:textColor="#FFF"
+        android:textColor="@color/textDialogColor"
         android:textStyle="italic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -27,7 +38,7 @@
 
     <TextView
         android:textSize="18sp"
-        android:textColor="#FFF"
+        android:textColor="@color/textDialogColor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"

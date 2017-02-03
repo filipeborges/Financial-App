@@ -179,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
         activityRequestCode = 0;
         if(resultCode == RESULT_OK) {
             activityRequestCode = requestCode;
+            dbAccess = DatabaseAccess.getDBAccessInstance(getApplicationContext());
             switch(requestCode) {
                 case ChartActivity.CHART_ACTIVITY_CODE:
                     drawerLayout.closeDrawers();
@@ -252,11 +253,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Caution: This method needs to run very quickly.
-    //TODO: Database cannot be closed on onPause() anymore.
     @Override
     protected void onPause() {
-        //dbAccess.closeDatabase();
+        dbAccess.closeDatabase();
         super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        dbAccess.closeSqlStatements();
+        super.onStop();
     }
 
     @Override
@@ -505,7 +511,9 @@ public class MainActivity extends AppCompatActivity {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(activity, AmountDetailActivity.class);
                 String date = dbAccess.getDateFromCod(codList.get(position));
+                String title = dbAccess.getTitleFromCod(codList.get(position));
                 intent.putExtra(AmountDetailActivity.KEY_INTENT_DATE, date);
+                intent.putExtra(AmountDetailActivity.KEY_INTENT_AMOUNT_TITLE, title);
                 intent.putExtra(AmountDetailActivity.KEY_INTENT_AMOUNT, allAmountsList.get(position));
                 activity.startActivityForResult(intent, AmountDetailActivity.AMOUNT_DETAIL_ACTIV_CODE);
                 return true;

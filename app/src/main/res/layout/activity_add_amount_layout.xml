@@ -62,22 +62,26 @@
 
     <Button
         android:text="@string/positive_button_message"
-        android:layout_width="wrap_content"
+        android:layout_width="95dp"
+        android:textSize="14sp"
+        android:textColor="@color/button_text_color"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_below="@+id/titleNoRadioBtn"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="30dp"
+        android:layout_marginRight="15dp"
         android:id="@+id/amountDialogButtonOk" />
 
     <Button
         android:text="@string/negative_button_message"
-        android:layout_width="wrap_content"
+        android:textSize="14sp"
+        android:textColor="@color/button_text_color"
+        android:layout_width="95dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_below="@+id/titleYesRadioBtn"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="30dp"
+        android:layout_marginLeft="15dp"
         android:id="@+id/amountDialogButtonCancel" />
 
 </RelativeLayout>

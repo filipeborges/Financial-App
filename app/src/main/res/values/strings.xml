@@ -16,7 +16,7 @@
     <string name="actbardrawtoggle_menu_option_1">Acompanhamento Anual</string>
 
     <string name="expense_title">Adicionar Despesa</string>
-    <string name="income_title">Adicionar Renda</string>
+    <string name="income_title">Adicionar Receita</string>
     <string name="income_expense_popup_message">Valor:</string>
     <string name="negative_button_message">Cancelar</string>
     <string name="positive_button_message">@android:string/ok</string>
@@ -37,4 +37,5 @@
     <string name="amount_title_hint">Título</string>
     <string name="amount_invalid_value">Não é possível inserir o valor informado!</string>
     <string name="amount_invalid_title">O título não pode ficar em branco!</string>
+    <string name="amount_without_title">Sem título</string>
 </resources>

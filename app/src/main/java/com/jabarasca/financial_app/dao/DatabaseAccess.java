@@ -26,13 +26,12 @@ public class DatabaseAccess {
     private SQLiteStatement minPickerSqlStmntMainActv;
     private SQLiteStatement maxPickerSqlStmntMainActv;
     private boolean can_write = true;
-    //TODO: Refactor table name to tb_amount
-    private final String AMOUNTS_TABLE = "tb_amount_month";
+    private final String AMOUNTS_TABLE = "tb_amount";
     private final String AMOUNT_COLUMN = "amount";
     private final String DATE_COLUMN = "date";
     private final String TITLE_COLUMN = "title";
     private final String COD_COLUMN = "cod";
-    private final String CREATE_TB_MONTH = "CREATE TABLE tb_amount_month(cod INTEGER PRIMARY KEY AUTOINCREMENT," +
+    private final String CREATE_TB_MONTH = "CREATE TABLE tb_amount(cod INTEGER PRIMARY KEY AUTOINCREMENT," +
                                                                         "date TEXT," +
                                                                         "amount TEXT," +
                                                                         "title TEXT);";
@@ -70,13 +69,18 @@ public class DatabaseAccess {
         return can_write;
     }
 
-    public void closeDatabase() {
+    public void closeSqlStatements() {
         if(minPickerSqlStmntMainActv != null) {
             minPickerSqlStmntMainActv.close();
+            minPickerSqlStmntMainActv = null;
         }
         if(maxPickerSqlStmntMainActv != null) {
             maxPickerSqlStmntMainActv.close();
+            maxPickerSqlStmntMainActv = null;
         }
+    }
+
+    public void closeDatabase() {
         db.close();
         dbAccessInstance = null;
     }
@@ -97,11 +101,11 @@ public class DatabaseAccess {
     public int removeAmount(String amountValue, String date) {
         String queryFilter = String.format("%s = '%s' AND %s = '%s'", DATE_COLUMN, date,
                 AMOUNT_COLUMN, amountValue);
-        String subQueryFilter = "SELECT cod FROM tb_amount_month WHERE " + queryFilter;
-        String deleteFilter = "cod IN (" + subQueryFilter + ");";
-        int returnValue = db.delete(AMOUNTS_TABLE, deleteFilter, null);
-
-        return returnValue;
+        String subQueryFilter = "SELECT %s FROM %s WHERE " + queryFilter;
+        subQueryFilter = String.format(subQueryFilter, COD_COLUMN, AMOUNTS_TABLE);
+        String deleteFilter = "%s IN (" + subQueryFilter + ");";
+        deleteFilter = String.format(deleteFilter, COD_COLUMN);
+        return db.delete(AMOUNTS_TABLE, deleteFilter, null);
     }
 
     //actualFormattedDate must be in format: YYYY-MM-DD only.
@@ -151,6 +155,16 @@ public class DatabaseAccess {
         }
 
         return Utilities.getLongValueFromDBDate(dbReturnedDate);
+    }
+
+    public String getTitleFromCod(int cod) {
+        String sql = "SELECT %s FROM %s WHERE %s = ?";
+        sql = String.format(sql, TITLE_COLUMN, AMOUNTS_TABLE, COD_COLUMN);
+        Cursor resultCur = db.rawQuery(sql, new String[]{String.valueOf(cod)});
+        resultCur.moveToFirst();
+        String title = resultCur.getString(0);
+        resultCur.close();
+        return title;
     }
 
     public String getDateFromCod(int cod) {

@@ -117,12 +117,10 @@ public class Utilities {
 
             for(int a = 0; a < orderedAllAmountsList.size(); a++) {
                 currentListValue = orderedAllAmountsList.get(a);
-                if(amountToCompare.equals(currentListValue)) {
-                    //Doesnt have the key inserted.
-                    if(codList.indexOfKey(a) < 0) {
-                        codList.append(a, amountCod);
-                        break;
-                    }
+                //Doesnt have the key inserted.
+                if(amountToCompare.equals(currentListValue) && codList.indexOfKey(a) < 0) {
+                    codList.append(a, amountCod);
+                    break;
                 }
             }
         }

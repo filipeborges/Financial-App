@@ -26,6 +26,7 @@
             android:name=".ChartActivity"
             android:value="com.jabarasca.financial_app.MainActivity" />
         <activity android:name=".AddAmountActivity"
+            android:windowSoftInputMode="stateVisible"
             android:theme="@style/DialogTheme" />
     </application>
 
