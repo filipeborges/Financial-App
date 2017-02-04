@@ -63,7 +63,7 @@
     <Button
         android:text="@string/positive_button_message"
         android:layout_width="95dp"
-        android:textSize="14sp"
+        android:textSize="12sp"
         android:textColor="@color/button_text_color"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -74,7 +74,7 @@
 
     <Button
         android:text="@string/negative_button_message"
-        android:textSize="14sp"
+        android:textSize="12sp"
         android:textColor="@color/button_text_color"
         android:layout_width="95dp"
         android:layout_height="wrap_content"

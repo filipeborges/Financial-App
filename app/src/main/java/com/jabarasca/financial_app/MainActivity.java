@@ -36,7 +36,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 //Obs: Normal actionBar from Activity doesnt show hamburguer icon.
-public class MainActivity extends AppCompatActivity {
+public class  MainActivity extends AppCompatActivity {
 
     public ActionBarDrawerToggle actionBarDrawerToggle;
     public View rightDrawerListView;
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
             switch (position) {
                 case CHART_ANALYSIS:
                     Intent intent = new Intent(activity, ChartActivity.class);
-                    intent.putExtra(ChartActivity.CURRENT_DATE, actionBarFormattedDate);
+                    intent.putExtra(ChartActivity.KEY_CURRENT_DATE, actionBarFormattedDate);
                     activity.startActivityForResult(intent, ChartActivity.CHART_ACTIVITY_CODE);
                     break;
             }

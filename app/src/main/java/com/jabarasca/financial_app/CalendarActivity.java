@@ -1,9 +1,9 @@
 package com.jabarasca.financial_app;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -11,8 +11,7 @@ import android.widget.DatePicker;
 import com.jabarasca.financial_app.dao.DatabaseAccess;
 import com.jabarasca.financial_app.utils.Utilities;
 
-//TODO: Use only Activity instead of AppCompatActivity
-public class CalendarActivity extends Activity {
+public class CalendarActivity extends AppCompatActivity {
 
     private DatePicker datePicker;
     private DatabaseAccess dbAccess;
@@ -61,12 +60,12 @@ public class CalendarActivity extends Activity {
         Button okButton = (Button)findViewById(R.id.datePickerButton);
         okButton.setOnClickListener(okListener);
         isChartActivityRequest = getIntent()
-                .getBooleanExtra(ChartActivity.CHART_ACTIVITY_REQUEST, false);
+                .getBooleanExtra(ChartActivity.KEY_CHART_ACTIVITY_REQUEST, false);
 
         if(isChartActivityRequest) {
             datePicker.findViewById(Resources.getSystem().getIdentifier("month", "id", "android"))
                     .setVisibility(View.GONE);
-            int currentYear = getIntent().getIntExtra(ChartActivity.CURRENT_YEAR, 0);
+            int currentYear = getIntent().getIntExtra(ChartActivity.KEY_CURRENT_YEAR, 0);
             //Only the year is important.
             datePicker.updateDate(currentYear, 0, DEFAULT_DAY);
         }

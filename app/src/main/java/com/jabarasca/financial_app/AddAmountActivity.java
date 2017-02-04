@@ -2,9 +2,9 @@ package com.jabarasca.financial_app;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +15,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class AddAmountActivity extends Activity {
+public class AddAmountActivity extends AppCompatActivity {
 
     public static final String KEY_ADD_AMOUNT_TITLE = "com.jabarasca.financial_app.DIALOG_TITLE";
     public static final String KEY_TOTAL_AMOUNT = "com.jabarasca.financial_app.TOTAL";

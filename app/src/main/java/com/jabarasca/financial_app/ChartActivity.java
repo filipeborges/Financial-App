@@ -41,10 +41,9 @@ import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.view.LineChartView;
 
 public class ChartActivity extends AppCompatActivity {
-    //TODO: Refactor Intent KEYs
-    public static final String CHART_ACTIVITY_REQUEST = "chartActivity";
-    public static final String CURRENT_DATE = "currentDate";
-    public static final String CURRENT_YEAR = "currentYear";
+    public static final String KEY_CHART_ACTIVITY_REQUEST = "com.jabarasca.financial_app.CHART_REQ";
+    public static final String KEY_CURRENT_DATE = "com.jabarasca.financial_app.DATE";
+    public static final String KEY_CURRENT_YEAR = "com.jabarasca.financial_app.YEAR";
     public static final int CHART_ACTIVITY_CODE = 2;
 
     private final int INVALID_CHART_VALUE = -1;
@@ -80,8 +79,6 @@ public class ChartActivity extends AppCompatActivity {
         }
     };
 
-    //TODO: Click on actual month needs to pass some parameter back to MainActivity to enable + on
-    //Action Bar.
     private LineChartOnValueSelectListener chartValueSelectListener = new LineChartOnValueSelectListener() {
         @Override
         public void onValueSelected(int lineIndex, int pointIndex, PointValue value) {
@@ -144,7 +141,7 @@ public class ChartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chart_layout);
 
         activity = this;
-        String actBarCurrentDate = getIntent().getStringExtra(CURRENT_DATE);
+        String actBarCurrentDate = getIntent().getStringExtra(KEY_CURRENT_DATE);
         int currentYear = Integer.parseInt(actBarCurrentDate.substring(4));
 
         setActionBarCustomView(R.layout.action_bar_text_layout);
@@ -153,8 +150,8 @@ public class ChartActivity extends AppCompatActivity {
         dbAccess = DatabaseAccess.getDBAccessInstance(getApplicationContext());
 
         Intent intent = new Intent(activity, CalendarActivity.class);
-        intent.putExtra(ChartActivity.CHART_ACTIVITY_REQUEST, true);
-        intent.putExtra(ChartActivity.CURRENT_YEAR, currentYear);
+        intent.putExtra(ChartActivity.KEY_CHART_ACTIVITY_REQUEST, true);
+        intent.putExtra(ChartActivity.KEY_CURRENT_YEAR, currentYear);
 
         activity.startActivityForResult(intent, CalendarActivity.CALENDAR_ACTIVITY_CODE);
     }
@@ -172,10 +169,17 @@ public class ChartActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.detailButton) {
+            String pointDate = Utilities.formatDbDateFromDatePicker(CalendarActivity.DEFAULT_DAY,
+                    chartSelectedMonth, selectedYear);
+            pointDate = pointDate.substring(0,7);
+            String currentDate = Utilities.getNowDbDateWithoutTime();
+            currentDate = currentDate.substring(0,7);
+
             Intent intent = new Intent();
             intent.putExtra(Utilities.KEY_INTENT_DAY, CalendarActivity.DEFAULT_DAY);
             intent.putExtra(Utilities.KEY_INTENT_MONTH, chartSelectedMonth);
             intent.putExtra(Utilities.KEY_INTENT_YEAR, selectedYear);
+            intent.putExtra(Utilities.KEY_INTENT_COMPARE_DATE, pointDate.equals(currentDate));
             setResult(RESULT_OK, intent);
             finish();
             return true;

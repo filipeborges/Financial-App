@@ -1,14 +1,14 @@
 package com.jabarasca.financial_app;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.jabarasca.financial_app.utils.Utilities;
 
-public class AmountDetailActivity extends Activity {
+public class AmountDetailActivity extends AppCompatActivity {
 
     public static final int AMOUNT_DETAIL_ACTIV_CODE = 3;
     public static final String KEY_INTENT_DATE = "com.jabarasca.financial_app.DATE";

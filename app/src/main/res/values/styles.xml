@@ -21,6 +21,7 @@
     <style name="DialogTheme"
         parent="@style/Theme.AppCompat.Light.Dialog">
         <!-- Changes the datepicker text color -->
+        <item name="windowNoTitle">true</item>
         <item name="android:textColorPrimary">#FFF</item>
     </style>
 

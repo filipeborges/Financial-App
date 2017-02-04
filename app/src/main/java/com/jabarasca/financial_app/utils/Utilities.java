@@ -18,6 +18,7 @@ public class Utilities {
     public static final int INCOME_SORT = 1;
     public static final int EXPENSE_SORT = 2;
     public static final int INCOME_EXPENSE_SORT = 3;
+    //TODO: Unify all intent Keys on Utilities class.
     public static final String KEY_INTENT_DAY = "com.jabarasca.financial_app.DAY";
     public static final String KEY_INTENT_MONTH = "com.jabarasca.financial_app.MONTH";
     public static final String KEY_INTENT_YEAR = "com.jabarasca.financial_app.YEAR";
