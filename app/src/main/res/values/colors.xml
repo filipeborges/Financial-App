@@ -4,8 +4,7 @@
     <color name="income_amount_color">#2c9a16</color>
     <color name="action_bar_color">#023c48</color>
     <color name="textDialogColor">#FFF</color>
-    <color name="chart_line_color">#4d4dff</color>
-    <color name="chart_line_point">#0000cc</color>
+    <color name="chart_line_color">#007693</color>
     <color name="button_text_color">#000</color>
     <color name="button_bckgnd_color">#d6d7d7</color>
     <color name="radion_edit_text_color">#009588</color>

@@ -176,7 +176,6 @@ public class Utilities {
         sortCodListValues(amountCodValues, allAmountsList, codList);
     }
 
-//    TODO: Parameter outOfBoundsLabel never used
     public static String sumIncomeExpenseItems(List<String> allAmountsListItems, String outOfBoundsLabel) {
         final double INVALID_SIGNAL = 99.99;
         double totalSum = 0.0;

@@ -110,10 +110,15 @@ public class DatabaseAccess {
 
     //actualFormattedDate must be in format: YYYY-MM-DD only.
     public List<String> getSpecificMonthlyAmounts(String actualFormattedDate) {
-        String queryFilter = "STRFTIME('%Y-%m'," + DATE_COLUMN + ")" +
-                "= STRFTIME('%Y-%m','" + actualFormattedDate + "');";
-        Cursor queryCursor = db.query(AMOUNTS_TABLE, new String[]{AMOUNT_COLUMN, COD_COLUMN},
-                queryFilter, null, null, null, null, null);
+        String queryFilter = "WHERE STRFTIME('%Y-%m'," + DATE_COLUMN + ")" + " = " +
+                "STRFTIME('%Y-%m','" + actualFormattedDate + "')";
+        String orderBy = "ORDER BY %s DESC";
+        orderBy = String.format(orderBy, DATE_COLUMN);
+        String sql = "SELECT %s, %s, %s FROM %s";
+        //OBS: DATE_COLUMN is used only to use ORDER BY by date.
+        sql = String.format(sql, AMOUNT_COLUMN, COD_COLUMN, DATE_COLUMN, AMOUNTS_TABLE);
+        sql = sql + " " + queryFilter + " " + orderBy;
+        Cursor queryCursor = db.rawQuery(sql, null);
 
         final int AMOUNT_COLUMN_INDEX = 0, COD_COLUMN_INDEX = 1;
         List<String> amountsList = new ArrayList<>();

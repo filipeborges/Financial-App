@@ -1,13 +1,14 @@
 package com.jabarasca.financial_app;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -50,11 +52,11 @@ public class ChartActivity extends AppCompatActivity {
 
     private int selectedYear;
     private int chartSelectedMonth = INVALID_CHART_VALUE;
+    private int oldChartSelectedMonth;
     private MenuItem detailButton;
     private Menu menu;
     private ChartActivity activity;
     private DatabaseAccess dbAccess;
-    private Handler handler = new Handler(Looper.getMainLooper());
     private TextView actionBarTextView;
     private Bitmap lineChartBitmap;
     private AxisValueFormatter axisValueFormatter = new AxisValueFormatter() {
@@ -65,11 +67,21 @@ public class ChartActivity extends AppCompatActivity {
          */
         @Override
         public int formatValueForManualAxis(char[] formattedValue, AxisValue axisValue) {
-            int axisCalendarValue = (int)axisValue.getValue() - 1;
-            String month = Utilities.getActionBarMonthFromDatePickerMonth(axisCalendarValue);
-            formattedValue[0] = month.charAt(0);
-            formattedValue[1] = month.charAt(1);
-            formattedValue[2] = month.charAt(2);
+            //Clean the array.
+            for(int i = 0; i < formattedValue.length; i++) {
+                formattedValue[i] = '\0';
+            }
+            if(axisValue.getValue() == 0) {
+                formattedValue[0] = '0';
+                formattedValue[1] = ',';
+                formattedValue[2] = '0';
+            } else {
+                int axisCalendarValue = (int)axisValue.getValue() - 1;
+                String month = Utilities.getActionBarMonthFromDatePickerMonth(axisCalendarValue);
+                formattedValue[0] = month.charAt(0);
+                formattedValue[1] = month.charAt(1);
+                formattedValue[2] = month.charAt(2);
+            }
             return formattedValue.length;
         }
 
@@ -82,37 +94,67 @@ public class ChartActivity extends AppCompatActivity {
     private LineChartOnValueSelectListener chartValueSelectListener = new LineChartOnValueSelectListener() {
         @Override
         public void onValueSelected(int lineIndex, int pointIndex, PointValue value) {
+            oldChartSelectedMonth = chartSelectedMonth;
             chartSelectedMonth = (int)value.getX() - 1;
             updateActionBar();
         }
         @Override
         public void onValueDeselected() {
+            oldChartSelectedMonth = chartSelectedMonth;
             chartSelectedMonth = INVALID_CHART_VALUE;
             updateActionBar();
         }
     };
 
+    private void startActBarTextAnimation(final boolean expand) {
+        float startValue = expand ? 18f : 20f;
+        float endValue = expand ? 20f : 18f;
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(actionBarTextView,
+                "textSize", startValue, endValue);
+        objectAnimator.setDuration(90);
+        objectAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                actionBarTextView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            }
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                actionBarTextView.setLayerType(View.LAYER_TYPE_NONE, null);
+                if(expand) {
+                    detailButton.setVisible(false);
+                } else {
+                    detailButton.setVisible(true);
+                }
+            }
+            @Override
+            public void onAnimationCancel(Animator animation) {}
+            @Override
+            public void onAnimationRepeat(Animator animation) {}
+        });
+        objectAnimator.start();
+    }
+
     private void updateActionBar() {
-        if(chartSelectedMonth != INVALID_CHART_VALUE) {
-            detailButton.setVisible(true);
-        } else {
+        if(oldChartSelectedMonth == INVALID_CHART_VALUE && chartSelectedMonth != INVALID_CHART_VALUE) {
+            startActBarTextAnimation(false);
+        } else if(
+                    oldChartSelectedMonth != INVALID_CHART_VALUE
+                    && chartSelectedMonth == INVALID_CHART_VALUE
+                ) {
             detailButton.setVisible(false);
+            startActBarTextAnimation(true);
         }
     }
 
     private LineChartValueFormatter lineLabelFormatter = new LineChartValueFormatter() {
         @Override
         public int formatChartValue(char[] formattedValue, PointValue value) {
-            int arrayLength = formattedValue.length;
-            for(int i = 0; i < arrayLength; i++) {
-                if(formattedValue[i] == '\0') {
-                    break;
-                } else {
-                    formattedValue[i] = '\0';
-                }
+            //Clean the array.
+            for(int i = 0; i < formattedValue.length; i++) {
+                formattedValue[i] = '\0';
             }
             String yValue = String.format("%.2f", value.getY());
-            arrayLength = yValue.length();
+            int arrayLength = yValue.length();
 
             for(int i = 0; i < arrayLength; i++) {
                 formattedValue[i] = yValue.charAt(i);
@@ -210,18 +252,33 @@ public class ChartActivity extends AppCompatActivity {
             amountLine.setHasLines(true);
             amountLine.setHasLabelsOnlyForSelected(true);
             amountLine.setFormatter(lineLabelFormatter);
-            amountLine.setPointColor(getResources().getColor(R.color.chart_line_point));
+            amountLine.setPointColor(getResources().getColor(R.color.action_bar_color));
             List<Line> lines = new ArrayList<>();
             lines.add(amountLine);
 
+            Typeface italicTypeface = Typeface.defaultFromStyle(Typeface.ITALIC);
             Axis axisX = Axis.generateAxisFromRange(1,12,(float)1);
             axisX.setMaxLabelChars(1);
             axisX.setFormatter(axisValueFormatter);
             axisX.setTextColor(Color.BLACK);
+            axisX.setTypeface(italicTypeface);
             axisX.setTextSize(Axis.DEFAULT_TEXT_SIZE_SP);
+
+            List<AxisValue> axisValues = new ArrayList<>();
+            AxisValue axisValue = new AxisValue(0);
+            axisValues.add(axisValue);
+            Axis axisY = new Axis(axisValues);
+            axisY.setFormatter(axisValueFormatter);
+            axisY.setTextColor(Color.BLACK);
+            axisY.setHasLines(true);
+            axisY.setTypeface(italicTypeface);
+            axisY.setTextSize(Axis.DEFAULT_TEXT_SIZE_SP);
+            axisY.setLineColor(getResources().getColor(R.color.action_bar_color));
+            axisY.setHasSeparationLine(false);
 
             LineChartData data = new LineChartData();
             data.setAxisXBottom(axisX);
+            data.setAxisYRight(axisY);
             data.setLines(lines);
 
             LineChartView lineChart = (LineChartView)findViewById(R.id.lineChartView);
