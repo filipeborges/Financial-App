@@ -34,7 +34,7 @@
     <RadioButton
         android:id="@+id/titleNoRadioBtn"
         android:text="@string/amount_title_no"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="8dp"
         android:layout_alignParentRight="true"
         android:layout_marginRight="30dp"
         android:layout_below="@+id/titlePromptEditText"
@@ -47,7 +47,7 @@
         android:layout_below="@+id/titlePromptEditText"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="30dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="8dp"
         style="@style/amountDialogRadioBtnStyle" />
 
     <EditText
@@ -66,7 +66,7 @@
         android:textSize="12sp"
         android:textColor="@color/button_text_color"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:layout_below="@+id/titleNoRadioBtn"
         android:layout_alignParentRight="true"
         android:layout_marginRight="15dp"
@@ -78,7 +78,7 @@
         android:textColor="@color/button_text_color"
         android:layout_width="95dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:layout_below="@+id/titleYesRadioBtn"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="15dp"

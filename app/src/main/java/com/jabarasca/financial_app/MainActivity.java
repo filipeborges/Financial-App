@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jabarasca.financial_app.dao.DatabaseAccess;
+import com.jabarasca.financial_app.utils.Constant;
 import com.jabarasca.financial_app.utils.SwipeDismissListViewTouchListener;
 import com.jabarasca.financial_app.utils.Utilities;
 
@@ -115,8 +116,8 @@ public class  MainActivity extends AppCompatActivity {
                     break;
             }
             Intent intent = new Intent(activity, AddAmountActivity.class);
-            intent.putExtra(AddAmountActivity.KEY_ADD_AMOUNT_TITLE, title);
-            intent.putExtra(AddAmountActivity.KEY_TOTAL_AMOUNT, amountSumTextView.getText().toString());
+            intent.putExtra(Constant.KEY_INTENT_TITLE, title);
+            intent.putExtra(Constant.KEY_INTENT_AMOUNT, amountSumTextView.getText().toString());
             activity.startActivityForResult(intent, AddAmountActivity.ADD_AMOUNT_ACTIVITY_CODE);
         }
     };
@@ -129,7 +130,7 @@ public class  MainActivity extends AppCompatActivity {
             switch (position) {
                 case CHART_ANALYSIS:
                     Intent intent = new Intent(activity, ChartActivity.class);
-                    intent.putExtra(ChartActivity.KEY_CURRENT_DATE, actionBarFormattedDate);
+                    intent.putExtra(Constant.KEY_INTENT_DATE, actionBarFormattedDate);
                     activity.startActivityForResult(intent, ChartActivity.CHART_ACTIVITY_CODE);
                     break;
             }
@@ -185,11 +186,11 @@ public class  MainActivity extends AppCompatActivity {
                     drawerLayout.closeDrawers();
                 case CalendarActivity.CALENDAR_ACTIVITY_CODE:
                     selectedDateForQuery[CONTAINS_DATA] = 1;
-                    selectedDateForQuery[YEAR] = data.getIntExtra(Utilities.KEY_INTENT_YEAR, 0);
-                    selectedDateForQuery[MONTH] = data.getIntExtra(Utilities.KEY_INTENT_MONTH, 0);
-                    selectedDateForQuery[DAY] = data.getIntExtra(Utilities.KEY_INTENT_DAY, 0);
-                    isAddButtonHided = !data.getBooleanExtra(Utilities.KEY_INTENT_COMPARE_DATE, false);
-                    if(data.getBooleanExtra(Utilities.KEY_INTENT_COMPARE_DATE, false)) {
+                    selectedDateForQuery[YEAR] = data.getIntExtra(Constant.KEY_INTENT_YEAR, 0);
+                    selectedDateForQuery[MONTH] = data.getIntExtra(Constant.KEY_INTENT_MONTH, 0);
+                    selectedDateForQuery[DAY] = data.getIntExtra(Constant.KEY_INTENT_DAY, 0);
+                    isAddButtonHided = !data.getBooleanExtra(Constant.KEY_INTENT_COMPARE_DATE, false);
+                    if(data.getBooleanExtra(Constant.KEY_INTENT_COMPARE_DATE, false)) {
                         menu.findItem(R.id.addButton).setVisible(true);
                     } else {
                         menu.findItem(R.id.addButton).setVisible(false);
@@ -197,10 +198,9 @@ public class  MainActivity extends AppCompatActivity {
                     break;
                 case AddAmountActivity.ADD_AMOUNT_ACTIVITY_CODE:
                     drawerLayout.closeDrawers();
-                    int typeOfAmount = data.getIntExtra(AddAmountActivity
-                            .KEY_TYPE_AMOUNT_RETURNED, 0);
-                    String amount = data.getStringExtra(AddAmountActivity.KEY_AMOUNT_RETURNED);
-                    String title = data.getStringExtra(AddAmountActivity.KEY_TITLE_NAME_RETURNED);
+                    int typeOfAmount = data.getIntExtra(Constant.KEY_INTENT_AMOUNT_TYPE, 0);
+                    String amount = data.getStringExtra(Constant.KEY_INTENT_AMOUNT);
+                    String title = data.getStringExtra(Constant.KEY_INTENT_TITLE);
                     saveAmount(amount, typeOfAmount, title);
                     break;
             }
@@ -512,9 +512,9 @@ public class  MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(activity, AmountDetailActivity.class);
                 String date = dbAccess.getDateFromCod(codList.get(position));
                 String title = dbAccess.getTitleFromCod(codList.get(position));
-                intent.putExtra(AmountDetailActivity.KEY_INTENT_DATE, date);
-                intent.putExtra(AmountDetailActivity.KEY_INTENT_AMOUNT_TITLE, title);
-                intent.putExtra(AmountDetailActivity.KEY_INTENT_AMOUNT, allAmountsList.get(position));
+                intent.putExtra(Constant.KEY_INTENT_DATE, date);
+                intent.putExtra(Constant.KEY_INTENT_TITLE, title);
+                intent.putExtra(Constant.KEY_INTENT_AMOUNT, allAmountsList.get(position));
                 activity.startActivityForResult(intent, AmountDetailActivity.AMOUNT_DETAIL_ACTIV_CODE);
                 return true;
             }

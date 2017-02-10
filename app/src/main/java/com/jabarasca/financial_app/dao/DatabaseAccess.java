@@ -19,9 +19,8 @@ import java.util.List;
 public class DatabaseAccess {
 
     private static DatabaseAccess dbAccessInstance;
-    private final String DATABASE_FILE_NAME = "financial_app_db";
+    private final String DATABASE_FILE_NAME = "com.jabarasca.financial_app.db";
     private final int DATABASE_VERSION = 1;
-    private SQLiteOpenHelper dbOpenHelper;
     private SQLiteDatabase db;
     private SQLiteStatement minPickerSqlStmntMainActv;
     private SQLiteStatement maxPickerSqlStmntMainActv;
@@ -37,7 +36,8 @@ public class DatabaseAccess {
                                                                         "title TEXT);";
 
     private DatabaseAccess(Context context) {
-        dbOpenHelper = new SQLiteOpenHelper(context, DATABASE_FILE_NAME, null, DATABASE_VERSION) {
+        SQLiteOpenHelper dbOpenHelper = new SQLiteOpenHelper(context, DATABASE_FILE_NAME,
+                null, DATABASE_VERSION) {
             @Override
             public void onCreate(SQLiteDatabase db) {
                 db.execSQL(CREATE_TB_MONTH);

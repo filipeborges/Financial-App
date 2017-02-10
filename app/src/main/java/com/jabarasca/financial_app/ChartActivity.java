@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.jabarasca.financial_app.dao.DatabaseAccess;
+import com.jabarasca.financial_app.utils.Constant;
 import com.jabarasca.financial_app.utils.Utilities;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -43,22 +44,15 @@ import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.view.LineChartView;
 
 public class ChartActivity extends AppCompatActivity {
-    public static final String KEY_CHART_ACTIVITY_REQUEST = "com.jabarasca.financial_app.CHART_REQ";
-    public static final String KEY_CURRENT_DATE = "com.jabarasca.financial_app.DATE";
-    public static final String KEY_CURRENT_YEAR = "com.jabarasca.financial_app.YEAR";
     public static final int CHART_ACTIVITY_CODE = 2;
-
     private final int INVALID_CHART_VALUE = -1;
 
     private int selectedYear;
     private int chartSelectedMonth = INVALID_CHART_VALUE;
     private int oldChartSelectedMonth;
     private MenuItem detailButton;
-    private Menu menu;
-    private ChartActivity activity;
     private DatabaseAccess dbAccess;
     private TextView actionBarTextView;
-    private Bitmap lineChartBitmap;
     private AxisValueFormatter axisValueFormatter = new AxisValueFormatter() {
         /**
          * Formats AxisValue for manual(custom) axis. Result is stored in (output) formattedValue array. Method
@@ -166,7 +160,7 @@ public class ChartActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult (int requestCode, int resultCode, Intent intent) {
         if(resultCode == RESULT_OK) {
-            selectedYear = intent.getIntExtra(Utilities.KEY_INTENT_YEAR, 0);
+            selectedYear = intent.getIntExtra(Constant.KEY_INTENT_YEAR, 0);
             actionBarTextView.setText(
                     String.format(getResources().getString(R.string.chart_activ_action_bar_title),
                             selectedYear)
@@ -182,8 +176,7 @@ public class ChartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart_layout);
 
-        activity = this;
-        String actBarCurrentDate = getIntent().getStringExtra(KEY_CURRENT_DATE);
+        String actBarCurrentDate = getIntent().getStringExtra(Constant.KEY_INTENT_DATE);
         int currentYear = Integer.parseInt(actBarCurrentDate.substring(4));
 
         setActionBarCustomView(R.layout.action_bar_text_layout);
@@ -191,11 +184,11 @@ public class ChartActivity extends AppCompatActivity {
         actionBarTextView.setText(getResources().getString(R.string.actbardrawtoggle_menu_option_1));
         dbAccess = DatabaseAccess.getDBAccessInstance(getApplicationContext());
 
-        Intent intent = new Intent(activity, CalendarActivity.class);
-        intent.putExtra(ChartActivity.KEY_CHART_ACTIVITY_REQUEST, true);
-        intent.putExtra(ChartActivity.KEY_CURRENT_YEAR, currentYear);
+        Intent intent = new Intent(this, CalendarActivity.class);
+        intent.putExtra(Constant.KEY_INTENT_CHART_REQUEST, true);
+        intent.putExtra(Constant.KEY_INTENT_YEAR, currentYear);
 
-        activity.startActivityForResult(intent, CalendarActivity.CALENDAR_ACTIVITY_CODE);
+        startActivityForResult(intent, CalendarActivity.CALENDAR_ACTIVITY_CODE);
     }
 
     @Override
@@ -204,7 +197,6 @@ public class ChartActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.activity_chart_action_bar_items, menu);
         detailButton = menu.findItem(R.id.detailButton);
         detailButton.setVisible(false);
-        this.menu = menu;
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -218,10 +210,10 @@ public class ChartActivity extends AppCompatActivity {
             currentDate = currentDate.substring(0,7);
 
             Intent intent = new Intent();
-            intent.putExtra(Utilities.KEY_INTENT_DAY, CalendarActivity.DEFAULT_DAY);
-            intent.putExtra(Utilities.KEY_INTENT_MONTH, chartSelectedMonth);
-            intent.putExtra(Utilities.KEY_INTENT_YEAR, selectedYear);
-            intent.putExtra(Utilities.KEY_INTENT_COMPARE_DATE, pointDate.equals(currentDate));
+            intent.putExtra(Constant.KEY_INTENT_DAY, CalendarActivity.DEFAULT_DAY);
+            intent.putExtra(Constant.KEY_INTENT_MONTH, chartSelectedMonth);
+            intent.putExtra(Constant.KEY_INTENT_YEAR, selectedYear);
+            intent.putExtra(Constant.KEY_INTENT_COMPARE_DATE, pointDate.equals(currentDate));
             setResult(RESULT_OK, intent);
             finish();
             return true;
@@ -287,7 +279,7 @@ public class ChartActivity extends AppCompatActivity {
             lineChart.setLineChartData(data);
             lineChart.setOnValueTouchListener(chartValueSelectListener);
 
-            lineChartBitmap = Bitmap.createBitmap(lineChart.getWidth(), lineChart.getHeight(),
+            Bitmap lineChartBitmap = Bitmap.createBitmap(lineChart.getWidth(), lineChart.getHeight(),
                     Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(lineChartBitmap);
             lineChart.draw(canvas);

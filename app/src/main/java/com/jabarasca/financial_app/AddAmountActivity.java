@@ -15,13 +15,10 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jabarasca.financial_app.utils.Constant;
+
 public class AddAmountActivity extends AppCompatActivity {
 
-    public static final String KEY_ADD_AMOUNT_TITLE = "com.jabarasca.financial_app.DIALOG_TITLE";
-    public static final String KEY_TOTAL_AMOUNT = "com.jabarasca.financial_app.TOTAL";
-    public static final String KEY_TYPE_AMOUNT_RETURNED = "com.jabarasca.financial_app.AMOUNT_TYPE";
-    public static final String KEY_AMOUNT_RETURNED = "com.jabarasca.financial_app.AMOUNT_VALUE";
-    public static final String KEY_TITLE_NAME_RETURNED = "com.jabarasca.financial_app.TITLE";
     public static final int ADD_AMOUNT_ACTIVITY_CODE = 4;
     public static final int INCOME_AMOUNT = 1;
     public static final int EXPENSE_AMOUNT = 2;
@@ -32,10 +29,9 @@ public class AddAmountActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_amount_layout);
-
-        String title = getIntent().getStringExtra(KEY_ADD_AMOUNT_TITLE);
+        String title = getIntent().getStringExtra(Constant.KEY_INTENT_TITLE);
         ((TextView)findViewById(R.id.amountDialogName)).setText(title);
-        String amountTotal = getIntent().getStringExtra(KEY_TOTAL_AMOUNT);
+        String amountTotal = getIntent().getStringExtra(Constant.KEY_INTENT_AMOUNT);
         setupButtonListener(amountTotal, title);
         setupRadioButtonListener();
 
@@ -80,15 +76,16 @@ public class AddAmountActivity extends AppCompatActivity {
                             Intent intent = new Intent();
                             //If its a income amount.
                             if(title.equals(getString(R.string.income_title))) {
-                                intent.putExtra(KEY_TYPE_AMOUNT_RETURNED, INCOME_AMOUNT);
+                                intent.putExtra(Constant.KEY_INTENT_AMOUNT_TYPE, INCOME_AMOUNT);
                             } else {
-                                intent.putExtra(KEY_TYPE_AMOUNT_RETURNED, EXPENSE_AMOUNT);
+                                intent.putExtra(Constant.KEY_INTENT_AMOUNT_TYPE, EXPENSE_AMOUNT);
                             }
                             //Needs to be verified on result Activity.
                             titleName = ((RadioButton)findViewById(R.id.titleNoRadioBtn))
                                     .isChecked() ? "" : titleName;
-                            intent.putExtra(KEY_TITLE_NAME_RETURNED, titleName);
-                            intent.putExtra(KEY_AMOUNT_RETURNED, amountEditText.getText().toString());
+                            intent.putExtra(Constant.KEY_INTENT_TITLE, titleName);
+                            intent.putExtra(Constant.KEY_INTENT_AMOUNT, amountEditText.getText()
+                                    .toString());
                             setResult(RESULT_OK, intent);
                             finish();
                         } else {
@@ -113,8 +110,8 @@ public class AddAmountActivity extends AppCompatActivity {
 
     private void setupRadioButtonListener() {
         View.OnClickListener radioListener = new View.OnClickListener() {
-            final int ANIMATION_TIME = 90, MINIMIZE_DP_PIXELS = 235, MAXIMIZE_DP_PIXELS = 315,
-                    TRANSLATE_DP_PIXELS = 60;
+            final int ANIMATION_TIME = 90, MINIMIZE_DP_PIXELS = 235, MAXIMIZE_DP_PIXELS = 285,
+                    TRANSLATE_DP_PIXELS = 50;
 
             @Override
             public void onClick(View v) {

@@ -18,11 +18,6 @@ public class Utilities {
     public static final int INCOME_SORT = 1;
     public static final int EXPENSE_SORT = 2;
     public static final int INCOME_EXPENSE_SORT = 3;
-    //TODO: Unify all intent Keys on Utilities class.
-    public static final String KEY_INTENT_DAY = "com.jabarasca.financial_app.DAY";
-    public static final String KEY_INTENT_MONTH = "com.jabarasca.financial_app.MONTH";
-    public static final String KEY_INTENT_YEAR = "com.jabarasca.financial_app.YEAR";
-    public static final String KEY_INTENT_COMPARE_DATE = "com.jabarasca.financial_app.COMPARE_DATE";
 
     public static String formatDbDateFromDatePicker(int datePickerDay, int datePickerMonth, int datePickerYear) {
         String day = String.valueOf(datePickerDay);
@@ -69,8 +64,7 @@ public class Utilities {
     }
 
     public static long getLongValueFromDBDate(String dbDate) {
-        //Only needed the YEAR and MONTH portions of the date.
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {
             Date date = dateFormat.parse(dbDate);
             return date.getTime();
