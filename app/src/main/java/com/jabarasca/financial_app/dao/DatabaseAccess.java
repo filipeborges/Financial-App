@@ -198,7 +198,9 @@ public class DatabaseAccess {
             int totalRows = resultCur.getCount();
             for(int i = 0; i < totalRows; i ++) {
                 int actualMonth = Integer.parseInt(resultCur.getString(1));
-                float actualAmount = resultCur.getFloat(0);
+                String strActualAmount = resultCur.getString(0);
+                //Needs to change ',' with '.' for Float parse.
+                float actualAmount = Float.parseFloat(strActualAmount.replace(",", "."));
                 if(!Float.isNaN(annualReportValues.get(actualMonth))) {
                     actualAmount += annualReportValues.get(actualMonth);
                 }
