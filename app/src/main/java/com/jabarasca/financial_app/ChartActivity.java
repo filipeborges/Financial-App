@@ -65,17 +65,9 @@ public class ChartActivity extends AppCompatActivity {
             for(int i = 0; i < formattedValue.length; i++) {
                 formattedValue[i] = '\0';
             }
-            if(axisValue.getValue() == 0) {
-                formattedValue[0] = '0';
-                formattedValue[1] = ',';
-                formattedValue[2] = '0';
-            } else {
-                int axisCalendarValue = (int)axisValue.getValue() - 1;
-                String month = Utilities.getActionBarMonthFromDatePickerMonth(axisCalendarValue);
-                formattedValue[0] = month.charAt(0);
-                formattedValue[1] = month.charAt(1);
-                formattedValue[2] = month.charAt(2);
-            }
+            formattedValue[0] = '0';
+            formattedValue[1] = ',';
+            formattedValue[2] = '0';
             return formattedValue.length;
         }
 
@@ -140,7 +132,7 @@ public class ChartActivity extends AppCompatActivity {
         }
     }
 
-    private LineChartValueFormatter lineLabelFormatter = new LineChartValueFormatter() {
+    private LineChartValueFormatter pointValueFormatter = new LineChartValueFormatter() {
         @Override
         public int formatChartValue(char[] formattedValue, PointValue value) {
             //Clean the array.
@@ -148,11 +140,12 @@ public class ChartActivity extends AppCompatActivity {
                 formattedValue[i] = '\0';
             }
             String yValue = String.format("%.2f", value.getY());
-            int arrayLength = yValue.length();
-
-            for(int i = 0; i < arrayLength; i++) {
-                formattedValue[i] = yValue.charAt(i);
+            String month = Utilities.getActionBarMonthFromDatePickerMonth((int)value.getX() - 1);
+            String label = month + " (" + yValue + ")";
+            for(int i = 0; i < label.length(); i++) {
+                formattedValue[i] = label.charAt(i);
             }
+
             return formattedValue.length;
         }
     };
@@ -243,18 +236,10 @@ public class ChartActivity extends AppCompatActivity {
                     getColor(R.color.chart_line_color));
             amountLine.setHasLines(true);
             amountLine.setHasLabelsOnlyForSelected(true);
-            amountLine.setFormatter(lineLabelFormatter);
+            amountLine.setFormatter(pointValueFormatter);
             amountLine.setPointColor(getResources().getColor(R.color.action_bar_color));
             List<Line> lines = new ArrayList<>();
             lines.add(amountLine);
-
-            Typeface italicTypeface = Typeface.defaultFromStyle(Typeface.ITALIC);
-            Axis axisX = Axis.generateAxisFromRange(1,12,(float)1);
-            axisX.setMaxLabelChars(1);
-            axisX.setFormatter(axisValueFormatter);
-            axisX.setTextColor(Color.BLACK);
-            axisX.setTypeface(italicTypeface);
-            axisX.setTextSize(Axis.DEFAULT_TEXT_SIZE_SP);
 
             List<AxisValue> axisValues = new ArrayList<>();
             AxisValue axisValue = new AxisValue(0);
@@ -263,13 +248,12 @@ public class ChartActivity extends AppCompatActivity {
             axisY.setFormatter(axisValueFormatter);
             axisY.setTextColor(Color.BLACK);
             axisY.setHasLines(true);
-            axisY.setTypeface(italicTypeface);
+            axisY.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC));
             axisY.setTextSize(Axis.DEFAULT_TEXT_SIZE_SP);
             axisY.setLineColor(getResources().getColor(R.color.action_bar_color));
             axisY.setHasSeparationLine(false);
 
             LineChartData data = new LineChartData();
-            data.setAxisXBottom(axisX);
             data.setAxisYRight(axisY);
             data.setLines(lines);
 
