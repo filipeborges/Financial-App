@@ -14,6 +14,7 @@
     <string name="add_menu_option_2">Receita</string>
 
     <string name="actbardrawtoggle_menu_option_1">Acompanhamento Anual</string>
+    <string name="actbardrawtoggle_menu_option_2">Como Usar</string>
 
     <string name="expense_title">Adicionar Despesa</string>
     <string name="income_title">Adicionar Receita</string>
@@ -29,6 +30,12 @@
 
     <string name="datepicker_title">Selecione...</string>
     <string name="amount_detail_date_title">Cadastrado em:</string>
+
+    <string name="help_title_1">Removendo</string>
+    <string name="help_title_2">Detalhando</string>
+    <string name="help_title_3">Trocando Mês</string>
+    <string name="help_title_4">Acompanhando</string>
+    <string name="help_nav_instruction">Como Usar: Deslize para navegar</string>
 
     <string name="amount_hint">Valor</string>
     <string name="amount_title_prompt">Deseja adicionar um título:</string>

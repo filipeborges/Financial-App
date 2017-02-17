@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.util.AttributeSet;
@@ -54,7 +55,7 @@ public class  MainActivity extends AppCompatActivity {
     public SparseIntArray codList = new SparseIntArray();
     public String OUT_OF_BOUNDS_LABEL = null;
     private final int EXPENSE_LISTVIEW_POSITION = 0, INCOME_LISTVIEW_POSITION = 1;
-    private final int ANNUAL_ANALYSIS_POSITION = 0;
+    private final int ANNUAL_ANALYSIS_POSITION = 0, HELP_POSITION = 1;
     private DatabaseAccess dbAccess;
     private boolean isAddButtonHided = false;
     private int activityRequestCode = 0;
@@ -125,13 +126,16 @@ public class  MainActivity extends AppCompatActivity {
     public AdapterView.OnItemClickListener actBarDrawToggleItemListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            final int CHART_ANALYSIS = 0;
-
+            Intent intent;
             switch (position) {
-                case CHART_ANALYSIS:
-                    Intent intent = new Intent(activity, ChartActivity.class);
+                case ANNUAL_ANALYSIS_POSITION:
+                    intent = new Intent(activity, ChartActivity.class);
                     intent.putExtra(Constant.KEY_INTENT_DATE, actionBarFormattedDate);
                     activity.startActivityForResult(intent, ChartActivity.CHART_ACTIVITY_CODE);
+                    break;
+                case HELP_POSITION:
+                    intent = new Intent(activity, HelpActivity.class);
+                    activity.startActivity(intent);
                     break;
             }
         }
@@ -173,6 +177,7 @@ public class  MainActivity extends AppCompatActivity {
         selectedDateForQuery[DAY] = Integer.parseInt(nowDate.substring(8,10));
 
         configureActBarDrawToogleOptions();
+        runTutorialOnFirstRun();
     }
 
     @Override
@@ -302,6 +307,16 @@ public class  MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void runTutorialOnFirstRun() {
+        String fileName = getPackageName() + "." + getString(R.string.app_name);
+        SharedPreferences preferences = getSharedPreferences(fileName, MODE_PRIVATE);
+        if(preferences.getBoolean("firstrun", true)) {
+            Intent intent = new Intent(activity, HelpActivity.class);
+            activity.startActivity(intent);
+            preferences.edit().putBoolean("firstrun", false).apply();
+        }
+    }
+
     public void showAlertDialogWithOk(String message, DialogInterface.OnClickListener okListener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(message);
@@ -364,6 +379,7 @@ public class  MainActivity extends AppCompatActivity {
 
         List<String> leftDrawerOptionsList = new ArrayList<String>();
         leftDrawerOptionsList.add(getString(R.string.actbardrawtoggle_menu_option_1));
+        leftDrawerOptionsList.add(getString(R.string.actbardrawtoggle_menu_option_2));
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
                 R.layout.left_drawer_menu_item_layout, R.id.leftMenuItemTextView,
@@ -377,6 +393,9 @@ public class  MainActivity extends AppCompatActivity {
                 switch (position) {
                     case ANNUAL_ANALYSIS_POSITION:
                         ((ImageView)((RelativeLayout)convertView).getChildAt(0)).setImageResource(R.drawable.annual_analysis);
+                        break;
+                    case HELP_POSITION:
+                        ((ImageView)((RelativeLayout)convertView).getChildAt(0)).setImageResource(R.drawable.help);
                         break;
                 }
                 return super.getView(position, convertView, parent);
