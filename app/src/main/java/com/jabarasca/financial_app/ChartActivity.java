@@ -196,17 +196,18 @@ public class ChartActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.detailButton) {
-            String pointDate = Utilities.formatDbDateFromDatePicker(CalendarActivity.DEFAULT_DAY,
-                    chartSelectedMonth, selectedYear);
-            pointDate = pointDate.substring(0,7);
-            String currentDate = Utilities.getNowDbDateWithoutTime();
-            currentDate = currentDate.substring(0,7);
-
             Intent intent = new Intent();
-            intent.putExtra(Constant.KEY_INTENT_DAY, CalendarActivity.DEFAULT_DAY);
+            int day;
+            if(Utilities.datePickerDateMatchesActBarDate(chartSelectedMonth, selectedYear,
+                    Utilities.getNowActionBarDate())
+            ) {
+                day = Integer.parseInt(Utilities.getNowDbDateWithoutTime().substring(8,10));
+            } else {
+                day = CalendarActivity.DEFAULT_DAY;
+            }
+            intent.putExtra(Constant.KEY_INTENT_DAY, day);
             intent.putExtra(Constant.KEY_INTENT_MONTH, chartSelectedMonth);
             intent.putExtra(Constant.KEY_INTENT_YEAR, selectedYear);
-            intent.putExtra(Constant.KEY_INTENT_COMPARE_DATE, pointDate.equals(currentDate));
             setResult(RESULT_OK, intent);
             finish();
             return true;

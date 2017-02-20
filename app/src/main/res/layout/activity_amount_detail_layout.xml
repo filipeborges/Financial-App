@@ -52,4 +52,15 @@
         android:layout_marginTop="40dp"
         style="@style/dialogOkButton"/>
 
+    <TextView
+        android:id="@+id/amountDetailPosDateValue"
+        android:text="@string/amount_detail_pos_date"
+        android:textSize="18sp"
+        android:textColor="@color/textDialogColor"
+        android:visibility="invisible"
+        android:layout_below="@+id/amountDetailDateValue"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 </RelativeLayout>

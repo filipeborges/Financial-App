@@ -83,12 +83,14 @@ public class  MainActivity extends AppCompatActivity {
             typeOfSort = Utilities.EXPENSE_SORT;
         }
 
+        boolean isNowDate = actionBarFormattedDate.equals(Utilities.getNowActionBarDate());
         String amountString = String.format(format, amount);
-        dbAccess.saveAmount(amountString, Utilities.formatDbDateWithTimeFromDatePicker(
-                selectedDateForQuery[DAY], selectedDateForQuery[MONTH],
-                selectedDateForQuery[YEAR]), titleName
-        );
+        String date = isNowDate ? Utilities.formatDbDateWithTimeFromDatePicker(
+                selectedDateForQuery[DAY], selectedDateForQuery[MONTH], selectedDateForQuery[YEAR]
+        ) : Utilities.formatDefaultDbDateWithTimeFromDatePicker(selectedDateForQuery[DAY],
+                        selectedDateForQuery[MONTH], selectedDateForQuery[YEAR]);
 
+        dbAccess.saveAmount(amountString, date, titleName, isNowDate);
         listToAdd.add(amountString);
         updateAmountsOnScreenWithActionBarDate(typeOfSort);
     }
@@ -194,12 +196,6 @@ public class  MainActivity extends AppCompatActivity {
                     selectedDateForQuery[YEAR] = data.getIntExtra(Constant.KEY_INTENT_YEAR, 0);
                     selectedDateForQuery[MONTH] = data.getIntExtra(Constant.KEY_INTENT_MONTH, 0);
                     selectedDateForQuery[DAY] = data.getIntExtra(Constant.KEY_INTENT_DAY, 0);
-                    isAddButtonHided = !data.getBooleanExtra(Constant.KEY_INTENT_COMPARE_DATE, false);
-                    if(data.getBooleanExtra(Constant.KEY_INTENT_COMPARE_DATE, false)) {
-                        menu.findItem(R.id.addButton).setVisible(true);
-                    } else {
-                        menu.findItem(R.id.addButton).setVisible(false);
-                    }
                     break;
                 case AddAmountActivity.ADD_AMOUNT_ACTIVITY_CODE:
                     drawerLayout.closeDrawers();
@@ -529,7 +525,11 @@ public class  MainActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(activity, AmountDetailActivity.class);
-                String date = dbAccess.getDateFromCod(codList.get(position));
+                boolean isActualDate = Utilities
+                        .datePickerDateMatchesActBarDate(selectedDateForQuery[MONTH],
+                                selectedDateForQuery[YEAR], Utilities.getNowActionBarDate());
+                String date = isActualDate ? dbAccess.getDateFromCod(codList.get(position))
+                        : dbAccess.getDateForAmountOnPreviousDate(codList.get(position));
                 String title = dbAccess.getTitleFromCod(codList.get(position));
                 intent.putExtra(Constant.KEY_INTENT_DATE, date);
                 intent.putExtra(Constant.KEY_INTENT_TITLE, title);

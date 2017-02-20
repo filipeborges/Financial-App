@@ -81,8 +81,7 @@ public class AddAmountActivity extends AppCompatActivity {
                                 intent.putExtra(Constant.KEY_INTENT_AMOUNT_TYPE, EXPENSE_AMOUNT);
                             }
                             //Needs to be verified on result Activity.
-                            titleName = ((RadioButton)findViewById(R.id.titleNoRadioBtn))
-                                    .isChecked() ? "" : titleName;
+                            titleName = titleDesired ? titleName : "";
                             intent.putExtra(Constant.KEY_INTENT_TITLE, titleName);
                             intent.putExtra(Constant.KEY_INTENT_AMOUNT, amountEditText.getText()
                                     .toString());

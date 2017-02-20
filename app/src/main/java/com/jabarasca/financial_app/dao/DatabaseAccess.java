@@ -30,10 +30,12 @@ public class DatabaseAccess {
     private final String DATE_COLUMN = "date";
     private final String TITLE_COLUMN = "title";
     private final String COD_COLUMN = "cod";
+    private final String POS_DATE_COLUMN = "posterior_date";
     private final String CREATE_TB_MONTH = "CREATE TABLE tb_amount(cod INTEGER PRIMARY KEY AUTOINCREMENT," +
                                                                         "date TEXT," +
                                                                         "amount TEXT," +
-                                                                        "title TEXT);";
+                                                                        "title TEXT, " +
+                                                                        "posterior_date TEXT);";
 
     private DatabaseAccess(Context context) {
         SQLiteOpenHelper dbOpenHelper = new SQLiteOpenHelper(context, DATABASE_FILE_NAME,
@@ -41,6 +43,9 @@ public class DatabaseAccess {
             @Override
             public void onCreate(SQLiteDatabase db) {
                 db.execSQL(CREATE_TB_MONTH);
+                //TODO: Remove after tests
+//                DataGenerator generator = new DataGenerator(db);
+//                generator.generateData();
             }
 
             @Override
@@ -86,12 +91,15 @@ public class DatabaseAccess {
     }
 
     //dateValue must be in format: YYYY-MM-DD HH:MM:SS. Return != -1 operation succeeded.
-    public long saveAmount(String amountValue, String dateValue, String titleName) {
+    public long saveAmount(String amountValue, String dateValue, String titleName, boolean isNowDate) {
         ContentValues mapValues = new ContentValues();
         mapValues.put(AMOUNT_COLUMN, amountValue);
         mapValues.put(DATE_COLUMN, dateValue);
         if(titleName.length() > 0) {
             mapValues.put(TITLE_COLUMN, titleName);
+        }
+        if(!isNowDate) {
+            mapValues.put(POS_DATE_COLUMN, Utilities.getNowDbDate());
         }
 
         return db.insert(AMOUNTS_TABLE, null, mapValues);
@@ -162,6 +170,7 @@ public class DatabaseAccess {
         return Utilities.getLongValueFromDBDate(dbReturnedDate);
     }
 
+    //TODO: Unify this three methods.
     public String getTitleFromCod(int cod) {
         String sql = "SELECT %s FROM %s WHERE %s = ?";
         sql = String.format(sql, TITLE_COLUMN, AMOUNTS_TABLE, COD_COLUMN);
@@ -170,6 +179,16 @@ public class DatabaseAccess {
         String title = resultCur.getString(0);
         resultCur.close();
         return title;
+    }
+
+    public String getPosDateFromCod(int cod) {
+        String sql = "SELECT %s FROM %s WHERE %s = ?";
+        sql = String.format(sql, POS_DATE_COLUMN, AMOUNTS_TABLE, COD_COLUMN);
+        Cursor resultCur = db.rawQuery(sql, new String[]{String.valueOf(cod)});
+        String posDate = resultCur.moveToFirst() ? resultCur.getString(0) : "";
+        posDate = posDate == null ? "" : posDate;
+        resultCur.close();
+        return posDate;
     }
 
     public String getDateFromCod(int cod) {
@@ -181,6 +200,13 @@ public class DatabaseAccess {
         resultCur.close();
         return date;
     }
+
+    public String getDateForAmountOnPreviousDate(int cod) {
+        String posDate = getPosDateFromCod(cod);
+        String date = posDate.length() > 0 ? posDate + "*" : getDateFromCod(cod);
+        return date;
+    }
+
 
     public SparseArray<Float> getGraphicAnalysisValues(int year) {
         SparseArray<Float> annualReportValues = new SparseArray<>();

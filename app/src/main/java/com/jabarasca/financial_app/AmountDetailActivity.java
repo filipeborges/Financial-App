@@ -29,8 +29,13 @@ public class AmountDetailActivity extends AppCompatActivity {
             amountDetailTxtVw.setTextColor(getResources().getColor(R.color.income_amount_color));
         }
         amountDetailTxtVw.setText(amountValue);
-        String date = Utilities.formatHumanDateFromDbDate(getIntent()
-                .getStringExtra(Constant.KEY_INTENT_DATE));
+        String date = getIntent().getStringExtra(Constant.KEY_INTENT_DATE);
+        if(date.contains("*")) {
+            date = date.replace("*", "");
+            findViewById(R.id.amountDetailPosDateValue).setVisibility(View.VISIBLE);
+        }
+        date = Utilities.formatHumanDateFromDbDate(date);
+
         amountDetailDateTxtVw.setText(date);
         String title = getIntent().getStringExtra(Constant.KEY_INTENT_TITLE);
         title = title == null ? getString(R.string.amount_without_title) : title;

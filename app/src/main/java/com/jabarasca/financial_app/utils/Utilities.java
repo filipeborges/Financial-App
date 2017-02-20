@@ -26,6 +26,12 @@ public class Utilities {
                 Utilities.getDBMonthFromDatePickerMonth(datePickerMonth), day);
     }
 
+    public static String formatDefaultDbDateWithTimeFromDatePicker(int datePickerDay, int datePickerMonth,
+                                                                   int datePickerYear) {
+        String date = formatDbDateFromDatePicker(datePickerDay, datePickerMonth, datePickerYear);
+        return String.format("%s %d:%d:%d", date, 10, 10, 10);
+    }
+
     //Returned format: YYYY-MM-DD HH:MM:SS
     public static String formatDbDateWithTimeFromDatePicker(int datePickerDay, int datePickerMonth,
                                                             int datePickerYear) {
@@ -79,6 +85,12 @@ public class Utilities {
         String actBarDate = String.format("%s/%d",
                 getActionBarMonthFromDatePickerMonth(datePickerMonth), datePickerYear);
         return pActBarDate.equals(actBarDate);
+    }
+
+    public static String getNowDbDate() {
+        Calendar actualDate = Calendar.getInstance();
+        return Utilities.formatDbDateWithTimeFromDatePicker(actualDate.get(Calendar.DAY_OF_MONTH),
+                actualDate.get(Calendar.MONTH), actualDate.get(Calendar.YEAR));
     }
 
     public static String getNowDbDateWithoutTime() {

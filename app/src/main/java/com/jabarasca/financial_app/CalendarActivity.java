@@ -29,16 +29,11 @@ public class CalendarActivity extends AppCompatActivity {
             Intent intent = new Intent();
             if(!isChartActivityRequest) {
                 intent.putExtra(Constant.KEY_INTENT_MONTH, datePicker.getMonth());
-                String selectedDate = Utilities.formatDbDateFromDatePicker(datePicker.getDayOfMonth(),
-                        datePicker.getMonth(), datePicker.getYear());
-                String actualDate = Utilities.getNowDbDateWithoutTime();
-
-                boolean isActualDate = selectedDate.substring(0,4).equals(actualDate.substring(0,4))
-                        && selectedDate.substring(5,7).equals(actualDate.substring(5,7));
-                intent.putExtra(Constant.KEY_INTENT_COMPARE_DATE, isActualDate);
-
-                //Default day to meet the format: YYYY-MM-DD
-                intent.putExtra(Constant.KEY_INTENT_DAY, DEFAULT_DAY);
+                int day = Utilities.datePickerDateMatchesActBarDate(datePicker.getMonth(),
+                        datePicker.getYear(), Utilities.getNowActionBarDate())
+                        ? Integer.parseInt(Utilities.getNowDbDateWithoutTime().substring(8,10))
+                        : DEFAULT_DAY;
+                intent.putExtra(Constant.KEY_INTENT_DAY, day);
             }
             intent.putExtra(Constant.KEY_INTENT_YEAR, datePicker.getYear());
             setResult(RESULT_OK, intent);

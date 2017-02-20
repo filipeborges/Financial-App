@@ -30,6 +30,7 @@
 
     <string name="datepicker_title">Selecione...</string>
     <string name="amount_detail_date_title">Cadastrado em:</string>
+    <string name="amount_detail_pos_date">* Mês Posterior</string>
 
     <string name="help_title_1">Removendo</string>
     <string name="help_title_2">Detalhando</string>
