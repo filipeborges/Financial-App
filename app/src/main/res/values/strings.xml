@@ -9,6 +9,7 @@
     <string name="add_menu_action_bar_title">Adicionar</string>
     <string name="menu_action_bar_title">Menu</string>
     <string name="chart_activ_action_bar_title">Acompanhamento - %d</string>
+    <string name="chart_activ_total_label">Total %d:</string>
 
     <string name="add_menu_option_1">Despesa</string>
     <string name="add_menu_option_2">Receita</string>

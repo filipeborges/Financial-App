@@ -93,8 +93,9 @@ public class ChartActivity extends AppCompatActivity {
     };
 
     private void startActBarTextAnimation(final boolean expand) {
-        float startValue = expand ? 18f : 20f;
-        float endValue = expand ? 20f : 18f;
+        float startValue = expand ? 16f : 20f;
+        float endValue = expand ? 20f : 16f;
+
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(actionBarTextView,
                 "textSize", startValue, endValue);
         objectAnimator.setDuration(90);
@@ -220,6 +221,26 @@ public class ChartActivity extends AppCompatActivity {
         }
     }
 
+    private void configureChartTotalValue(SparseArray<Float> annualReportValues) {
+        TextView totalLabelTxtView = (TextView)findViewById(R.id.lineChartTotalLabel);
+        totalLabelTxtView.setText(String.format(getString(R.string.chart_activ_total_label),
+                selectedYear));
+
+        float totalAmount = 0f;
+        for(int i = 1; i <= annualReportValues.size(); i++) {
+            if(!Float.isNaN(annualReportValues.get(i))) {
+                totalAmount += annualReportValues.get(i);
+            }
+        }
+        String strTotalAmount = String.format("%.2f", totalAmount);
+        strTotalAmount = totalAmount < 0f ? strTotalAmount : "+" + strTotalAmount;
+        int colorId = totalAmount < 0f ? R.color.expense_amount_color : R.color.income_amount_color;
+
+        TextView totalValueTxtView = (TextView)findViewById(R.id.lineChartTotalValue);
+        totalValueTxtView.setTextColor(getResources().getColor(colorId));
+        totalValueTxtView.setText(strTotalAmount);
+    }
+
     private void configureLineChart(SparseArray<Float> annualReportValues) {
         List<PointValue> amountValues = new ArrayList<>();
         int numberOfPointsToDraw = 0;
@@ -233,6 +254,8 @@ public class ChartActivity extends AppCompatActivity {
         }
 
         if(numberOfPointsToDraw >= 2) {
+            configureChartTotalValue(annualReportValues);
+
             Line amountLine = new Line(amountValues).setColor(getResources().
                     getColor(R.color.chart_line_color));
             amountLine.setHasLines(true);

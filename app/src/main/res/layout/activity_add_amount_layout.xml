@@ -57,6 +57,7 @@
         android:maxLength="15"
         android:visibility="invisible"
         android:layout_marginTop="10dp"
+        android:singleLine="true"
         android:hint="@string/amount_title_hint"
         style="@style/amountDialogEditTextStyle"/>
 
