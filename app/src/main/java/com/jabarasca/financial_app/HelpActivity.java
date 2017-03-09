@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -27,7 +28,8 @@ public class HelpActivity extends AppCompatActivity {
     private Animation bwrdTransAnimIn;
     private Animation bwrdTransAnimOut;
     private int currentPageNumber = 1;
-    private final String PAGE_MASK = "%d/" + IMAGES_IDS.length;
+    private int current_index = 0;
+    private final String PAGE_MASK = "%d de " + IMAGES_IDS.length;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,10 +87,19 @@ public class HelpActivity extends AppCompatActivity {
             }
         });
 
+        setupButtonListener();
         Toast.makeText(this, R.string.help_nav_instruction, Toast.LENGTH_LONG).show();
     }
 
-    private int current_index = 0;
+    private void setupButtonListener() {
+        Button okButton = (Button)findViewById(R.id.helpOkButton);
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
 
     private void changeImage(ViewGroup relativeLayout, float x0, float x1) {
         ImageSwitcher imgSwitcher = (ImageSwitcher)relativeLayout.getChildAt(1);

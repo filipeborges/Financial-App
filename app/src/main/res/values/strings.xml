@@ -37,7 +37,7 @@
     <string name="help_title_2">Detalhando</string>
     <string name="help_title_3">Trocando Mês</string>
     <string name="help_title_4">Acompanhando</string>
-    <string name="help_nav_instruction">Como Usar: Deslize para navegar</string>
+    <string name="help_nav_instruction">&lt;--  DESLIZE PARA NAVEGAR  --&gt;</string>
 
     <string name="amount_hint">Valor</string>
     <string name="amount_title_prompt">Deseja adicionar um título:</string>
