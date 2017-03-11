@@ -21,7 +21,7 @@ android {
         }
         debug {
             minifyEnabled false
-	        testCoverageEnabled  true
+            testCoverageEnabled true
             debuggable true
         }
     }
@@ -44,10 +44,10 @@ task jacoco(type: JacocoReport, dependsOn: "testDebug") {
     }
     classDirectories = fileTree(
             dir: "$buildDir/intermediates/classes/debug",
-            excludes:  ['**/android/',
-                        '**/R.class',
-                        '**/*$*.class',
-                        '**/BuildConfig.class']
+            excludes: ['**/android/',
+                       '**/R.class',
+                       '**/*$*.class',
+                       '**/BuildConfig.class']
     )
     sourceDirectories = files('src/main/java')
     executionData = files("$buildDir/jacoco/testDebug.exec")
@@ -56,11 +56,14 @@ task jacoco(type: JacocoReport, dependsOn: "testDebug") {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.github.lecho:hellocharts-library:1.5.8@aar'
-    compile "com.android.support:support-v4:22.1.1"
-    compile "com.android.support:appcompat-v7:22.1.1"
+    compile 'com.android.support:support-v4:22.2.1'
+    compile 'com.android.support:appcompat-v7:22.2.1'
+    compile 'com.google.firebase:firebase-crash:9.2.1'
     testCompile 'junit:junit:4.12'
     testCompile 'org.powermock:powermock-api-mockito:1.6.1'
     testCompile 'org.powermock:powermock-module-junit4:1.6.1'
     androidTestCompile 'com.android.support.test:testing-support-lib:0.1'
     androidTestCompile 'com.jayway.android.robotium:robotium-solo:5.4.1'
 }
+
+apply plugin: 'com.google.gms.google-services'

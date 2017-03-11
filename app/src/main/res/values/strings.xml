@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Financial_App</string>
+    <string name="app_name">FinanSimples</string>
 
     <string name="open_drawer">Aberto</string>
     <string name="close_drawer">Fechado</string>
