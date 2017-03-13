@@ -550,7 +550,8 @@ public class  MainActivity extends AppCompatActivity {
                     public void onDismiss(ListView listView, int[] reverseSortedPositions) {
                         int incomeElementsMaxPosition = allAmountsList.size() - expenseAmountsList.size();
                         String amountToRemove = allAmountsList.get(reverseSortedPositions[0]);
-                        String date = dbAccess.getDateFromCod(codList.get(reverseSortedPositions[0]));
+                        String date = dbAccess.getDateForAmountOnPreviousDate(codList
+                                .get(reverseSortedPositions[0]));
                         dbAccess.removeAmount(amountToRemove, date);
                         int typeOfSort;
                         //If the element dismissed is Income.

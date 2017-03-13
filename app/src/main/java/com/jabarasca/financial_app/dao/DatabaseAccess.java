@@ -43,7 +43,7 @@ public class DatabaseAccess {
             @Override
             public void onCreate(SQLiteDatabase db) {
                 db.execSQL(CREATE_TB_MONTH);
-                //TODO: Remove after tests
+                //OBS: Used only for UI test.
 //                DataGenerator generator = new DataGenerator(db);
 //                generator.generateData();
             }
@@ -107,7 +107,13 @@ public class DatabaseAccess {
 
     //date must be in format: YYYY-MM-DD HH:MI:SS.
     public int removeAmount(String amountValue, String date) {
-        String queryFilter = String.format("%s = '%s' AND %s = '%s'", DATE_COLUMN, date,
+        String dateColumn = DATE_COLUMN;
+        //If removing date inserted on posterior date.
+        if(date.contains("*")) {
+            date = date.replace("*","");
+            dateColumn = POS_DATE_COLUMN;
+        }
+        String queryFilter = String.format("%s = '%s' AND %s = '%s'", dateColumn, date,
                 AMOUNT_COLUMN, amountValue);
         String subQueryFilter = "SELECT %s FROM %s WHERE " + queryFilter;
         subQueryFilter = String.format(subQueryFilter, COD_COLUMN, AMOUNTS_TABLE);
