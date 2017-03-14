@@ -1,8 +1,11 @@
 package com.jabarasca.financial_app;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +33,10 @@ public class HelpActivity extends AppCompatActivity {
     private int currentPageNumber = 1;
     private int current_index = 0;
     private final String PAGE_MASK = "%d de " + IMAGES_IDS.length;
+    private TextView pageNumberTextView;
+    private ValueAnimator pageNumberContractAnimator;
+    private ValueAnimator pageNumberExpandAnimator;
+    private float animationValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +60,8 @@ public class HelpActivity extends AppCompatActivity {
             }
         });
         ((TextView)findViewById(R.id.helpTitle)).setText(STR_IMAGES_IDS[0]);
-        ((TextView)findViewById(R.id.helpPageNumber))
-                .setText(String.format(PAGE_MASK, currentPageNumber));
+        pageNumberTextView = (TextView)findViewById(R.id.helpPageNumber);
+        pageNumberTextView.setText(String.format(PAGE_MASK, currentPageNumber));
 
         RelativeLayout relLayout = (RelativeLayout)findViewById(R.id.helpActivRelLay);
         DisplayMetrics metrics = new DisplayMetrics();
@@ -88,7 +95,72 @@ public class HelpActivity extends AppCompatActivity {
         });
 
         setupButtonListener();
-        Toast.makeText(this, R.string.help_nav_instruction, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Toast toastMsg = Toast.makeText(this, R.string.help_nav_instruction, Toast.LENGTH_LONG);
+        toastMsg.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL, 0, 0);
+        toastMsg.show();
+        startPageNumberAnimation();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        pageNumberTextView.setLayerType(View.LAYER_TYPE_NONE, null);
+        pageNumberContractAnimator.cancel();
+        pageNumberExpandAnimator.cancel();
+    }
+
+    private void startPageNumberAnimation() {
+        long animationDuration = 300;
+        float startValue = 1f, endValue = 1.3f;
+
+        pageNumberTextView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        ValueAnimator.AnimatorUpdateListener animatorUpdate = new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                pageNumberTextView.setText(String.format(PAGE_MASK, currentPageNumber));
+                animationValue = (float)animation.getAnimatedValue();
+                pageNumberTextView.setScaleX(animationValue);
+                pageNumberTextView.setScaleY(animationValue);
+            }
+        };
+
+        pageNumberExpandAnimator = ValueAnimator.ofFloat(startValue, endValue);
+        pageNumberExpandAnimator.setDuration(animationDuration);
+        pageNumberExpandAnimator.addUpdateListener(animatorUpdate);
+        pageNumberExpandAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {}
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                pageNumberContractAnimator.start();
+            }
+            @Override
+            public void onAnimationCancel(Animator animation) {}
+            @Override
+            public void onAnimationRepeat(Animator animation) {}
+        });
+
+        pageNumberContractAnimator = ValueAnimator.ofFloat(endValue, startValue);
+        pageNumberContractAnimator.setDuration(animationDuration);
+        pageNumberContractAnimator.addUpdateListener(animatorUpdate);
+        pageNumberContractAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {}
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                pageNumberExpandAnimator.start();
+            }
+            @Override
+            public void onAnimationCancel(Animator animation) {}
+            @Override
+            public void onAnimationRepeat(Animator animation) {}
+        });
+        pageNumberExpandAnimator.start();
     }
 
     private void setupButtonListener() {
@@ -121,8 +193,6 @@ public class HelpActivity extends AppCompatActivity {
         if(current_index <= arrayMaxIndex && current_index >= 0 && changeImage) {
             ((TextView)relativeLayout.getChildAt(0)).setText(STR_IMAGES_IDS[current_index]);
             imgSwitcher.setImageResource(IMAGES_IDS[current_index]);
-            ((TextView)relativeLayout.getChildAt(2))
-                    .setText(String.format(PAGE_MASK, currentPageNumber));
         }
     }
 
