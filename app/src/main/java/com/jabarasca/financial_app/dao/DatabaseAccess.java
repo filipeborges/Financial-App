@@ -124,18 +124,37 @@ public class DatabaseAccess {
 
     //actualFormattedDate must be in format: YYYY-MM-DD only.
     public List<String> getSpecificMonthlyAmounts(String actualFormattedDate) {
-        String queryFilter = "WHERE STRFTIME('%Y-%m'," + DATE_COLUMN + ")" + " = " +
-                "STRFTIME('%Y-%m','" + actualFormattedDate + "')";
+        final int AMOUNT_COLUMN_INDEX = 0, COD_COLUMN_INDEX = 1;
+        List<String> amountsList = new ArrayList<>();
+
+        String queryFilter = "WHERE STRFTIME('%%Y-%%m', %s) = STRFTIME('%%Y-%%m', '%s') AND " +
+                "LENGTH(%s) > 0";
+        queryFilter = String.format(queryFilter, DATE_COLUMN, actualFormattedDate, POS_DATE_COLUMN);
         String orderBy = "ORDER BY %s DESC";
-        orderBy = String.format(orderBy, DATE_COLUMN);
-        String sql = "SELECT %s, %s, %s FROM %s";
-        //OBS: DATE_COLUMN is used only to use ORDER BY by date.
-        sql = String.format(sql, AMOUNT_COLUMN, COD_COLUMN, DATE_COLUMN, AMOUNTS_TABLE);
+        orderBy = String.format(orderBy, POS_DATE_COLUMN);
+        String sql = "SELECT %s, %s FROM %s";
+        sql = String.format(sql, AMOUNT_COLUMN, COD_COLUMN, AMOUNTS_TABLE);
         sql = sql + " " + queryFilter + " " + orderBy;
         Cursor queryCursor = db.rawQuery(sql, null);
 
-        final int AMOUNT_COLUMN_INDEX = 0, COD_COLUMN_INDEX = 1;
-        List<String> amountsList = new ArrayList<>();
+        if(queryCursor.moveToFirst()) {
+            for (int i = 0; i < queryCursor.getCount(); i++) {
+                amountsList.add(queryCursor.getString(AMOUNT_COLUMN_INDEX) + "&" +
+                        queryCursor.getString(COD_COLUMN_INDEX));
+                queryCursor.moveToNext();
+            }
+        }
+        queryCursor.close();
+
+        queryFilter = "WHERE STRFTIME('%%Y-%%m', %s) = STRFTIME('%%Y-%%m', '%s') AND " +
+                "%s IS NULL";
+        queryFilter = String.format(queryFilter, DATE_COLUMN, actualFormattedDate, POS_DATE_COLUMN);
+        orderBy = "ORDER BY %s DESC";
+        orderBy = String.format(orderBy, DATE_COLUMN);
+        sql = "SELECT %s, %s FROM %s";
+        sql = String.format(sql, AMOUNT_COLUMN, COD_COLUMN, AMOUNTS_TABLE);
+        sql = sql + " " + queryFilter + " " + orderBy;
+        queryCursor = db.rawQuery(sql, null);
 
         if(queryCursor.moveToFirst()) {
             for (int i = 0; i < queryCursor.getCount(); i++) {
@@ -145,6 +164,7 @@ public class DatabaseAccess {
             }
         }
         queryCursor.close();
+
         return amountsList;
     }
 
