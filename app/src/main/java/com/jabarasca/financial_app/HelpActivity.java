@@ -34,8 +34,7 @@ public class HelpActivity extends AppCompatActivity {
     private int current_index = 0;
     private final String PAGE_MASK = "%d de " + IMAGES_IDS.length;
     private TextView pageNumberTextView;
-    private ValueAnimator pageNumberContractAnimator;
-    private ValueAnimator pageNumberExpandAnimator;
+    private ValueAnimator pageNumberAnimator;
     private float animationValue;
 
     @Override
@@ -109,17 +108,18 @@ public class HelpActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        pageNumberTextView.setLayerType(View.LAYER_TYPE_NONE, null);
-        pageNumberContractAnimator.cancel();
-        pageNumberExpandAnimator.cancel();
+        pageNumberAnimator.cancel();
     }
 
     private void startPageNumberAnimation() {
         long animationDuration = 300;
         float startValue = 1f, endValue = 1.3f;
 
-        pageNumberTextView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        ValueAnimator.AnimatorUpdateListener animatorUpdate = new ValueAnimator.AnimatorUpdateListener() {
+        pageNumberAnimator = ValueAnimator.ofFloat(startValue, endValue);
+        pageNumberAnimator.setDuration(animationDuration);
+        pageNumberAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        pageNumberAnimator.setRepeatMode(ValueAnimator.REVERSE);
+        pageNumberAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 pageNumberTextView.setText(String.format(PAGE_MASK, currentPageNumber));
@@ -127,40 +127,22 @@ public class HelpActivity extends AppCompatActivity {
                 pageNumberTextView.setScaleX(animationValue);
                 pageNumberTextView.setScaleY(animationValue);
             }
-        };
-
-        pageNumberExpandAnimator = ValueAnimator.ofFloat(startValue, endValue);
-        pageNumberExpandAnimator.setDuration(animationDuration);
-        pageNumberExpandAnimator.addUpdateListener(animatorUpdate);
-        pageNumberExpandAnimator.addListener(new Animator.AnimatorListener() {
+        });
+        pageNumberAnimator.addListener(new Animator.AnimatorListener() {
             @Override
-            public void onAnimationStart(Animator animation) {}
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                pageNumberContractAnimator.start();
+            public void onAnimationStart(Animator animation) {
+                pageNumberTextView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
             }
             @Override
-            public void onAnimationCancel(Animator animation) {}
+            public void onAnimationEnd(Animator animation) {}
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                pageNumberTextView.setLayerType(View.LAYER_TYPE_NONE, null);
+            }
             @Override
             public void onAnimationRepeat(Animator animation) {}
         });
-
-        pageNumberContractAnimator = ValueAnimator.ofFloat(endValue, startValue);
-        pageNumberContractAnimator.setDuration(animationDuration);
-        pageNumberContractAnimator.addUpdateListener(animatorUpdate);
-        pageNumberContractAnimator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {}
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                pageNumberExpandAnimator.start();
-            }
-            @Override
-            public void onAnimationCancel(Animator animation) {}
-            @Override
-            public void onAnimationRepeat(Animator animation) {}
-        });
-        pageNumberExpandAnimator.start();
+        pageNumberAnimator.start();
     }
 
     private void setupButtonListener() {
