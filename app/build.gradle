@@ -3,7 +3,7 @@ apply plugin: 'jacoco'
 
 android {
     compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.jabarasca.financial_app"
